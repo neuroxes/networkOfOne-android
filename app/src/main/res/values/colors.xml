@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="blackTransparent">#11000000</color>
+    <color name="blackLight">#010101</color>
+
+    <color name="white">#FFFFFFFF</color>
+    <color name="lightBack">@color/white</color>
+    <color name="background_secondary">#f6f7f6</color>
+
+    <color name="brand">#f29111</color>
+    <color name="brand_light">#99f29111</color>
+    <color name="brand_dark">#FF6F00</color>
+    <color name="brandTrans">#22f29111</color>
+
+    <color name="textColor">#222</color>
+    <color name="darkBack">#131414</color>
+    <color name="textColorSecondary">#5a5a5a</color>
+    <color name="textColorSecondaryAlt">#afafaf</color>
+
+
+
+    <color name="btmNavDark">#1e1f20</color>
+    <color name="colorError">#FF2718</color>
+    <color name="green">#4CAF50</color>
+    <color name="yellow">#FFC107</color>>
+    <color name="colorInfo">#2196F3</color>
+
+    <color name="cardBackground">#22aaaaaa</color>
+
+    <color name="pending">#feead5</color>
+    <color name="completed">#ddC8E6C9</color>
+    <color name="cancelled">#ddFFCDD2</color>
+    <color name="accepted">#ddB3E5FC</color>
+
+    <!-- Notification Background Colors (light) -->
+    <color name="order_update_bg_light">#E3F2FD</color>  <!-- Light blue -->
+    <color name="promotion_bg_light">#FFF8E1</color>     <!-- Light amber -->
+    <color name="system_bg_light">#F1F8E9</color>        <!-- Light green -->
+    <color name="store_update_bg_light">#E8F5E9</color>  <!-- Very light green -->
+    <color name="delivery_update_bg_light">#E0F7FA</color><!-- Light cyan -->
+    <color name="new_booking_bg_light">#E8EAF6</color>   <!-- Light indigo -->
+    <color name="cancellation_bg_light">#FFEBEE</color>  <!-- Light red -->
+    <color name="reschedule_bg_light">#F3E5F5</color>    <!-- Light purple -->
+    <color name="payment_bg_light">#E0F2F1</color>      <!-- Light teal -->
+    <color name="review_bg_light">#FFF3E0</color>       <!-- Light orange -->
+    <color name="reminder_bg_light">#EDE7F6</color>     <!-- Light deep purple -->
+
+    <!-- Notification Tint Colors (dark) -->
+    <color name="order_update_tint_dark">#0D47A1</color>  <!-- Dark blue -->
+    <color name="promotion_tint_dark">#FF6F00</color>     <!-- Dark amber -->
+    <color name="system_tint_dark">#33691E</color>        <!-- Dark green -->
+    <color name="store_update_tint_dark">#1B5E20</color>  <!-- Dark green -->
+    <color name="delivery_update_tint_dark">#006064</color><!-- Dark cyan -->
+    <color name="new_booking_tint_dark">#1A237E</color>   <!-- Dark indigo -->
+    <color name="cancellation_tint_dark">#B71C1C</color>  <!-- Dark red -->
+    <color name="reschedule_tint_dark">#4A148C</color>    <!-- Dark purple -->
+    <color name="payment_tint_dark">#004D40</color>       <!-- Dark teal -->
+    <color name="review_tint_dark">#E65100</color>       <!-- Dark orange -->
+    <color name="reminder_tint_dark">#311B92</color>
+    <color name="shimmerColor">#cfcfcf</color>     <!-- Dark deep purple -->
+
+
+        <!-- Primary Brand Colors -->
+        <color name="primary">#2563EB</color>
+        <color name="primary_light">#EFF6FF</color>
+        <color name="primary_dark">#1D4ED8</color>
+
+        <!-- Text Colors -->
+        <color name="text_primary">#111827</color>
+        <color name="text_secondary">#6B7280</color>
+        <color name="text_tertiary">#9CA3AF</color>
+
+        <!-- Status Colors -->
+        <color name="status_pending">#F59E0B</color>
+        <color name="status_pending_bg">#FEF3C7</color>
+
+        <color name="status_confirmed">#10B981</color>
+        <color name="status_confirmed_bg">#D1FAE5</color>
+
+        <color name="status_processing">#3B82F6</color>
+        <color name="status_processing_bg">#DBEAFE</color>
+
+        <color name="status_shipped">#8B5CF6</color>
+        <color name="status_shipped_bg">#EDE9FE</color>
+
+        <color name="status_delivered">#059669</color>
+        <color name="status_delivered_bg">#A7F3D0</color>
+
+        <color name="status_cancelled">#EF4444</color>
+        <color name="status_cancelled_bg">#FEE2E2</color>
+
+        <!-- Success Colors -->
+        <color name="success">#10B981</color>
+        <color name="success_dark">#047857</color>
+        <color name="success_light">#D1FAE5</color>
+
+        <!-- Warning Colors -->
+        <color name="warning">#F59E0B</color>
+        <color name="warning_dark">#D97706</color>
+        <color name="warning_light">#FEF3C7</color>
+
+        <!-- Error Colors -->
+        <color name="error">#EF4444</color>
+        <color name="error_dark">#DC2626</color>
+        <color name="error_light">#FEE2E2</color>
+
+        <!-- Neutral Colors -->
+        <color name="border_light">#E5E7EB</color>
+        <color name="background_light">#F9FAFB</color>
+        <color name="surface">#FFFFFF</color>
+
+
+        <!-- Primary Colors -->
+        <color name="primary_action">#6366F1</color>
+
+        <!-- Status Colors -->
+
+        <color name="status_ring_confirmed">#10B981</color>
+
+        <!-- Success Colors -->
+        <color name="success_primary">#059669</color>
+
+        <!-- UI Colors -->
+        <color name="rating_gold">#F59E0B</color>
+        <color name="progress_background">#E2E8F0</color>
+        <color name="action_bar_background">#F8FAFC</color>
+        <color name="action_icon">#475569</color>
+        <color name="icon_primary">#6366F1</color>
+
+        <!-- Indicator Colors -->
+        <color name="new_indicator">#EF4444</color>
+        <color name="dot_separator">#CBD5E1</color>
+
+
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="buttonRadius">16dp</dimen>
+    <dimen name="horizontalSpacing">16dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="selected_stroke_width">2dp</dimen>
+    <dimen name="default_stroke_width">0dp</dimen>
+    <dimen name="et_stroke_width">1dp</dimen>
+    <dimen name="buttonRadiusLarge">24dp</dimen>
+    <dimen name="peek_width">25dp</dimen>
+    <dimen name="small_page_margin">0dp</dimen>
+</resources>

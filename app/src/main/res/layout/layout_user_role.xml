@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="30dp">
+
+            <TextView
+                style="@style/textHeading.Large"
+                android:layout_gravity="center_horizontal"
+                android:text="Join as a Scheduler or Refree"
+                android:textAlignment="center" />
+
+            <TextView
+                style="@style/textBody"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
+                android:text="Create and manage basketball games as a Scheduler or join as a Referee to accept games, check-in via GPS, and receive payments."
+                android:textAlignment="center" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layClient"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="20dp"
+                android:background="@drawable/outlined_10dp_round_simple"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="15dp">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/img1"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="#22aaaaaa"
+                    android:padding="1dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/round_school_24"
+                    app:contentPadding="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+                    app:strokeColor="?colorPrimary"
+                    app:tint="@color/yellow" />
+
+
+                <TextView
+                    android:id="@+id/tvTitle2"
+                    style="@style/textHeading.medium"
+                    android:layout_marginStart="15dp"
+                    android:text="As a Scheduler / School"
+                    app:layout_constraintStart_toEndOf="@id/img1"
+                    app:layout_constraintTop_toTopOf="@id/img1"
+
+                    />
+
+                <TextView
+                    android:id="@+id/userEmail"
+                    style="@style/textBody"
+                    android:layout_width="0dp"
+                    android:text="Create and manage all your basketball games with tools and features."
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/tvTitle2"
+                    app:layout_constraintTop_toBottomOf="@id/tvTitle2" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layProf"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/outlined_10dp_round_simple"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="15dp">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/img2"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="#22aaaaaa"
+                    android:padding="1dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/whistle_1_"
+                    app:contentPadding="12dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+                    app:strokeColor="?colorPrimary"
+                    app:tint="@color/green" />
+
+
+                <TextView
+                    android:id="@+id/tvTitle22"
+                    style="@style/textHeading.medium"
+                    android:layout_marginStart="15dp"
+                    android:text="As a Refree"
+                    app:layout_constraintStart_toEndOf="@id/img2"
+                    app:layout_constraintTop_toTopOf="@id/img2"
+
+                    />
+
+                <TextView
+                    android:id="@+id/userEmail22"
+                    style="@style/textBody"
+                    android:layout_width="0dp"
+                    android:text="Accept games, check-in via GPS, and receive payments."
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/tvTitle22"
+                    app:layout_constraintTop_toBottomOf="@id/tvTitle22" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnContinue"
+        style="@style/btn_lwm_enable_disable"
+        android:layout_marginHorizontal="25dp"
+        android:layout_marginVertical="16dp"
+        android:enabled="false"
+        android:text="Continue" />
+
+    <!--<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
+        android:gravity="center_horizontal|center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Already have an account?" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSignin"
+            style="@style/btn_lwm.textBtn"
+            android:paddingStart="8dp"
+            android:text="@string/sign_in"
+            android:textAlignment="textStart" />
+
+    </LinearLayout>-->
+
+
+</LinearLayout>

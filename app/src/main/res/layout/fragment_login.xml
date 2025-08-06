@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".authentication.Login">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tLay1"
+        style="@style/textInputLayout"
+        android:layout_marginTop="12dp"
+        android:hint="Email"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:placeholderText="Enter your email">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etEmail"
+            style="@style/editTextOutlined_round"
+            android:drawableStart="@drawable/envelope"
+            android:inputType="textEmailAddress"
+            tools:targetApi="o" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tLay2"
+        style="@style/textInputLayout"
+        android:hint="Password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tLay1"
+        app:passwordToggleEnabled="true"
+        app:passwordToggleTint="?colorSecondary"
+        app:placeholderText="Enter your password">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etPassword"
+            style="@style/editTextOutlined_round"
+            android:drawableStart="@drawable/lock"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkboxRemember"
+        style="@style/checkBoxStyle"
+        android:lines="1"
+        android:text="Remember me!"
+        app:layout_constraintBottom_toBottomOf="@id/btnForgotPass"
+        app:layout_constraintEnd_toStartOf="@id/btnForgotPass"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btnForgotPass" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnLogin"
+        style="@style/btn_lwm"
+        android:layout_marginTop="8dp"
+        android:text="Login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnForgotPass" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressBar"
+        style="@style/circular_progress_indicator"
+        app:layout_constraintBottom_toBottomOf="@id/btnLogin"
+        app:layout_constraintEnd_toEndOf="@id/btnLogin"
+        app:layout_constraintStart_toStartOf="@id/btnLogin"
+        app:layout_constraintTop_toTopOf="@id/btnLogin" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnForgotPass"
+        style="@style/btn_lwm.textBtn"
+        android:paddingStart="5dp"
+        android:text="Forgot Password?"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tLay2" />
+
+    <!--<TextView
+        android:id="@+id/t2"
+        style="@style/textBody"
+        android:layout_marginTop="15dp"
+        android:text="Or with"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnLogin" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivGoogle"
+        style="@style/selectableIcon"
+        android:contentDescription="Google"
+        android:padding="1dp"
+        android:src="@drawable/icons8_google"
+        app:layout_constraintEnd_toStartOf="@id/ivFacebook"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/t2"
+        app:strokeWidth="1dp" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivFacebook"
+        style="@style/selectableIcon"
+        android:layout_marginHorizontal="25dp"
+        android:layout_marginTop="0dp"
+        android:contentDescription="Facebook"
+        android:padding="1dp"
+        android:src="@drawable/icons8_facebook_colorful"
+        app:layout_constraintBottom_toBottomOf="@id/ivGoogle"
+        app:layout_constraintEnd_toStartOf="@id/ivApple"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@id/ivGoogle"
+        app:layout_constraintTop_toTopOf="@id/ivGoogle"
+        app:strokeWidth="1dp" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivApple"
+        style="@style/selectableIcon"
+        android:layout_marginTop="0dp"
+        android:contentDescription="Apple"
+        android:padding="1dp"
+        android:src="@drawable/icons8_apple"
+        app:layout_constraintBottom_toBottomOf="@id/ivGoogle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@id/ivFacebook"
+        app:layout_constraintTop_toTopOf="@id/ivGoogle"
+        app:strokeWidth="1dp"
+        app:tint="?colorOnBackground" />-->
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,43 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.NETWORKOFONE" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/brand</item>
+        <item name="colorSecondary">@color/textColorSecondary</item>
+        <item name="backgroundColor">@color/lightBack</item>
+        <item name="cardBackgroundColor">@color/cardBackground</item>
+        <item name="colorOnBackground">@color/textColor</item>
+        <item name="android:windowBackground">?backgroundColor</item>
+        <item name="android:navigationBarColor">?backgroundColor</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="q">true</item>
+        <item name="colorSecondaryContainer">?colorPrimary</item>
+        <item name="colorOnSecondary">@color/blackLight</item>
+        <item name="colorPrimaryInverse">?colorOnBackground</item>
+
+        <item name="colorTertiary">@color/background_secondary</item>
+        <item name="colorError">@color/colorError</item>
+        <item name="colorAccent">?colorPrimary</item>
+
+        <item name="colorOnTertiary">@color/white</item>
+
+        <!--        Text Colors -->
+        <item name="android:textColor">@color/textColor</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
+
+        <!--    Status Bar Styling      -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">?backgroundColor</item>
+
+        <!--     Font Family !-->
+        <item name="fontFamily">@font/average_sans</item>
+        <item name="android:fontFamily">?fontFamily</item>
+
+        <item name="android:ellipsize">end</item>
+        <item name="android:includeFontPadding">false</item>
+
+        <!--   Highlighter color when clicking a hint value     -->
+        <item name="colorControlActivated">?colorPrimaryInverse</item>
+    </style>
+
+    <style name="Theme.NETWORKOFONE" parent="Base.Theme.NETWORKOFONE" />
+</resources>

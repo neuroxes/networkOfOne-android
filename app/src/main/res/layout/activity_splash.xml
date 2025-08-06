@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activities.SplashActivity"
+    tools:parentTag="android.widget.FrameLayout">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/img"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:scaleX="1.25"
+        android:scaleY="1.25"
+        android:translationY="20dp"
+        android:scaleType="centerCrop"
+        android:layout_gravity="center"
+        android:src="@drawable/logo_network_one"
+        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.ExtraLarge" />
+
+    <TextView
+        android:id="@+id/tvAppName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="center_horizontal"
+        android:padding="50dp"
+        android:alpha="0"
+        android:translationY="15dp"
+        android:text="@string/app_name"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+
+    <View
+        android:id="@+id/animator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:transitionName="animator"
+        />
+
+
+</merge>

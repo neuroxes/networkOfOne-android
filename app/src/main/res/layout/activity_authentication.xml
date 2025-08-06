@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:parentTag="androidx.core.widget.NestedScrollView">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:background="?colorOnBackground"
+        tools:context=".activities.AuthenticationActivity">
+
+        <TextView
+            android:id="@+id/t1"
+            style="@style/textHeading.Large"
+            android:layout_width="0dp"
+            android:layout_marginHorizontal="28dp"
+            android:layout_marginTop="40dp"
+            android:text="@string/login_msg1"
+            android:textColor="?backgroundColor"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/t2"
+            style="@style/textBody"
+            android:layout_width="0dp"
+            android:layout_marginTop="5dp"
+            android:text="@string/login_msg2"
+            android:textColor="?colorTertiary"
+            app:layout_constraintEnd_toEndOf="@id/t1"
+            app:layout_constraintStart_toStartOf="@id/t1"
+            app:layout_constraintTop_toBottomOf="@id/t1" />
+
+        <View
+            android:id="@+id/bgRound"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="70dp"
+            android:background="@drawable/top_50dp_round"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/t1" />
+
+
+        <FrameLayout
+            android:id="@+id/tab"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/round_12dp_bg"
+            android:backgroundTint="?cardBackgroundColor"
+            android:padding="5dp"
+            app:layout_constraintEnd_toEndOf="@id/t1"
+            app:layout_constraintStart_toStartOf="@id/t1"
+            app:layout_constraintTop_toTopOf="@id/bgRound"
+            app:layout_constraintWidth_max="450dp">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                style="@style/Widget.Design.TabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:tabGravity="fill"
+                app:tabIndicator="@drawable/round_12dp_bg"
+                app:tabIndicatorAnimationDuration="200"
+                app:tabIndicatorAnimationMode="fade"
+                app:tabIndicatorColor="?backgroundColor"
+                app:tabIndicatorFullWidth="true"
+                app:tabIndicatorGravity="stretch"
+                app:tabMaxWidth="0dp"
+                app:tabMode="fixed"
+                app:tabRippleColor="@android:color/transparent"
+                app:tabSelectedTextAppearance="@style/textHeading.Large"
+                app:tabSelectedTextColor="?android:textColor"
+                app:tabTextAppearance="@style/TabTextAppearance"
+                app:tabTextColor="?android:textColorSecondary">
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Login" />
+
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Signup" />
+
+            </com.google.android.material.tabs.TabLayout>
+        </FrameLayout>
+
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="0dp"
+            android:layout_height="470dp"
+            android:overScrollMode="never"
+            app:layout_constraintBottom_toTopOf="@id/t3"
+            app:layout_constraintEnd_toEndOf="@id/t1"
+            app:layout_constraintStart_toStartOf="@id/t1"
+            app:layout_constraintTop_toBottomOf="@id/tab"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintWidth_max="450dp" />
+
+
+        <TextView
+            android:id="@+id/t3"
+            style="@style/textBody.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Don't have an account?"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnAuth"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/viewpager"
+            app:layout_constraintVertical_bias="1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAuth"
+            style="@style/btn_lwm.textBtn"
+            android:layout_width="58dp"
+            android:onClick="switchTab"
+            android:text="Sign Up"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@id/t3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/t3"
+            app:layout_constraintTop_toTopOf="@id/t3" />
+
+
+        <View
+            android:id="@+id/animator"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:transitionName="animator"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="textBody">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
+        <item name="android:drawablePadding">5dp</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="textBody_lw0dp" parent="textBody">
+        <item name="android:layout_width">0dp</item>
+    </style>
+
+
+    <style name="textBody.Small" parent="textBody">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+
+    <style name="textBody.VerySmall" parent="textBody">
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="textBody.VerySmall.Error" parent="textBody.VerySmall">
+        <item name="android:textColor">?colorError</item>
+    </style>
+
+    <style name="textBody.Large" parent="textBody">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="textBody.VeryLarge" parent="textBody">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+
+    <style name="textHeading" parent="textBody">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?android:textColor</item>
+    </style>
+
+    <style name="textHeading.medium" parent="textHeading">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="textHeading.Small" parent="textHeading">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="textHeading.VerySmall" parent="textHeading">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="textHeading.NormalStyle" parent="textHeading.Small">
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="textHeading.NormalStyle.Large" parent="textHeading.medium">
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="textHeading.NormalStyle.Small" parent="textHeading.NormalStyle">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="textHeading.NormalStyle.VerySmall" parent="textHeading.NormalStyle">
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="textHeading.Large" parent="textHeading">
+        <item name="android:textSize">22sp</item>
+    </style>
+
+
+    <style name="btn_lwm" parent="Widget.Material3.Button">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">52dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textColor">?backgroundColor</item>
+        <item name="backgroundTint">?colorPrimaryInverse</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">@dimen/buttonRadius</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:insetTop">0sp</item>
+        <item name="android:insetBottom">0sp</item>
+        <item name="iconTint">?backgroundColor</item>
+    </style>
+
+
+    <style name="btn_lwm_enable_disable" parent="btn_lwm">
+        <item name="backgroundTint">@color/button_bg</item>
+    </style>
+
+    <style name="btn_lwm.textBtn" parent="Widget.Material3.Button.TextButton">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:paddingHorizontal" tools:targetApi="o">0dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">@dimen/buttonRadius</item>
+    </style>
+
+    <style name="btn_lwm.outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:minHeight">58dp</item>
+        <item name="android:lines">1</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
+        <item name="iconTint">?android:textColorSecondary</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">@dimen/buttonRadius</item>
+        <item name="strokeColor">?colorButtonNormal</item>
+    </style>
+
+    <style name="btn_lw0dp.outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:minHeight">55dp</item>
+        <item name="android:lines">1</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">?android:textColor</item>
+        <item name="iconGravity">end</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="android:paddingHorizontal" tools:targetApi="o">10dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">@dimen/buttonRadius</item>
+    </style>
+
+    <style name="textInputLayout">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="boxBackgroundColor">?backgroundColor</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/buttonRadius</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/buttonRadius</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/buttonRadius</item>
+        <item name="boxCornerRadiusTopStart">@dimen/buttonRadius</item>
+        <item name="boxStrokeColor">@color/stroke_color_with_effects</item>
+        <item name="boxStrokeWidth">@dimen/et_stroke_width</item>
+        <item name="hintEnabled">true</item>
+        <item name="errorEnabled">true</item>
+        <item name="boxStrokeErrorColor">?colorError</item>
+        <item name="errorTextAppearance">@style/textBody.VerySmall.Error</item>
+        <item name="expandedHintEnabled">true</item>
+        <item name="hintTextColor">?colorPrimary</item>
+    </style>
+
+
+    <style name="textInputLayout.NoHint" parent="textInputLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="hintEnabled">false</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="expandedHintEnabled">false</item>
+    </style>
+
+
+    <style name="editTextInputLayout" parent="textBody">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:maxLength">80</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:drawablePadding">10dp</item>
+    </style>
+
+    <style name="backBtn">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_marginTop">15dp</item>
+        <item name="contentPadding">5dp</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:background">?selectableItemBackground</item>
+        <item name="android:src">@drawable/arrow_small_left</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Full</item>
+    </style>
+
+    <style name="llSet">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:layout_marginTop">15dp</item>
+    </style>
+
+    <style name="TabTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">?fontFamily</item>
+        <item name="fontFamily">?fontFamily</item>
+
+    </style>
+
+    <style name="SettingsButton" parent="Base.Theme.NETWORKOFONE">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:drawablePadding">10dp</item>
+        <item name="android:background">?selectableItemBackground</item>
+        <!--        <item name="endIcon">@drawable/angle_small_right_1_</item>-->
+
+    </style>
+    <!--        <item name="textColor">?android:textColor</item>-->
+
+
+    <style name="linearProg">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:max">100</item>
+        <item name="android:progressTint">@color/textColorSecondary</item>
+        <item name="android:secondaryProgress">?colorPrimary</item>
+        <item name="android:progress">0</item>
+        <item name="trackColor">?colorTertiary</item>
+        <item name="indicatorTrackGapSize">0dp</item>
+        <item name="trackThickness">2dp</item>
+        <item name="trackStopIndicatorSize">0dp</item>
+        <item name="indicatorColor">?colorPrimary</item>
+    </style>
+
+
+    <style name="checkBoxStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">5dp</item>
+    </style>
+
+
+    <style name="constraintLay" parent="constLay">
+        <item name="android:id">@id/parent</item>
+        <item name="android:padding">5dp</item>
+    </style>
+
+    <style name="selectableIcon" parent="backBtn">
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_width">40dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="contentPadding">10dp</item>
+        <item name="android:layout_marginTop">0dp</item>
+    </style>
+
+
+    <!--<style name="roundMaterialCard">
+        <item name="android:id">@id/parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="cardBackgroundColor">?cardBackgroundColor</item>
+        <item name="android:pointerIcon">hand</item>
+        <item name="cornerRadius">12dp</item>
+    </style>-->
+
+
+    <style name="horizontal_divider">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_marginTop">15dp</item>
+        <item name="android:background">?colorButtonNormal</item>
+    </style>
+
+    <style name="setting_item" parent="textHeading.NormalStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:paddingVertical" tools:targetApi="o">16dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingEnd">15dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:drawablePadding">15dp</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:drawableEnd">@drawable/angle_small_right</item>
+        <item name="android:background">@drawable/ripple_effect</item>
+    </style>
+
+    <style name="radioBtn">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!--        <item name="android:background">@drawable/radio_btn_outlined_bg</item>-->
+        <item name="android:layout_marginTop">15dp</item>
+        <item name="android:paddingTop">17dp</item>
+        <item name="android:paddingStart">3dp</item>
+        <item name="android:lines">2</item>
+        <item name="android:paddingBottom">17dp</item>
+    </style>
+
+    <style name="error_text_appearance">
+        <item name="android:textSize">8sp</item>
+    </style>
+
+    <style name="circular_progress_indicator">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:indeterminate">true</item>
+        <item name="android:visibility">gone</item>
+        <item name="indicatorColor">?backgroundColor</item>
+        <item name="indicatorSize">30dp</item>
+        <item name="trackColor">?backgroundColor</item>
+    </style>
+
+    <style name="btn">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:layout_weight">1</item>
+        <!--        <item name="android:background">@drawable/selectable_bg</item>-->
+        <item name="android:textColor">?colorOnBackground</item>
+
+    </style>
+
+    <style name="editTextOutlined">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingHorizontal" tools:targetApi="o">10dp</item>
+        <item name="android:paddingVertical" tools:targetApi="o">15dp</item>
+        <item name="android:drawablePadding">15dp</item>
+        <item name="android:textColorHint">#aaaaaa</item>
+        <item name="android:background">@drawable/outlined_10dp_round_with_states_effect</item>
+    </style>
+
+
+    <style name="chipStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="chipCornerRadius">26dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/chip_text_color</item>
+        <item name="chipBackgroundColor">@color/chip_background_color</item>
+        <item name="android:checkable">true</item>
+        <item name="chipIconTint">?colorOnBackground</item>
+
+    </style>
+
+    <style name="chipStyle2" parent="chipStyle">
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="android:textColor">@color/chip_text_color2</item>
+        <item name="chipBackgroundColor">@color/chip_background_color2</item>
+    </style>
+
+    <style name="constLay">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+
+    </style>
+
+    <style name="viewAllSt" parent="btn_lwm.textBtn">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:drawablePadding">0dp</item>
+        <item name="icon">@drawable/angle_small_right</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:text">See all</item>
+        <item name="android:gravity">center</item>
+        <item name="iconGravity">textEnd</item>
+    </style>
+
+    <style name="tvSettings" parent="textBody">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:background">@drawable/round_full_bg_with_ripple_effects</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:drawablePadding">15dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">15dp</item>
+
+    </style>
+
+    <style name="roundCard">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@drawable/round_bg</item>
+        <item name="android:backgroundTint">@color/cardBackground</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingHorizontal" tools:ignore="NewApi">10dp</item>
+        <item name="android:paddingVertical" tools:ignore="NewApi">15dp</item>
+    </style>
+
+    <style name="editTextOutlined_round">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:drawablePadding">10dp</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="loading_anim">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="lottie_rawRes">@raw/incity_loading_anim</item>
+        <item name="lottie_loop">true</item>
+        <item name="lottie_autoPlay">true</item>
+
+    </style>
+
+
+    <style name="materialCard">
+        <item name="android:id">@id/parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="cardBackgroundColor">?backgroundColor</item>
+        <item name="cardCornerRadius">@dimen/buttonRadius</item>
+        <item name="android:pointerIcon">hand</item>
+
+
+    </style>
+
+    <style name="SettingsButton2">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:layout_marginHorizontal" tools:targetApi="26">20dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:drawablePadding">10dp</item>
+        <item name="android:background">@drawable/selectable_bg_new</item>
+        <item name="endIcon">@drawable/angle_small_right_1_</item>
+    </style>
+
+    <style name="outlined_spinner">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:background">@drawable/custom_spinner_background</item>
+        <item name="android:paddingHorizontal" tools:targetApi="26">15dp</item>
+        <item name="android:paddingVertical" tools:targetApi="26">18dp</item>
+        <item name="android:popupBackground">@drawable/custom_spinner_background_with_padding</item>
+        <item name="android:spinnerMode">dropdown</item>
+    </style>
+
+
+    <style name="circular_progress_indicator_home">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:indeterminate">false</item>
+        <item name="indicatorColor">?colorOnBackground</item>
+        <item name="indicatorSize">65dp</item>
+        <item name="thumbTrackGapSize">0dp</item>
+        <item name="trackColor">?colorButtonNormal</item>
+
+    </style>
+
+    <style name="simpleCardView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="cardCornerRadius">@dimen/buttonRadius</item>
+        <item name="cardBackgroundColor">?cardBackgroundColor</item>
+        <item name="strokeWidth">0dp</item>
+    </style>
+
+    <style name="floatingActionButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/horizontalSpacing</item>
+        <item name="android:backgroundTint">?colorOnTertiary</item>
+        <item name="tint">?colorOnBackground</item>
+        <item name="android:contentDescription">@string/add</item>
+    </style>
+
+    <style name="vertical_divider">
+        <item name="android:layout_width">1dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">?colorButtonNormal</item>
+        <item name="android:layout_marginHorizontal">8dp</item>
+    </style>
+
+
+    <string name="add">add</string>
+</resources>

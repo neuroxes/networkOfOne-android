@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:layout_height="470dp">
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tLay0"
+        style="@style/textInputLayout"
+        android:layout_marginTop="12dp"
+        android:hint="Name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:placeholderText="Enter your legal name">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etName"
+            style="@style/editTextOutlined_round"
+            android:drawableStart="@drawable/user"
+            android:inputType="textPersonName"
+            android:maxLength="75" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tLay1"
+        style="@style/textInputLayout"
+        android:hint="Email"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tLay0"
+        app:placeholderText="Enter your email">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etEmail"
+            style="@style/editTextOutlined_round"
+            android:drawableStart="@drawable/envelope"
+            android:inputType="textEmailAddress" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.hbb20.CountryCodePicker
+        android:id="@+id/ccp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="-12dp"
+        android:elevation="10dp"
+        android:textColor="?colorPrimary"
+        android:translationZ="10dp"
+        app:ccpDialog_textColor="?colorOnBackground"
+        app:ccp_areaCodeDetectedCountry="true"
+        app:ccp_arrowColor="?colorOnBackground"
+        app:ccp_autoDetectCountry="true"
+        app:ccp_clickable="true"
+        app:ccp_contentColor="?colorOnBackground"
+        app:ccp_defaultNameCode="PK"
+        app:ccp_showFlag="true"
+        app:ccp_showFullName="false"
+        app:ccp_textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/phoneLay"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/phoneLay" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/phoneLay"
+        style="@style/textInputLayout"
+        android:layout_width="0dp"
+        android:hint="Phone Number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tLay1"
+        app:placeholderText="390 1254234">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/phoneEditText"
+            style="@style/editTextOutlined_round"
+            android:inputType="phone"
+            android:paddingStart="105dp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tLay2"
+        style="@style/textInputLayout"
+        android:hint="Password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/phoneLay"
+        app:passwordToggleEnabled="true"
+        app:passwordToggleTint="?colorSecondary"
+        app:placeholderText="Enter your password">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etPassword"
+            style="@style/editTextOutlined_round"
+            android:drawableStart="@drawable/lock"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tLay3"
+        style="@style/textInputLayout"
+        android:hint="Confirm Password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tLay2"
+        app:passwordToggleEnabled="true"
+        app:passwordToggleTint="?colorSecondary"
+        app:placeholderText="Confirm your password">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etConfirmPassword"
+            style="@style/editTextOutlined_round"
+            android:drawableStart="@drawable/lock"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSignup"
+        style="@style/btn_lwm"
+        android:layout_marginTop="12dp"
+        android:text="Signup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tLay3" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressBar"
+        style="@style/circular_progress_indicator"
+        app:layout_constraintBottom_toBottomOf="@id/btnSignup"
+        app:layout_constraintEnd_toEndOf="@id/btnSignup"
+        app:layout_constraintStart_toStartOf="@id/btnSignup"
+        app:layout_constraintTop_toTopOf="@id/btnSignup" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

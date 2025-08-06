@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "71960048163",
+    "project_id": "networkofone-3b9c4",
+    "storage_bucket": "networkofone-3b9c4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:71960048163:android:84069c6f8b828d410e7796",
+        "android_client_info": {
+          "package_name": "com.example.networkofone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmTCCxsPK67c9kdvWsdnickQ_64Zxhh3k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
