@@ -1,0 +1,630 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:parentTag="androidx.core.widget.NestedScrollView">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:paddingVertical="15dp"
+        tools:context=".home.HomeFragment">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layViews"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible">
+
+
+            <TextView
+                android:id="@+id/t2"
+                style="@style/textBody.Small"
+                android:text="Welcome"
+                android:layout_marginStart="16dp"
+                app:layout_constraintBottom_toTopOf="@id/tvLocation"
+                app:layout_constraintStart_toEndOf="@id/picHome"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/tvLocation"
+                style="@style/textHeading.medium"
+                android:layout_width="0dp"
+                android:layout_marginHorizontal="16dp"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:text="@string/storeLocation"
+                app:layout_constraintBottom_toBottomOf="@id/picHome"
+                app:layout_constraintStart_toEndOf="@id/picHome"
+                app:layout_constraintTop_toBottomOf="@id/t2"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:layout_constraintWidth_default="wrap" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/notification"
+                style="@style/selectableIcon"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/bell"
+                app:layout_constraintBottom_toBottomOf="@id/picHome"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/picHome" />
+
+            <TextView
+                android:id="@+id/noOfNotifications"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/round"
+                android:backgroundTint="?colorPrimary"
+                android:gravity="center"
+                android:text="2"
+                android:textColor="@color/white"
+                android:textSize="11sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/notification"
+                app:layout_constraintTop_toTopOf="@id/notification" />
+
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/picHome"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/user_bg"
+                android:visibility="visible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+                app:tint="?colorSecondary" />
+
+
+            <View
+                android:id="@+id/div"
+                style="@style/horizontal_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/picHome" />
+
+            <TextView
+                android:id="@+id/tv0"
+                style="@style/textBody.VeryLarge"
+                android:layout_marginTop="20dp"
+                android:text="Basic Operations"
+                app:layout_constraintStart_toStartOf="@id/picHome"
+                app:layout_constraintTop_toBottomOf="@id/div" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <View
+            android:id="@+id/animator"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</merge>
+
+
+    <!--
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmerContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:shimmer_auto_start="true"
+                tools:visibility="gone">
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:animateLayoutChanges="true"
+                    tools:context=".fragments.home.Home">
+
+
+                    <View
+                        android:id="@+id/headerText_shimmer"
+                        android:layout_width="100dp"
+                        android:layout_height="15dp"
+                        android:background="@drawable/shimmer_rectangle"
+                        app:layout_constraintBottom_toTopOf="@id/locationText_shimmer"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    &lt;!&ndash; Location Value (Text with arrow) &ndash;&gt;
+                    <View
+                        android:id="@+id/locationText_shimmer"
+                        android:layout_width="0dp"
+                        android:layout_height="15dp"
+                        android:layout_marginHorizontal="30dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@drawable/shimmer_rectangle"
+                        app:layout_constraintBottom_toBottomOf="@id/profileImage_shimmer"
+                        app:layout_constraintEnd_toStartOf="@id/bellIcon_shimmer"
+                        app:layout_constraintStart_toEndOf="@id/profileImage_shimmer"
+                        app:layout_constraintTop_toBottomOf="@id/headerText_shimmer" />
+
+                    &lt;!&ndash; Notification Icon &ndash;&gt;
+                    <View
+                        android:id="@+id/bellIcon_shimmer"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/shimmer_circle"
+                        app:layout_constraintBottom_toBottomOf="@id/profileImage_shimmer"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/profileImage_shimmer" />
+
+                    &lt;!&ndash; Profile Picture &ndash;&gt;
+                    <View
+                        android:id="@+id/profileImage_shimmer"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="16dp"
+                        android:background="@drawable/shimmer_circle"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        android:id="@+id/divider1"
+                        style="@style/horizontal_divider"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profileImage_shimmer" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/mainCard"
+                        style="@style/materialCard"
+                        android:layout_width="0dp"
+                        android:layout_marginTop="15dp"
+                        app:layout_constraintEnd_toEndOf="@id/bellIcon_shimmer"
+                        app:layout_constraintStart_toStartOf="@id/profileImage_shimmer"
+                        app:layout_constraintTop_toBottomOf="@id/divider1">
+
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            &lt;!&ndash; Line 1 &ndash;&gt;
+                            <View
+                                android:id="@+id/verticalLine1"
+                                android:layout_width="1dp"
+                                android:layout_height="85dp"
+                                android:background="@color/shimmerColor"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <View
+                                android:id="@+id/textLabel1"
+                                android:layout_width="60dp"
+                                android:layout_height="15dp"
+                                android:layout_marginStart="20dp"
+                                android:background="@drawable/shimmer_rectangle"
+                                app:layout_constraintBottom_toTopOf="@id/levelText1"
+                                app:layout_constraintStart_toEndOf="@id/verticalLine1"
+                                app:layout_constraintTop_toTopOf="@id/verticalLine1"
+                                app:layout_constraintVertical_chainStyle="packed" />
+
+                            <View
+                                android:id="@+id/levelText1"
+                                android:layout_width="40dp"
+                                android:layout_height="15dp"
+                                android:layout_marginTop="5dp"
+                                android:background="@drawable/shimmer_rectangle"
+                                app:layout_constraintBottom_toBottomOf="@id/verticalLine1"
+                                app:layout_constraintStart_toStartOf="@id/textLabel1"
+                                app:layout_constraintTop_toBottomOf="@id/textLabel1"
+                                app:layout_constraintVertical_chainStyle="packed" />
+
+                            <View
+                                android:id="@+id/progressText1"
+                                android:layout_width="30dp"
+                                android:layout_height="15dp"
+                                android:background="@drawable/shimmer_rectangle"
+                                app:layout_constraintBottom_toBottomOf="@id/progressCircle1"
+                                app:layout_constraintEnd_toEndOf="@id/progressCircle1"
+                                app:layout_constraintStart_toStartOf="@id/progressCircle1"
+                                app:layout_constraintTop_toTopOf="@id/progressCircle1" />
+
+                            <View
+                                android:id="@+id/progressCircle1"
+                                android:layout_width="65dp"
+                                android:layout_height="65dp"
+                                android:background="@drawable/shimmer_circle"
+                                app:layout_constraintBottom_toBottomOf="@id/verticalLine1"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="@id/verticalLine1" />
+
+                            &lt;!&ndash; Line 2 &ndash;&gt;
+                            <View
+                                android:id="@+id/verticalLine2"
+                                android:layout_width="1dp"
+                                android:layout_height="85dp"
+                                android:layout_marginTop="15dp"
+                                android:background="@color/shimmerColor"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/verticalLine1" />
+
+                            <View
+                                android:id="@+id/textLabel2"
+                                android:layout_width="60dp"
+                                android:layout_height="15dp"
+                                android:layout_marginStart="20dp"
+                                android:background="@drawable/shimmer_rectangle"
+                                app:layout_constraintBottom_toTopOf="@id/levelText2"
+                                app:layout_constraintStart_toEndOf="@id/verticalLine2"
+                                app:layout_constraintTop_toTopOf="@id/verticalLine2"
+                                app:layout_constraintVertical_chainStyle="packed" />
+
+                            <View
+                                android:id="@+id/levelText2"
+                                android:layout_width="40dp"
+                                android:layout_height="15dp"
+                                android:layout_marginTop="5dp"
+                                android:background="@drawable/shimmer_rectangle"
+                                app:layout_constraintBottom_toBottomOf="@id/verticalLine2"
+                                app:layout_constraintStart_toStartOf="@id/textLabel2"
+                                app:layout_constraintTop_toBottomOf="@id/textLabel2" />
+
+                            <View
+                                android:id="@+id/progressText2"
+                                android:layout_width="30dp"
+                                android:layout_height="15dp"
+                                android:background="@drawable/shimmer_rectangle"
+                                app:layout_constraintBottom_toBottomOf="@id/progressCircle2"
+                                app:layout_constraintEnd_toEndOf="@id/progressCircle2"
+                                app:layout_constraintStart_toStartOf="@id/progressCircle2"
+                                app:layout_constraintTop_toTopOf="@id/progressCircle2" />
+
+                            <View
+                                android:id="@+id/progressCircle2"
+                                android:layout_width="65dp"
+                                android:layout_height="65dp"
+                                android:background="@drawable/shimmer_circle"
+                                app:layout_constraintBottom_toBottomOf="@id/verticalLine2"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="@id/verticalLine2" />
+
+                            &lt;!&ndash; Line 3 &ndash;&gt;
+                            <View
+                                android:id="@+id/verticalLine3"
+                                android:layout_width="1dp"
+                                android:layout_height="85dp"
+                                android:layout_marginTop="15dp"
+                                android:background="@color/shimmerColor"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/verticalLine2" />
+
+                            <View
+                                android:id="@+id/textLabel3"
+                                android:layout_width="70dp"
+                                android:layout_height="15dp"
+                                android:layout_marginStart="20dp"
+                                android:background="@drawable/shimmer_rectangle"
+                                app:layout_constraintBottom_toTopOf="@id/levelText3"
+                                app:layout_constraintStart_toEndOf="@id/verticalLine3"
+                                app:layout_constraintTop_toTopOf="@id/verticalLine3"
+                                app:layout_constraintVertical_chainStyle="packed" />
+
+                            <View
+                                android:id="@+id/levelText3"
+                                android:layout_width="40dp"
+                                android:layout_height="15dp"
+                                android:layout_marginTop="5dp"
+                                android:background="@drawable/shimmer_rectangle"
+                                app:layout_constraintBottom_toBottomOf="@id/verticalLine3"
+                                app:layout_constraintStart_toStartOf="@id/textLabel3"
+                                app:layout_constraintTop_toBottomOf="@id/textLabel3" />
+
+                            <View
+                                android:id="@+id/progressText3"
+                                android:layout_width="30dp"
+                                android:layout_height="15dp"
+                                android:background="@drawable/shimmer_rectangle"
+                                app:layout_constraintBottom_toBottomOf="@id/progressCircle3"
+                                app:layout_constraintEnd_toEndOf="@id/progressCircle3"
+                                app:layout_constraintStart_toStartOf="@id/progressCircle3"
+                                app:layout_constraintTop_toTopOf="@id/progressCircle3" />
+
+                            <View
+                                android:id="@+id/progressCircle3"
+                                android:layout_width="65dp"
+                                android:layout_height="65dp"
+                                android:background="@drawable/shimmer_circle"
+                                app:layout_constraintBottom_toBottomOf="@id/verticalLine3"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="@id/verticalLine3" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <View
+                        android:id="@+id/divider2"
+                        style="@style/horizontal_divider"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/mainCard" />
+
+                    &lt;!&ndash; Success Card &ndash;&gt;
+                    <LinearLayout
+                        android:id="@+id/successCardLayout"
+                        style="@style/roundCard"
+                        android:layout_marginTop="20dp"
+                        app:layout_constraintEnd_toStartOf="@id/ratingCardLayout"
+                        app:layout_constraintStart_toStartOf="@id/profileImage_shimmer"
+                        app:layout_constraintTop_toBottomOf="@id/divider2">
+
+
+                        <View
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:background="@drawable/shimmer_circle" />
+
+                        <View
+                            android:layout_width="60dp"
+                            android:layout_height="15dp"
+                            android:layout_marginVertical="8dp"
+                            android:background="@drawable/shimmer_rectangle" />
+
+                        <View
+                            android:id="@+id/successValueText"
+                            android:layout_width="40dp"
+                            android:layout_height="15dp"
+                            android:background="@drawable/shimmer_rectangle" />
+
+                    </LinearLayout>
+
+                    &lt;!&ndash; Rating Card &ndash;&gt;
+                    <LinearLayout
+                        android:id="@+id/ratingCardLayout"
+                        style="@style/roundCard"
+                        android:layout_marginHorizontal="10dp"
+                        app:layout_constraintEnd_toStartOf="@id/ordersCardLayout"
+                        app:layout_constraintStart_toEndOf="@id/successCardLayout"
+                        app:layout_constraintTop_toTopOf="@id/successCardLayout">
+
+
+                        <View
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:background="@drawable/shimmer_circle" />
+
+                        <View
+                            android:layout_width="60dp"
+                            android:layout_height="15dp"
+                            android:layout_marginVertical="8dp"
+                            android:background="@drawable/shimmer_rectangle" />
+
+                        <View
+                            android:id="@+id/ratingValueText"
+                            android:layout_width="40dp"
+                            android:layout_height="15dp"
+                            android:background="@drawable/shimmer_rectangle" />
+
+                    </LinearLayout>
+
+                    &lt;!&ndash; Orders Card &ndash;&gt;
+                    <LinearLayout
+                        android:id="@+id/ordersCardLayout"
+                        style="@style/roundCard"
+                        app:layout_constraintEnd_toEndOf="@id/bellIcon_shimmer"
+                        app:layout_constraintStart_toEndOf="@id/ratingCardLayout"
+                        app:layout_constraintTop_toTopOf="@id/successCardLayout">
+
+
+                        <View
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:background="@drawable/shimmer_circle" />
+
+                        <View
+                            android:layout_width="60dp"
+                            android:layout_height="15dp"
+                            android:layout_marginVertical="8dp"
+                            android:background="@drawable/shimmer_rectangle" />
+
+                        <View
+                            android:id="@+id/ordersValueText"
+                            android:layout_width="40dp"
+                            android:layout_height="15dp"
+                            android:background="@drawable/shimmer_rectangle" />
+
+                    </LinearLayout>
+
+                    &lt;!&ndash; Earnings Title &ndash;&gt;
+                    <View
+                        android:id="@+id/earningsTitleText"
+                        android:layout_width="80dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/shimmer_rectangle"
+                        app:layout_constraintStart_toStartOf="@id/profileImage_shimmer"
+                        app:layout_constraintTop_toBottomOf="@id/successCardLayout" />
+
+                    &lt;!&ndash; Earnings Card &ndash;&gt;
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/earningsContainer"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:background="@drawable/outlined_10dp_round_simple"
+                        android:backgroundTint="@color/cardBackground"
+                        android:paddingVertical="20dp"
+                        app:layout_constraintEnd_toEndOf="@id/bellIcon_shimmer"
+                        app:layout_constraintStart_toStartOf="@id/profileImage_shimmer"
+                        app:layout_constraintTop_toBottomOf="@id/earningsTitleText">
+
+                        &lt;!&ndash; Total Earnings &ndash;&gt;
+                        <View
+                            android:id="@+id/summaryLabelText"
+                            android:layout_width="120dp"
+                            android:layout_height="15dp"
+                            android:layout_marginStart="15dp"
+                            android:background="@drawable/shimmer_rectangle"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <View
+                            android:id="@+id/itemsValueText"
+                            android:layout_width="40dp"
+                            android:layout_height="15dp"
+                            android:layout_marginEnd="20dp"
+                            android:background="@drawable/shimmer_rectangle"
+                            app:layout_constraintBottom_toBottomOf="@id/summaryLabelText"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/summaryLabelText" />
+
+                        &lt;!&ndash; Divider 1 &ndash;&gt;
+                        <View
+                            android:id="@+id/earningsDivider1"
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@color/shimmerColor"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/summaryLabelText" />
+
+                        &lt;!&ndash; Monthly Earnings &ndash;&gt;
+                        <View
+                            android:id="@+id/subtotalLabelText"
+                            android:layout_width="150dp"
+                            android:layout_height="15dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/shimmer_rectangle"
+                            app:layout_constraintStart_toStartOf="@id/summaryLabelText"
+                            app:layout_constraintTop_toBottomOf="@id/earningsDivider1" />
+
+                        <View
+                            android:id="@+id/subtotalValueText"
+                            android:layout_width="50dp"
+                            android:layout_height="15dp"
+                            android:background="@drawable/shimmer_rectangle"
+                            app:layout_constraintBottom_toBottomOf="@id/subtotalLabelText"
+                            app:layout_constraintEnd_toEndOf="@id/itemsValueText"
+                            app:layout_constraintTop_toTopOf="@id/subtotalLabelText" />
+
+                        &lt;!&ndash; Divider 2 &ndash;&gt;
+                        <View
+                            android:id="@+id/earningsDivider2"
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@color/shimmerColor"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/subtotalLabelText" />
+
+                        &lt;!&ndash; Active Orders &ndash;&gt;
+                        <View
+                            android:id="@+id/taxLabelText"
+                            android:layout_width="150dp"
+                            android:layout_height="15dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/shimmer_rectangle"
+                            app:layout_constraintStart_toStartOf="@id/summaryLabelText"
+                            app:layout_constraintTop_toBottomOf="@id/earningsDivider2" />
+
+                        <View
+                            android:id="@+id/taxValueText"
+                            android:layout_width="40dp"
+                            android:layout_height="15dp"
+                            android:background="@drawable/shimmer_rectangle"
+                            app:layout_constraintBottom_toBottomOf="@id/taxLabelText"
+                            app:layout_constraintEnd_toEndOf="@id/itemsValueText"
+                            app:layout_constraintTop_toTopOf="@id/taxLabelText" />
+
+                        &lt;!&ndash; Divider 3 &ndash;&gt;
+                        <View
+                            android:id="@+id/earningsDivider3"
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@color/shimmerColor"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/taxLabelText" />
+
+                        &lt;!&ndash; Cancelled Orders &ndash;&gt;
+                        <View
+                            android:id="@+id/shippingLabelText"
+                            android:layout_width="150dp"
+                            android:layout_height="15dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/shimmer_rectangle"
+                            app:layout_constraintStart_toStartOf="@id/summaryLabelText"
+                            app:layout_constraintTop_toBottomOf="@id/earningsDivider3" />
+
+                        <View
+                            android:id="@+id/shippingValueText"
+                            android:layout_width="40dp"
+                            android:layout_height="15dp"
+                            android:background="@drawable/shimmer_rectangle"
+                            app:layout_constraintBottom_toBottomOf="@id/shippingLabelText"
+                            app:layout_constraintEnd_toEndOf="@id/itemsValueText"
+                            app:layout_constraintTop_toTopOf="@id/shippingLabelText" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    &lt;!&ndash;<LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="65dp"
+                        android:background="#EEEEEE"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="8dp"
+                        android:weightSum="5"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_marginHorizontal="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/shimmer_rectangle" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_marginHorizontal="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/shimmer_rectangle" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_marginHorizontal="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/shimmer_rectangle" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_marginHorizontal="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/shimmer_rectangle" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_marginHorizontal="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/shimmer_rectangle" />
+                    </LinearLayout>&ndash;&gt;
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.facebook.shimmer.ShimmerFrameLayout>-->

@@ -35,4 +35,17 @@
         <item name="colorControlActivated">?colorPrimaryInverse</item>
 
     </style>
+
+
+    <style name="Theme.AuthenticationScreen" parent="Base.Theme.NETWORKOFONE">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">?colorPrimaryInverse</item>
+    </style>
+
+
+    <style name="Base.Theme.inCityStores.Home" parent="Base.Theme.NETWORKOFONE">
+        <item name="android:navigationBarColor">?colorTertiary</item>
+    </style>
+
+
 </resources>

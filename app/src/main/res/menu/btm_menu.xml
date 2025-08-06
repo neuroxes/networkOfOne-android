@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item
+        android:id="@+id/dashboard"
+        android:icon="@drawable/house_crack"
+        android:title="Home" />
+
+
+    <item
+        android:id="@+id/button_create"
+        tools:ignore="MenuTitle" />
+
+    <item
+        android:id="@+id/more_tab"
+        android:icon="@drawable/cvv_card"
+        android:title="Payouts" />
+
+
+</menu>

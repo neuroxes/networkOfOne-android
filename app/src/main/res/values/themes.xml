@@ -40,4 +40,15 @@
     </style>
 
     <style name="Theme.NETWORKOFONE" parent="Base.Theme.NETWORKOFONE" />
+
+    <style name="Theme.AuthenticationScreen" parent="Base.Theme.NETWORKOFONE">
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">?colorPrimaryInverse</item>
+    </style>
+
+
+    <style name="Base.Theme.inCityStores.Home" parent="Base.Theme.NETWORKOFONE">
+        <item name="android:navigationBarColor">?colorTertiary</item>
+    </style>
+
 </resources>

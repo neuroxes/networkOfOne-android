@@ -1,22 +1,24 @@
 package com.example.networkofone.authentication
 
-import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.networkofone.R
 import com.example.networkofone.databinding.FragmentSignupBinding
 import com.example.networkofone.databinding.LayoutUserRoleBinding
+import com.example.networkofone.mvvm.models.UserType
 import com.example.networkofone.mvvm.viewModels.AuthenticationResponses
 import com.example.networkofone.mvvm.viewModels.SignupViewModel
 import com.example.networkofone.utils.DialogUtil
 import com.example.networkofone.utils.NewToastUtil
 import com.example.networkofone.utils.ToastType
+import com.incity.incity_stores.utils.KeyboardUtils
 
 
 class Signup : Fragment() {
@@ -31,8 +33,19 @@ class Signup : Fragment() {
         viewModel = ViewModelProvider(this)[SignupViewModel::class.java]
 
         setupObservers()
+        setupWatchers()
         binding.btnSignup.setOnClickListener { handleSignup() }
         return binding.root
+    }
+
+    private fun setupWatchers() {
+        binding.apply {
+            etEmail.addTextChangedListener(GenericTextWatcher { tLay1.error = null })
+            etName.addTextChangedListener(GenericTextWatcher { tLay0.error = null })
+            etPassword.addTextChangedListener(GenericTextWatcher { tLay2.error = null })
+            etConfirmPassword.addTextChangedListener(GenericTextWatcher { tLay3.error = null })
+            phoneEditText.addTextChangedListener(GenericTextWatcher { phoneLay.error = null })
+        }
     }
 
     private fun handleSignup() {
@@ -55,7 +68,7 @@ class Signup : Fragment() {
                         img2.strokeWidth = 0f
                         layProf.setBackgroundResource(R.drawable.outlined_10dp_round_simple)
                         btnContinue.setEnabled(true)
-                        viewModel.isProf = false
+                        viewModel.userType = UserType.SCHOOL
                     }
                     layProf.setOnClickListener {
                         layProf.setBackgroundResource(R.drawable.outlined_10dp_round_simple_selected)
@@ -63,7 +76,7 @@ class Signup : Fragment() {
                         img1.strokeWidth = 0f
                         img2.strokeWidth = 1f
                         btnContinue.setEnabled(true)
-                        viewModel.isProf = true
+                        viewModel.userType = UserType.REFEREE
                     }
                     btnContinue.setOnClickListener {
                         dialog.dismiss()
@@ -178,21 +191,34 @@ class Signup : Fragment() {
             etEmail.text = null
             etName.text = null
             etPassword.text = null
+            phoneEditText.text = null
             etConfirmPassword.text = null
             etConfirmPassword.clearFocus()
             etName.clearFocus()
+            phoneEditText.clearFocus()
             etEmail.clearFocus()
             etPassword.clearFocus()
         }
     }
 
+    private class GenericTextWatcher(private val onTextChangedAction: (CharSequence?) -> Unit) : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            // Not needed for this use case
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            onTextChangedAction(s)
+        }
+
+        override fun afterTextChanged(s: Editable?) {
+            // Not needed for this use case
+        }
+    }
     private fun showToast(message: String, type: ToastType) {
         NewToastUtil.show(requireContext(), message, type)
     }
 
     private fun hideKeyboard() {
-        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        val view = activity?.currentFocus ?: View(activity)
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
+        KeyboardUtils.hideKeyboard(requireActivity())
     }
 }

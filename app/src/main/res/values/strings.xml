@@ -6,4 +6,6 @@
     <string name="signup_msg1">Go ahead and set up your account</string>
     <string name="signup_msg2">Signup and enjoy the best learning experience</string>
     <string name="sign_in">Sign In</string>
+    <string name="storeLocation">User Name</string>
+    <string name="special_note_optional"><b>Special Note</b> <small>(optional)</small></string>
 </resources>
