@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NetworkOfOne</string>
+    <string name="app_name">Network Of One</string>
 
     <string name="login_msg1">Go ahead and provide your credentials</string>
     <string name="login_msg2">Sign-In and never lose your progress</string>

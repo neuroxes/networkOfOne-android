@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:parentTag="androidx.core.widget.NestedScrollView">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -13,94 +14,144 @@
         android:paddingVertical="15dp"
         tools:context=".home.HomeFragment">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layViews"
+
+        <TextView
+            android:id="@+id/t2"
+            style="@style/textBody.Small"
+            android:layout_marginStart="16dp"
+            android:drawableEnd="@drawable/hand_wave_1_"
+            android:gravity="center_vertical"
+            android:text="Welcome"
+            app:layout_constraintBottom_toTopOf="@id/tvLocation"
+            app:layout_constraintStart_toEndOf="@id/picHome"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/tvLocation"
+            style="@style/textHeading"
+            android:layout_width="0dp"
+            android:layout_marginHorizontal="16dp"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="@string/storeLocation"
+            app:layout_constraintBottom_toBottomOf="@id/picHome"
+            app:layout_constraintStart_toEndOf="@id/picHome"
+            app:layout_constraintTop_toBottomOf="@id/t2"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintWidth_default="wrap" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/notification"
+            style="@style/selectableIcon"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/bell"
+            app:layout_constraintBottom_toBottomOf="@id/picHome"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/picHome" />
+
+        <TextView
+            android:id="@+id/noOfNotifications"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/oval"
+            android:backgroundTint="?colorPrimary"
+            android:gravity="center"
+            android:text="2"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/notification"
+            app:layout_constraintTop_toTopOf="@id/notification" />
+
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/picHome"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/user_bg"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@id/tvLocation"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/t2"
+            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+            app:tint="?colorSecondary" />
+
+        <!--
+                    <View
+                        android:id="@+id/div"
+                        style="@style/horizontal_divider"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvLocation" />-->
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="visible">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="?backgroundColor"
+            app:layout_constraintTop_toBottomOf="@+id/tvLocation"
+            app:tabMode="auto"
+            app:tabRippleColor="@android:color/transparent"
+            app:tabSelectedTextColor="?colorPrimary"
+            app:tabTextAppearance="@style/TabTextAppearance">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="All" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Recent" />
 
 
-            <TextView
-                android:id="@+id/t2"
-                style="@style/textBody.Small"
-                android:text="Welcome"
-                android:layout_marginStart="16dp"
-                app:layout_constraintBottom_toTopOf="@id/tvLocation"
-                app:layout_constraintStart_toEndOf="@id/picHome"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed" />
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
 
-            <TextView
-                android:id="@+id/tvLocation"
-                style="@style/textHeading.medium"
-                android:layout_width="0dp"
-                android:layout_marginHorizontal="16dp"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:text="@string/storeLocation"
-                app:layout_constraintBottom_toBottomOf="@id/picHome"
-                app:layout_constraintStart_toEndOf="@id/picHome"
-                app:layout_constraintTop_toBottomOf="@id/t2"
-                app:layout_constraintVertical_chainStyle="packed"
-                app:layout_constraintWidth_default="wrap" />
+                android:text="Active" />
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/notification"
-                style="@style/selectableIcon"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/bell"
-                app:layout_constraintBottom_toBottomOf="@id/picHome"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/picHome" />
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Payout Pending" />
 
-            <TextView
-                android:id="@+id/noOfNotifications"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_margin="5dp"
-                android:background="@drawable/round"
-                android:backgroundTint="?colorPrimary"
-                android:gravity="center"
-                android:text="2"
-                android:textColor="@color/white"
-                android:textSize="11sp"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="@id/notification"
-                app:layout_constraintTop_toTopOf="@id/notification" />
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Completed" />
 
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/picHome"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="16dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:scaleType="centerCrop"
-                android:src="@drawable/user_bg"
-                android:visibility="visible"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
-                app:tint="?colorSecondary" />
+        </com.google.android.material.tabs.TabLayout>
 
+        <View
+            android:id="@+id/div"
+            style="@style/horizontal_divider"
+            android:layout_marginTop="0dp"
+            app:layout_constraintTop_toBottomOf="@id/tabLayout"
+            tools:ignore="MissingConstraints" />
 
-            <View
-                android:id="@+id/div"
-                style="@style/horizontal_divider"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/picHome" />
-
-            <TextView
-                android:id="@+id/tv0"
-                style="@style/textBody.VeryLarge"
-                android:layout_marginTop="20dp"
-                android:text="Basic Operations"
-                app:layout_constraintStart_toStartOf="@id/picHome"
-                app:layout_constraintTop_toBottomOf="@id/div" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcvGames"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="15dp"
+            android:orientation="vertical"
+            android:overScrollMode="never"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/div"
+            tools:itemCount="2"
+            tools:listitem="@layout/item_game" />
 
 
         <View
@@ -110,6 +161,53 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/progressBar"
+            style="@style/loading_anim"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/layResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:animateLayoutChanges="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/div"
+            tools:visibility="gone">
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/search_database"
+                app:tint="?colorSecondary" />
+
+            <TextView
+                android:id="@+id/tvTitle"
+                style="@style/textHeading.medium"
+                android:layout_marginTop="15dp"
+                android:text="No Games Found" />
+
+            <TextView
+                android:id="@+id/tvMsg"
+                style="@style/textBody"
+                android:layout_marginTop="5dp"
+                android:text="You haven't added any games to your store. Tap the '+' button to add your first game."
+                android:textAlignment="center" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
