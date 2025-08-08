@@ -13,8 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.networkofone.databinding.ActivityMainBinding
 import com.example.networkofone.databinding.DialogCreateGameBinding
-import com.example.networkofone.home.HomeFragment
-import com.example.networkofone.home.PayoutFragment
+import com.example.networkofone.home.HomeFragmentScheduler
+import com.example.networkofone.home.PayoutFragmentScheduler
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
 import com.example.networkofone.mvvm.repo.GameRepository
@@ -48,8 +48,8 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
     private lateinit var etLocation: EditText
 
     private lateinit var viewModel: MainActivityViewModel
-    private lateinit var homeFragment: HomeFragment
-    private lateinit var payoutFragment: PayoutFragment
+    private lateinit var homeFragmentScheduler: HomeFragmentScheduler
+    private lateinit var payoutFragmentScheduler: PayoutFragmentScheduler
     private var selectedDate: String = ""
     private var selectedTime: String = ""
     private var latitude: Double = 0.0
@@ -64,15 +64,15 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
         setContentView(binding.root)
         loader = LoadingDialog(this)
         fragDashboard = findViewById(R.id.fragDashboard)
-        homeFragment = HomeFragment(this) { gameData ->
+        homeFragmentScheduler = HomeFragmentScheduler(this) { gameData ->
             isEditing = true
             showCreateGameDialog(gameData)
         }
-        fragDashboard.onAppFragmentLoader = homeFragment
+        fragDashboard.onAppFragmentLoader = homeFragmentScheduler
 
-        payoutFragment = PayoutFragment(this)
+        payoutFragmentScheduler = PayoutFragmentScheduler(this)
         fragMore = findViewById(R.id.fragMore)
-        fragMore.onAppFragmentLoader = payoutFragment
+        fragMore.onAppFragmentLoader = payoutFragmentScheduler
 
         locationHelper = LocationHelper()
         locationHelper.initialize(this, this)
@@ -106,11 +106,11 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
         binding.swipeRefreshLayout.setOnRefreshListener {
             when (binding.btmNav.selectedItemId) {
                 R.id.dashboard -> {
-                    homeFragment.refreshData()
+                    homeFragmentScheduler.refreshData()
                 }
 
                 R.id.more_tab -> {
-                    payoutFragment.refreshData()
+                    payoutFragmentScheduler.refreshData()
                 }
 
                 else -> {

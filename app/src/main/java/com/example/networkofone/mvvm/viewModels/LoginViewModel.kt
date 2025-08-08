@@ -35,6 +35,10 @@ class LoginViewModel() : ViewModel() {
         }
     }
 
+    fun showLoadingOnButton(show : Boolean){
+        _loading.value = show
+    }
+
     private val _resetStatus = MutableLiveData<AuthResult>()
     val resetStatus: LiveData<AuthResult> get() = _resetStatus
 
@@ -120,7 +124,7 @@ class LoginViewModel() : ViewModel() {
             val userRef = database.getReference("users").child(userId)
             val snapshot = userRef.get().await()
             val user = snapshot.getValue(UserModel::class.java)
-            user?.let { (it) } ?: null
+            user?.let { (it) }
         } catch (e: Exception) {
             null
         }

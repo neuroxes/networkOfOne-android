@@ -5,29 +5,32 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.networkofone.mvvm.interfaces.GameRepositoryInterface
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
-import com.example.networkofone.mvvm.models.UserModel
 import com.example.networkofone.mvvm.repo.GameRepositoryImpl
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class HomeViewModel(
-    private val repository: GameRepositoryImpl
+class HomeViewModelReferee(
+    private val repository: GameRepositoryImpl,
 ) : ViewModel() {
 
     private val _uiState = MutableLiveData<GameUiState>(GameUiState.Loading)
     val uiState: LiveData<GameUiState> = _uiState
 
-    private val _selectedTab = MutableLiveData(0) // 0: All, 1: Recent, 2: Active, 3: Payout Pending, 4: Completed
+    private val _selectedTab =
+        MutableLiveData(0) // 0: All, 1: Recent, 2: Active, 3: Payout Pending, 4: Completed
     val selectedTab: LiveData<Int> = _selectedTab
 
     private val _filteredGames = MutableLiveData<List<GameData>>()
     val filteredGames: LiveData<List<GameData>> = _filteredGames
 
+    private val _updateResult = MutableLiveData<Result<Unit>>()
+    val updateResult: LiveData<Result<Unit>> = _updateResult
+
     private var allGames: List<GameData> = emptyList()
 
+    var checkInGame: GameData? = null
 
 
     init {
@@ -38,21 +41,19 @@ class HomeViewModel(
     fun observeGames() {
         viewModelScope.launch {
             _uiState.value = GameUiState.Loading
-            repository.getGamesByCreatorOptimized()
-                .catch { exception ->
-                    _uiState.value = GameUiState.Error(
-                        exception.message ?: "An error occurred while loading games"
-                    )
+            repository.getAvailableGamesForReferee().catch { exception ->
+                _uiState.value = GameUiState.Error(
+                    exception.message ?: "An error occurred while loading games"
+                )
+            }.collect { games ->
+                allGames = games
+                if (games.isEmpty()) {
+                    _uiState.value = GameUiState.Empty
+                } else {
+                    _uiState.value = GameUiState.Success(games)
+                    applyFilter(_selectedTab.value ?: 0)
                 }
-                .collect { games ->
-                    allGames = games
-                    if (games.isEmpty()) {
-                        _uiState.value = GameUiState.Empty
-                    } else {
-                        _uiState.value = GameUiState.Success(games)
-                        applyFilter(_selectedTab.value ?: 0)
-                    }
-                }
+            }
         }
     }
 
@@ -68,6 +69,7 @@ class HomeViewModel(
                 val sevenDaysAgo = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000)
                 allGames.filter { it.createdAt >= sevenDaysAgo }
             }
+
             2 -> allGames.filter { it.status == GameStatus.ACCEPTED } // Active
             3 -> allGames.filter { it.status == GameStatus.CHECKED_IN } // Completed
             4 -> allGames.filter { it.status == GameStatus.COMPLETED } // Payout Pending
@@ -76,48 +78,21 @@ class HomeViewModel(
         _filteredGames.value = filtered
     }
 
-    fun editGame(game: GameData) {
+    fun updateGame(gameId: String, status: GameStatus) {
         viewModelScope.launch {
-            repository.updateGame(game).fold(
-                onSuccess = {
-                    // Game updated successfully
-                },
-                onFailure = { exception ->
-                    // Handle error - could show toast or snackbar
-                }
-            )
+            _updateResult.value = repository.updateGame(gameId, status)
         }
     }
 
-    fun deleteGame(gameId: String) {
-        viewModelScope.launch {
-            repository.deleteGame(gameId).fold(
-                onSuccess = {
-                    // Game deleted successfully
-                },
-                onFailure = { exception ->
-                    // Handle error - could show toast or snackbar
-                }
-            )
-        }
-    }
-}
-
-sealed class GameUiState {
-    object Loading : GameUiState()
-    data class Success(val games: List<GameData>) : GameUiState()
-    data class Error(val message: String) : GameUiState()
-    object Empty : GameUiState()
 }
 
 
-class HomeViewModelFactory(
-    private val repository: GameRepositoryImpl
+class HomeViewModelRefereeFactory(
+    private val repository: GameRepositoryImpl,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return HomeViewModel(repository) as T
+        if (modelClass.isAssignableFrom(HomeViewModelReferee::class.java)) {
+            @Suppress("UNCHECKED_CAST") return HomeViewModelReferee(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

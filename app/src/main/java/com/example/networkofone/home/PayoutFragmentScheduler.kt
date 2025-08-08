@@ -24,7 +24,7 @@ import com.example.networkofone.utils.NewToastUtil
 import com.example.networkofone.utils.SharedPrefManager
 import com.incity.incity_stores.AppFragmentLoader
 
-class PayoutFragment(
+class PayoutFragmentScheduler(
     private val context: AppCompatActivity
 ) : AppFragmentLoader(R.layout.fragment_root_constraint_layout) {
     private lateinit var binding: LayoutPayoutFragmentBinding

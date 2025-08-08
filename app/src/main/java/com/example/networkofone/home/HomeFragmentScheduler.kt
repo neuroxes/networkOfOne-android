@@ -24,7 +24,7 @@ import com.google.android.material.tabs.TabLayout
 import com.incity.incity_stores.AppFragmentLoader
 import java.util.Calendar
 
-class HomeFragment(
+class HomeFragmentScheduler(
     private val context: AppCompatActivity, private val onGameEditing: (GameData) -> Unit
 ) : AppFragmentLoader(R.layout.fragment_store_info_root) {
     private lateinit var binding: FragmentHomeBinding
@@ -47,8 +47,9 @@ class HomeFragment(
     }
 
     private fun initiateLayout() {
-        settingUpBinding()
         userModel = SharedPrefManager(context).getUser()
+        Log.e(TAG, "initiateLayout: $userModel")
+        settingUpBinding()
     }
 
     private fun settingUpBinding() {

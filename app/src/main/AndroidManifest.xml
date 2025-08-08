@@ -18,6 +18,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NETWORKOFONE">
         <activity
+            android:name=".activities.MainActivityReferee"
+            android:exported="false"
+            android:theme="@style/Base.Theme.inCityStores.Home"
+            android:windowSoftInputMode="adjustNothing" />
+
+        <activity
             android:name=".activities.GameDetailActivity"
             android:exported="false" />
         <activity

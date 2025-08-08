@@ -8,4 +8,6 @@
     <string name="sign_in">Sign In</string>
     <string name="storeLocation">User Name</string>
     <string name="special_note_optional"><b>Special Note</b> <small>(optional)</small></string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

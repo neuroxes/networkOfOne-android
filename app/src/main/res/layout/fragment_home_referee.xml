@@ -152,7 +152,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/div"
             tools:itemCount="2"
-            tools:listitem="@layout/item_game" />
+            tools:listitem="@layout/item_referee_game" />
 
 
         <View

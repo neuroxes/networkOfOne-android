@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
@@ -14,12 +15,15 @@ import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.example.networkofone.MainActivityScheduler
+import com.example.networkofone.activities.MainActivityReferee
 import com.example.networkofone.databinding.DialogForgotPasswordBinding
 import com.example.networkofone.databinding.FragmentLoginBinding
 import com.example.networkofone.databinding.LayoutProgressDialogBinding
+import com.example.networkofone.mvvm.models.UserType
 import com.example.networkofone.mvvm.viewModels.LoginViewModel
 import com.example.networkofone.mvvm.viewModels.LoginViewModel.AuthResult
 import com.example.networkofone.utils.ActivityNavigatorUtil
@@ -128,6 +132,7 @@ class Login : Fragment() {
             when (result) {
                 is AuthResult.Success -> {
                     if (binding.checkboxRemember.isChecked) keepUserLogged(1)
+                    viewModel.showLoadingOnButton(true)
                     viewModel.getUser()
                 }
 
@@ -191,9 +196,10 @@ class Login : Fragment() {
         }
 
         viewModel.userData.observe(viewLifecycleOwner) { user ->
+            viewModel.showLoadingOnButton(false)
             if (user != null) {
                 SharedPrefManager(requireContext()).saveUser(user)
-                navigateToNextScreen()
+                navigateToNextScreen(user.userType)
             } else {
                 NewToastUtil.showError(requireContext(), "Something went wrong!")
             }
@@ -240,10 +246,13 @@ class Login : Fragment() {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    private fun navigateToNextScreen() {
-        ActivityNavigatorUtil.startActivity(
-            requireActivity(), MainActivityScheduler::class.java, clearStack = true
-        )
+    private fun navigateToNextScreen(userType: UserType) {
+        val targetActivity = when (userType) {
+            UserType.ADMIN -> MainActivityScheduler::class.java
+            UserType.SCHOOL -> MainActivityScheduler::class.java
+            UserType.REFEREE -> MainActivityReferee::class.java
+        }
+        ActivityNavigatorUtil.startActivity(requireActivity(), targetActivity, clearStack = true)
         requireActivity().finish()
     }
 
@@ -273,7 +282,7 @@ class Login : Fragment() {
         if (result.resultCode == Activity.RESULT_OK) {
             keepUserLogged(1)
             loadingDialog.dismiss()
-            navigateToNextScreen()
+            navigateToNextScreen(UserType.SCHOOL)
         } else {
             loadingDialog.dismiss()
             showToast("Request cancelled!", ToastType.ERROR)

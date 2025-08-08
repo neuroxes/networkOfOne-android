@@ -1,4 +1,5 @@
 package com.example.networkofone.mvvm.models
+
 // 2. Game Status Enum
 data class GameData(
     var id: String = "",
@@ -16,7 +17,7 @@ data class GameData(
     var acceptedByRefereeId: String? = null,
     var acceptedAt: Long? = null,
     var checkInStatus: Boolean = false,
-    var checkInTime: Long? = null
+    var checkInTime: Long? = null,
 )
 
 enum class GameStatus {
@@ -37,7 +38,7 @@ data class PaymentRequestData(
     val status: PaymentStatus = PaymentStatus.PENDING,
     val requestedAt: Long = System.currentTimeMillis(),
     val paidAt: Long? = null,
-    val transactionId: String? = null
+    val transactionId: String? = null,
 )
 
 

@@ -2,6 +2,7 @@ package com.example.networkofone.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import com.example.networkofone.mvvm.models.UserModel
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -25,11 +26,13 @@ class SharedPrefManager(context: Context) {
 
     fun saveUser(user: UserModel) {
         editor.putString("user", Gson().toJson(user))
+        Log.e("SharedPref", "saveUser: $user")
         editor.apply()
     }
 
     fun getUser(): UserModel? {
         val json = sharedPref.getString("user", null)
+
         return if (json.isNullOrEmpty()) {
             null
         } else {

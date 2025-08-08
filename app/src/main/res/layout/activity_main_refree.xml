@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeRefreshLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:transitionName="refresh"
+    tools:context=".activities.MainActivityReferee">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:translationZ="-100dp"
+            app:layout_constraintBottom_toTopOf="@id/btmNav"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.incity.incity_stores.AppFragment
+                android:id="@+id/fragDashboard"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?backgroundColor" />
+
+            <com.incity.incity_stores.AppFragment
+                android:id="@+id/fragMore"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?backgroundColor" />
+
+
+        </FrameLayout>
+
+
+        <!--
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/ivMore"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:background="?colorPrimaryInverse"
+                    android:src="@drawable/round_add_24"
+                    android:translationZ="0dp"
+                    app:contentPadding="14dp"
+                    app:layout_constraintBottom_toBottomOf="@id/btmNav"
+                    app:layout_constraintEnd_toEndOf="@id/btmNav"
+                    app:layout_constraintStart_toStartOf="@id/btmNav"
+                    app:layout_constraintTop_toTopOf="@id/btmNav"
+                    app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Large"
+                    app:tint="?backgroundColor" />
+        -->
+        <!--        <View
+                    android:id="@+id/coverView"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:background="@drawable/full_round"
+                    android:backgroundTint="?colorTertiary"
+                    android:translationZ="0dp"
+                    app:layout_constraintBottom_toBottomOf="@id/btmNav"
+                    app:layout_constraintEnd_toEndOf="@id/btmNav"
+                    app:layout_constraintStart_toStartOf="@id/btmNav"
+                    app:layout_constraintTop_toTopOf="@id/btmNav"
+                     />-->
+        <!--        style="@style/Widget.Design.BottomNavigationView"-->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/btmNav"
+            style="@style/Widget.Design.BottomNavigationView"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:background="?colorTertiary"
+            android:paddingTop="5dp"
+            android:paddingBottom="4dp"
+            android:translationZ="-10dp"
+            app:itemHorizontalTranslationEnabled="false"
+            app:itemIconSize="20dp"
+            app:itemIconTint="@color/selectable_color"
+            app:itemTextAppearanceActive="@style/textHeading.VerySmall"
+            app:itemTextAppearanceActiveBoldEnabled="false"
+            app:itemTextAppearanceInactive="@style/textHeading.NormalStyle.Small"
+            app:itemTextColor="@color/selectable_color"
+            app:labelVisibilityMode="labeled"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:menu="@menu/btm_menu_referee" />
+
+        <View
+            android:id="@+id/animator"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:transitionName="animator"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+

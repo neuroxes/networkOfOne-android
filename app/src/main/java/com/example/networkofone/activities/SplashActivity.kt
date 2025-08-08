@@ -1,7 +1,6 @@
 package com.example.networkofone.activities
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -10,7 +9,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.networkofone.MainActivityScheduler
 import com.example.networkofone.R
+import com.example.networkofone.mvvm.models.UserType
 import com.example.networkofone.utils.ActivityNavigatorUtil
+import com.example.networkofone.utils.SharedPrefManager
 import com.google.android.material.imageview.ShapeableImageView
 
 @SuppressLint("CustomSplashScreen")
@@ -46,10 +47,37 @@ class SplashActivity : AppCompatActivity() {
             override fun onFinish() {
                 val status = userOnBoardingStatus()
                 when (status) {
-                    1 -> ActivityNavigatorUtil.startActivity(this@SplashActivity, MainActivityScheduler::class.java, findViewById(
-                        R.id.animator
-                    ))
-                    else -> ActivityNavigatorUtil.startActivity(this@SplashActivity, AuthenticationActivity::class.java)
+                    1 -> {
+                        val userType = getUserType()
+                        userType?.let {
+                            when (it) {
+                                UserType.SCHOOL -> {
+                                    ActivityNavigatorUtil.startActivity(
+                                        this@SplashActivity,
+                                        MainActivityScheduler::class.java,
+                                        findViewById(
+                                            R.id.animator
+                                        )
+                                    )
+                                }
+
+                                UserType.REFEREE -> {
+                                    ActivityNavigatorUtil.startActivity(
+                                        this@SplashActivity,
+                                        MainActivityReferee::class.java,
+                                        findViewById(
+                                            R.id.animator
+                                        )
+                                    )
+                                }
+                                UserType.ADMIN -> {}
+                            }
+                        }
+                    }
+
+                    else -> ActivityNavigatorUtil.startActivity(
+                        this@SplashActivity, AuthenticationActivity::class.java
+                    )
                 }
                 finish()
             }
@@ -67,6 +95,10 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun userOnBoardingStatus(): Int {
-        return getSharedPreferences("Logged", Context.MODE_PRIVATE).getInt("isLogged", 0)
+        return getSharedPreferences("Logged", MODE_PRIVATE).getInt("isLogged", 0)
+    }
+
+    private fun getUserType(): UserType? {
+        return SharedPrefManager(this).getUser()?.userType
     }
 }

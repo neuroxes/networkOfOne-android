@@ -12,10 +12,11 @@ import com.example.networkofone.R
 import com.example.networkofone.databinding.ItemGameBinding
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
+import com.example.networkofone.utils.NumberFormatterUtil
 
 class GamesAdapter(
     private val onGameClick: (GameData) -> Unit,
-    private val onMoreOptionsClick: (GameData) -> Unit
+    private val onMoreOptionsClick: (GameData) -> Unit,
 ) : ListAdapter<GameData, GamesAdapter.GameViewHolder>(GameDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameViewHolder {
@@ -30,16 +31,16 @@ class GamesAdapter(
     }
 
     inner class GameViewHolder(
-        private val binding: ItemGameBinding
+        private val binding: ItemGameBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        @SuppressLint("UseCompatTextViewDrawableApis")
+        @SuppressLint("UseCompatTextViewDrawableApis", "SetTextI18n")
         fun bind(game: GameData) {
             with(binding) {
                 gameName.text = game.title
                 gameLocation.text = game.location
                 gameTime.text = "${game.date} ${game.time}"
-                gamePrice.text = "$${game.feeAmount}"
+                gamePrice.text = "$${NumberFormatterUtil.format(game.feeAmount)}"
 
                 // Set status bar color and note based on game status
                 when (game.status) {
@@ -121,6 +122,23 @@ class GamesAdapter(
                     }
 
                     GameStatus.CHECKED_IN -> {
+                        statusBar.setBackgroundColor(
+                            ContextCompat.getColor(itemView.context, R.color.status_processing)
+                        )
+                        gameStatusNote.apply {
+                            text = "Game has started and is ongoing"
+                            setBackgroundTintList(
+                                ColorStateList.valueOf(
+                                    ContextCompat.getColor(context, R.color.status_processing_bg)
+                                )
+                            )
+                            setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.round_access_alarm_24, 0, 0, 0
+                            )
+                            compoundDrawableTintList = ColorStateList.valueOf(
+                                ContextCompat.getColor(context, R.color.status_processing)
+                            )
+                        }
                     }
                 }
 
