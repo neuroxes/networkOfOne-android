@@ -1,5 +1,6 @@
 package com.example.networkofone
 
+import android.location.Geocoder
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,11 +14,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.networkofone.databinding.ActivityMainBinding
 import com.example.networkofone.databinding.DialogCreateGameBinding
 import com.example.networkofone.home.HomeFragment
+import com.example.networkofone.home.PayoutFragment
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
 import com.example.networkofone.mvvm.repo.GameRepository
-import com.example.networkofone.mvvm.viewModels.GameViewModel
 import com.example.networkofone.mvvm.viewModels.GameViewModelFactory
+import com.example.networkofone.mvvm.viewModels.MainActivityViewModel
 import com.example.networkofone.utils.DialogUtil
 import com.example.networkofone.utils.LoadingDialog
 import com.example.networkofone.utils.LocationHelper
@@ -30,13 +32,14 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.google.firebase.auth.FirebaseAuth
 import com.incity.incity_stores.AppFragment
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-class MainActivity : AppCompatActivity(), LocationHelper.LocationResultListener {
+class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResultListener {
     private lateinit var binding: ActivityMainBinding
     private lateinit var fragDashboard: AppFragment
     private lateinit var fragMore: AppFragment
@@ -44,9 +47,15 @@ class MainActivity : AppCompatActivity(), LocationHelper.LocationResultListener 
     private lateinit var locationHelper: LocationHelper
     private lateinit var etLocation: EditText
 
-    private lateinit var gameViewModel: GameViewModel
+    private lateinit var viewModel: MainActivityViewModel
+    private lateinit var homeFragment: HomeFragment
+    private lateinit var payoutFragment: PayoutFragment
     private var selectedDate: String = ""
     private var selectedTime: String = ""
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
+
+    private var isEditing = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,10 +64,15 @@ class MainActivity : AppCompatActivity(), LocationHelper.LocationResultListener 
         setContentView(binding.root)
         loader = LoadingDialog(this)
         fragDashboard = findViewById(R.id.fragDashboard)
-        fragDashboard.onAppFragmentLoader = HomeFragment(this)
+        homeFragment = HomeFragment(this) { gameData ->
+            isEditing = true
+            showCreateGameDialog(gameData)
+        }
+        fragDashboard.onAppFragmentLoader = homeFragment
 
+        payoutFragment = PayoutFragment(this)
         fragMore = findViewById(R.id.fragMore)
-        fragMore.onAppFragmentLoader = HomeFragment(this)
+        fragMore.onAppFragmentLoader = payoutFragment
 
         locationHelper = LocationHelper()
         locationHelper.initialize(this, this)
@@ -71,6 +85,7 @@ class MainActivity : AppCompatActivity(), LocationHelper.LocationResultListener 
                 R.id.more_tab -> loadFragment(1)
                 else -> {
                     Handler(Looper.getMainLooper()).postDelayed({
+                        isEditing = false
                         showCreateGameDialog()
                     }, 200)
                 }
@@ -81,12 +96,33 @@ class MainActivity : AppCompatActivity(), LocationHelper.LocationResultListener 
         binding.btmNav.setOnItemReselectedListener { item ->
             if (item.itemId == R.id.button_create) {
                 Handler(Looper.getMainLooper()).postDelayed({
+                    isEditing = false
                     showCreateGameDialog()
                 }, 200)
 
             }
         }
 
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            when (binding.btmNav.selectedItemId) {
+                R.id.dashboard -> {
+                    homeFragment.refreshData()
+                }
+
+                R.id.more_tab -> {
+                    payoutFragment.refreshData()
+                }
+
+                else -> {
+
+                }
+            }
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                binding.swipeRefreshLayout.isRefreshing = false
+            }, 1500)
+
+        }
 
         setupViewModel()
     }
@@ -94,17 +130,21 @@ class MainActivity : AppCompatActivity(), LocationHelper.LocationResultListener 
     private fun setupViewModel() {
         val repository = GameRepository()
         val factory = GameViewModelFactory(repository)
-        gameViewModel = ViewModelProvider(this, factory)[GameViewModel::class.java]
+        viewModel = ViewModelProvider(this, factory)[MainActivityViewModel::class.java]
 
-        gameViewModel.saveGameResult.observe(this) { result ->
+        viewModel.saveGameResult.observe(this) { result ->
             result.fold(onSuccess = { gameId ->
-                NewToastUtil.showSuccess(this@MainActivity, "Game created successfully!")
+                if (isEditing) NewToastUtil.showSuccess(
+                    this@MainActivityScheduler,
+                    "Game updated successfully!"
+                )
+                else NewToastUtil.showSuccess(this@MainActivityScheduler, "Game created successfully!")
                 loader.endLoadingAnimation()
 
             }, onFailure = { exception ->
                 {
                     NewToastUtil.showError(
-                        this@MainActivity, "Failed to create game: ${exception.message}"
+                        this@MainActivityScheduler, "Failed to create game: ${exception.message}"
 
                     )
                     loader.endLoadingAnimation()
@@ -113,14 +153,24 @@ class MainActivity : AppCompatActivity(), LocationHelper.LocationResultListener 
         }
     }
 
-    private fun showCreateGameDialog() {
+    private fun showCreateGameDialog(gameDataForEditing: GameData? = null) {
         try {
             val (dialog, dialogBinding) = DialogUtil.createBottomDialogWithBinding(
-                this@MainActivity, DialogCreateGameBinding::inflate
+                this@MainActivityScheduler, DialogCreateGameBinding::inflate
             )
             dialog.show()
 
             dialogBinding.apply {
+                gameDataForEditing?.let {
+                    tvHeading.text = "Edit Game"
+                    btnSave.text = "Update"
+                    etGameName.setText(it.title)
+                    etLocation.setText(it.location)
+                    etDate.text = it.date
+                    etTime.text = it.time
+                    etPrice.setText(it.feeAmount)
+                    etDescription.setText(it.specialNote)
+                }
                 // Setup text watchers
                 setupTextWatchers()
 
@@ -130,7 +180,7 @@ class MainActivity : AppCompatActivity(), LocationHelper.LocationResultListener 
                 btnCancel.setOnClickListener { dialog.dismiss() }
                 ivBack.setOnClickListener { dialog.dismiss() }
                 btnCurrentLoc.setOnClickListener {
-                    this@MainActivity.etLocation = dialogBinding.etLocation
+                    this@MainActivityScheduler.etLocation = dialogBinding.etLocation
                     getMyCurrentLocation()
                 }
 
@@ -138,7 +188,19 @@ class MainActivity : AppCompatActivity(), LocationHelper.LocationResultListener 
                     if (validateInputs(dialogBinding)) {
                         loader.startLoadingAnimation()
                         val gameData = createGameData()
-                        gameViewModel.saveGame(gameData)
+                        if (gameDataForEditing != null) {
+                            val updatedGameData = gameData.copy(
+                                latitude = gameDataForEditing.latitude,
+                                longitude = gameDataForEditing.longitude,
+                                id = gameDataForEditing.id,
+                                createdBySchoolId = gameDataForEditing.createdBySchoolId,
+                                acceptedByRefereeId = gameDataForEditing.acceptedByRefereeId,
+                                acceptedAt = gameDataForEditing.acceptedAt,
+                                checkInStatus = gameDataForEditing.checkInStatus,
+                                checkInTime = gameDataForEditing.checkInTime
+                            )
+                            viewModel.updateGame(updatedGameData)
+                        } else viewModel.saveGame(gameData)
                         dialog.dismiss()
                     }
                 }
@@ -286,11 +348,13 @@ class MainActivity : AppCompatActivity(), LocationHelper.LocationResultListener 
         return GameData(
             title = etGameName.text.toString().trim(),
             location = etLocation.text.toString().trim(),
+            latitude = this@MainActivityScheduler.latitude,
+            longitude = this@MainActivityScheduler.longitude,
             date = etDate.text.toString().trim(),
             time = etTime.text.toString().trim(),
             feeAmount = etPrice.text.toString().trim(),
             specialNote = etDescription.text.toString().trim(),
-            createdBy = userId,
+            createdBySchoolId = userId,
             status = GameStatus.PENDING
         )
     }
@@ -346,7 +410,7 @@ class MainActivity : AppCompatActivity(), LocationHelper.LocationResultListener 
     }
 
     override fun onLocationError(error: String) {
-        NewToastUtil.showError(this@MainActivity, "Error: $error")
+        NewToastUtil.showError(this@MainActivityScheduler, "Error: $error")
         Log.e("Location", "Error: $error")
     }
 
@@ -356,7 +420,10 @@ class MainActivity : AppCompatActivity(), LocationHelper.LocationResultListener 
 
     private fun updateLocationUI(latitude: Double, longitude: Double) {
         try {
-            etLocation.setText("Lat: $latitude | Long: $longitude")
+            val loc = getAddressFromLocation(latitude, longitude)
+            this.latitude = latitude
+            this.longitude = longitude
+            etLocation.setText(loc)
         } catch (e: Exception) {
             Log.e("TAG", "updateLocationUI: ${e.message}")
         }
@@ -371,7 +438,46 @@ class MainActivity : AppCompatActivity(), LocationHelper.LocationResultListener 
         }
     }
 
+    fun getAddressFromLocation(latitude: Double, longitude: Double): String {
+        val geocoder = Geocoder(this, Locale.getDefault())
+        var result = ""
+
+        try {
+            val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+            if (addresses != null && addresses.isNotEmpty()) {
+                val address = addresses[0]
+
+                // Build the address string
+                val sb = StringBuilder()
+
+                for (i in 0..address.maxAddressLineIndex) {
+                    sb.append(address.getAddressLine(i)).append(", ")
+                }
+
+                // Alternatively, you can access specific components:
+                val street = address.thoroughfare       // Street name
+                val city = address.locality            // City
+                val state = address.adminArea         // State/Province
+                val country = address.countryName     // Country
+                val postalCode = address.postalCode    // Postal code
+
+                if (postalCode != null) result += "$postalCode, "
+                if (street != null) result += "$street, "
+                if (city != null) result += "$city, "
+                if (state != null) result += "$state, "
+                if (country != null) result += "$country, "
+
+                // Remove the last comma and space if needed
+                result = result.substring(0, result.length - 2)
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            result = "Unable to get address"
+        }
+        return result
+    }
+
     companion object {
-        private const val TAG = "MainActivity"
+        private const val TAG = "MainActivityScheduler"
     }
 }

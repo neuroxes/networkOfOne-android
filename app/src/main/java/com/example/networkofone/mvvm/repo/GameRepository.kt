@@ -1,7 +1,9 @@
 package com.example.networkofone.mvvm.repo
 
+import android.util.Log
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
+import com.example.networkofone.mvvm.models.UserModel
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +26,24 @@ class GameRepository {
             Result.failure(e)
         }
     }
+    suspend fun updateGame(gameData: GameData): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            // Check if the game ID exists (optional, but good for validation)
+            if (gameData.id.isEmpty()) {
+                Log.e("TAG", "updateGame: game id is empty!", )
+                return@withContext Result.failure(Exception("Game ID is missing"))
+            }
 
+            // Update the existing entry (overwrites only the specified fields if using updateChildren)
+            gamesRef.child(gameData.id).setValue(gameData).await()
+            // OR (for partial updates):
+            // gamesRef.child(gameData.id).updateChildren(gameData.toMap()).await()
+
+            Result.success(gameData.id)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
     suspend fun getUserGames(userId: String): Result<List<GameData>> = withContext(Dispatchers.IO) {
         try {
             val snapshot = gamesRef.orderByChild("createdBy").equalTo(userId).get().await()
@@ -61,4 +80,5 @@ class GameRepository {
             Result.failure(e)
         }
     }
+
 }

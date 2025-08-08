@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:animateLayoutChanges="true"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+
+    <TextView
+        android:id="@+id/tvTitle"
+        style="@style/textHeading.Large"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Payouts"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivSearch"
+        style="@style/selectableIcon"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="15dp"
+        android:src="@drawable/round_info_outline_24_20dp"
+        android:visibility="visible"
+        app:contentPadding="6dp"
+        app:layout_constraintBottom_toBottomOf="@id/tvTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvTitle" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/laySerNm"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        app:endIconMode="clear_text"
+        app:hintEnabled="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/tvTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSearch"
+            style="@style/editTextOutlined"
+            android:drawableStart="@drawable/round_search_24"
+            android:hint="Search here..."
+            android:imeOptions="actionSearch"
+            android:inputType="textPersonName"
+            android:textColor="?colorSecondary" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <TextView
+        android:id="@+id/t1"
+        style="@style/textBody"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:text="Requested Payouts"
+        android:textAllCaps="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/laySerNm" />
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardData"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="15dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:cardBackgroundColor="?backgroundColor"
+        app:cardCornerRadius="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="wrap"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/t1"
+        app:layout_constraintVertical_bias="0"
+        app:strokeWidth="0dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcvTemplate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="2"
+            tools:listitem="@layout/item_payouts" /> <!-- Replace with your list item layout -->
+
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/progressBar"
+        style="@style/loading_anim"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/layResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:animateLayoutChanges="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/t1"
+        tools:visibility="gone">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/search_database"
+            app:tint="?colorSecondary" />
+
+        <TextView
+            style="@style/textHeading.medium"
+            android:layout_marginTop="15dp"
+            android:text="No Payouts Yet" />
+
+        <TextView
+            android:id="@+id/tvMsg"
+            style="@style/textBody"
+            android:layout_marginTop="5dp"
+            android:text="You haven't requested any payouts yet. All your requested payouts will appear here."
+            android:textAlignment="center" />
+
+    </LinearLayout>
+
+
+</merge>

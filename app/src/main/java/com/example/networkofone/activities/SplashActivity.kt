@@ -8,7 +8,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.networkofone.MainActivity
+import com.example.networkofone.MainActivityScheduler
 import com.example.networkofone.R
 import com.example.networkofone.utils.ActivityNavigatorUtil
 import com.google.android.material.imageview.ShapeableImageView
@@ -46,7 +46,7 @@ class SplashActivity : AppCompatActivity() {
             override fun onFinish() {
                 val status = userOnBoardingStatus()
                 when (status) {
-                    1 -> ActivityNavigatorUtil.startActivity(this@SplashActivity, MainActivity::class.java, findViewById(
+                    1 -> ActivityNavigatorUtil.startActivity(this@SplashActivity, MainActivityScheduler::class.java, findViewById(
                         R.id.animator
                     ))
                     else -> ActivityNavigatorUtil.startActivity(this@SplashActivity, AuthenticationActivity::class.java)

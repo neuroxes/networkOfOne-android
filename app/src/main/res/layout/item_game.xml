@@ -55,6 +55,7 @@
             android:id="@+id/gameLocation"
             style="@style/textBody.Small"
             android:layout_width="0dp"
+            android:layout_marginTop="2dp"
             android:drawableStart="@drawable/location_outlined"
             android:paddingVertical="4dp"
             android:text="Street 12, California, United States"
@@ -66,6 +67,7 @@
             android:id="@+id/gameTime"
             style="@style/textBody.Small"
             android:text="12/08/2025 10:40 AM"
+            android:layout_marginTop="4dp"
             app:drawableStartCompat="@drawable/ic_clock_15dp"
             app:layout_constraintStart_toStartOf="@id/gameName"
             app:layout_constraintTop_toBottomOf="@id/gameLocation" />
@@ -102,6 +104,7 @@
             android:backgroundTint="@color/status_pending_bg"
             android:drawablePadding="8dp"
             android:paddingHorizontal="16dp"
+            android:gravity="center_vertical"
             android:paddingVertical="16dp"
             android:text="Game acceptance request is pending"
             app:drawableStartCompat="@drawable/round_access_alarm_24"

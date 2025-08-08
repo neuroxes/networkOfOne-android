@@ -119,6 +119,9 @@ class GamesAdapter(
                             )
                         }
                     }
+
+                    GameStatus.CHECKED_IN -> {
+                    }
                 }
 
                 // Set click listeners

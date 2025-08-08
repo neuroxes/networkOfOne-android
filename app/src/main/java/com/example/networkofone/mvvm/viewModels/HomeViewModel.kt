@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.networkofone.mvvm.interfaces.GameRepositoryInterface
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
+import com.example.networkofone.mvvm.models.UserModel
 import com.example.networkofone.mvvm.repo.GameRepositoryImpl
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
@@ -27,12 +28,16 @@ class HomeViewModel(
 
     private var allGames: List<GameData> = emptyList()
 
+
+
     init {
         observeGames()
     }
 
-    private fun observeGames() {
+
+    fun observeGames() {
         viewModelScope.launch {
+            _uiState.value = GameUiState.Loading
             repository.getAllGames()
                 .catch { exception ->
                     _uiState.value = GameUiState.Error(
@@ -64,8 +69,8 @@ class HomeViewModel(
                 allGames.filter { it.createdAt >= sevenDaysAgo }
             }
             2 -> allGames.filter { it.status == GameStatus.ACCEPTED } // Active
-            3 -> allGames.filter { it.status == GameStatus.PENDING } // Payout Pending
-            4 -> allGames.filter { it.status == GameStatus.COMPLETED } // Completed
+            3 -> allGames.filter { it.status == GameStatus.COMPLETED } // Completed
+//            3 -> allGames.filter { it.status == GameStatus.PENDING } // Payout Pending
             else -> allGames
         }
         _filteredGames.value = filtered

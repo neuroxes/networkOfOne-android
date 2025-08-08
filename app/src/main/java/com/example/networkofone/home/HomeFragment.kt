@@ -9,24 +9,28 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.NestedScrollView
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.networkofone.R
 import com.example.networkofone.adapters.GamesAdapter
 import com.example.networkofone.databinding.FragmentHomeBinding
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
+import com.example.networkofone.mvvm.models.UserModel
 import com.example.networkofone.mvvm.repo.GameRepositoryImpl
 import com.example.networkofone.mvvm.viewModels.GameUiState
 import com.example.networkofone.mvvm.viewModels.HomeViewModel
 import com.example.networkofone.mvvm.viewModels.HomeViewModelFactory
+import com.example.networkofone.utils.SharedPrefManager
 import com.google.android.material.tabs.TabLayout
 import com.incity.incity_stores.AppFragmentLoader
+import java.util.Calendar
 
-class HomeFragment(private val context: AppCompatActivity) :
-    AppFragmentLoader(R.layout.fragment_store_info_root) {
+class HomeFragment(
+    private val context: AppCompatActivity, private val onGameEditing: (GameData) -> Unit
+) : AppFragmentLoader(R.layout.fragment_store_info_root) {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var base: NestedScrollView
     private lateinit var viewModel: HomeViewModel
+    private var userModel: UserModel? = null
     private lateinit var gamesAdapter: GamesAdapter
 
     override fun onCreate() {
@@ -38,8 +42,13 @@ class HomeFragment(private val context: AppCompatActivity) :
         }
     }
 
+    fun refreshData() {
+        viewModel.observeGames()
+    }
+
     private fun initiateLayout() {
         settingUpBinding()
+        userModel = SharedPrefManager(context).getUser()
     }
 
     private fun settingUpBinding() {
@@ -48,12 +57,8 @@ class HomeFragment(private val context: AppCompatActivity) :
         binding = FragmentHomeBinding.inflate(context.layoutInflater, base)
         binding.root.alpha = 0f
         binding.root.translationY = 20f
-        binding.root.animate()
-            .translationY(0f)
-            .alpha(1f)
-            .setDuration(500)
-            .setInterpolator(FastOutSlowInInterpolator())
-            .start()
+        binding.root.animate().translationY(0f).alpha(1f).setDuration(500)
+            .setInterpolator(FastOutSlowInInterpolator()).start()
 
         setupViewModel()
         setupRecyclerView()
@@ -68,24 +73,39 @@ class HomeFragment(private val context: AppCompatActivity) :
     }
 
     private fun setupUI() {
+        binding.apply {
+            tvUserName.text = userModel?.name ?: "User"
+            tvGreeting.text = greetingMsg()
+        }
+    }
 
+    private fun greetingMsg(): String {
+        val c = Calendar.getInstance()
+        return when (c.get(Calendar.HOUR_OF_DAY)) {
+            in 0..11 -> "Good Morning"
+            in 12..15 -> "Good Afternoon"
+            in 16..20 -> "Good Evening"
+            in 21..23 -> "Good Night"
+            else -> {
+                "Hello"
+            }
+        }
 
     }
 
     private fun setupViewModel() {
-        viewModel = ViewModelProvider.create(context, HomeViewModelFactory(GameRepositoryImpl()))[HomeViewModel::class.java]
+        viewModel = ViewModelProvider.create(
+            context, HomeViewModelFactory(GameRepositoryImpl())
+        )[HomeViewModel::class.java]
     }
 
     private fun setupRecyclerView() {
-        gamesAdapter = GamesAdapter(
-            onGameClick = { game ->
-                // Handle game item click
-                // Navigate to game details or edit screen
-            },
-            onMoreOptionsClick = { game ->
-                showGameOptionsDialog(game)
-            }
-        )
+        gamesAdapter = GamesAdapter(onGameClick = { game ->
+            // Handle game item click
+            // Navigate to game details or edit screen
+        }, onMoreOptionsClick = { game ->
+            showGameOptionsDialog(game)
+        })
 
         binding.rcvGames.apply {
             adapter = gamesAdapter
@@ -113,11 +133,13 @@ class HomeFragment(private val context: AppCompatActivity) :
                     binding.rcvGames.visibility = View.GONE
                     binding.layResult.visibility = View.GONE
                 }
+
                 is GameUiState.Success -> {
                     binding.progressBar.visibility = View.GONE
                     binding.rcvGames.visibility = View.VISIBLE
                     binding.layResult.visibility = View.GONE
                 }
+
                 is GameUiState.Empty -> {
                     binding.progressBar.visibility = View.GONE
                     binding.rcvGames.visibility = View.GONE
@@ -125,8 +147,10 @@ class HomeFragment(private val context: AppCompatActivity) :
 
                     // Update empty state UI
                     binding.tvTitle.text = "No Games Found"
-                    binding.tvMsg.text = "You haven't added any games to your store. Tap the '+' button to add your first game."
+                    binding.tvMsg.text =
+                        "You haven't added any games to your store. Tap the '+' button to add your first game."
                 }
+
                 is GameUiState.Error -> {
                     binding.progressBar.visibility = View.GONE
                     binding.rcvGames.visibility = View.GONE
@@ -158,22 +182,21 @@ class HomeFragment(private val context: AppCompatActivity) :
     private fun showGameOptionsDialog(game: GameData) {
         val options = arrayOf("Edit", "Delete")
 
-        AlertDialog.Builder(context)
-            .setTitle("Game Options")
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> {
-                        // Edit game
-                        // Navigate to edit screen or show edit dialog
-                        editGame(game)
-                    }
-                    1 -> {
-                        // Delete game
-                        showDeleteConfirmationDialog(game)
-                    }
+        AlertDialog.Builder(context).setTitle("Game Options").setItems(options) { _, which ->
+            when (which) {
+                0 -> {
+                    // Edit game
+                    // Navigate to edit screen or show edit dialog
+                    onGameEditing(game)
+                    //editGame(game)
+                }
+
+                1 -> {
+                    // Delete game
+                    showDeleteConfirmationDialog(game)
                 }
             }
-            .show()
+        }.show()
     }
 
     private fun editGame(game: GameData) {
@@ -182,24 +205,23 @@ class HomeFragment(private val context: AppCompatActivity) :
             status = when (game.status) {
                 GameStatus.PENDING -> GameStatus.ACCEPTED
                 GameStatus.ACCEPTED -> GameStatus.COMPLETED
-                GameStatus.COMPLETED -> GameStatus.PENDING
+                GameStatus.COMPLETED -> GameStatus.CHECKED_IN
                 GameStatus.REJECTED -> GameStatus.PENDING
+                GameStatus.CHECKED_IN -> GameStatus.CHECKED_IN
             }
         )
         viewModel.editGame(updatedGame)
     }
 
     private fun showDeleteConfirmationDialog(game: GameData) {
-        AlertDialog.Builder(context)
-            .setTitle("Delete Game")
+        AlertDialog.Builder(context).setTitle("Delete Game")
             .setMessage("Are you sure you want to delete this game?")
             .setPositiveButton("Delete") { _, _ ->
                 viewModel.deleteGame(game.id)
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+            }.setNegativeButton("Cancel", null).show()
     }
-    companion object{
+
+    companion object {
         private const val TAG = "Home Frag"
     }
 }

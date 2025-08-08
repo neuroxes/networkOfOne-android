@@ -16,7 +16,7 @@ import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
-import com.example.networkofone.MainActivity
+import com.example.networkofone.MainActivityScheduler
 import com.example.networkofone.databinding.DialogForgotPasswordBinding
 import com.example.networkofone.databinding.FragmentLoginBinding
 import com.example.networkofone.databinding.LayoutProgressDialogBinding
@@ -25,6 +25,7 @@ import com.example.networkofone.mvvm.viewModels.LoginViewModel.AuthResult
 import com.example.networkofone.utils.ActivityNavigatorUtil
 import com.example.networkofone.utils.DialogUtil
 import com.example.networkofone.utils.NewToastUtil
+import com.example.networkofone.utils.SharedPrefManager
 import com.example.networkofone.utils.ToastType
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -127,7 +128,7 @@ class Login : Fragment() {
             when (result) {
                 is AuthResult.Success -> {
                     if (binding.checkboxRemember.isChecked) keepUserLogged(1)
-                    navigateToNextScreen()
+                    viewModel.getUser()
                 }
 
                 is AuthResult.EmailNotVerified -> {
@@ -188,6 +189,17 @@ class Login : Fragment() {
                 }
             }
         }
+
+        viewModel.userData.observe(viewLifecycleOwner) { user ->
+            if (user != null) {
+                SharedPrefManager(requireContext()).saveUser(user)
+                navigateToNextScreen()
+            } else {
+                NewToastUtil.showError(requireContext(), "Something went wrong!")
+            }
+
+        }
+
     }
 
     private fun validateInput(email: String, password: String): Boolean {
@@ -230,7 +242,7 @@ class Login : Fragment() {
 
     private fun navigateToNextScreen() {
         ActivityNavigatorUtil.startActivity(
-            requireActivity(), MainActivity::class.java, clearStack = true
+            requireActivity(), MainActivityScheduler::class.java, clearStack = true
         )
         requireActivity().finish()
     }

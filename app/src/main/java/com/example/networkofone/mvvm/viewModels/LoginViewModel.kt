@@ -5,10 +5,16 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.firebase.auth.AuthResult
+import androidx.lifecycle.viewModelScope
+import com.example.networkofone.mvvm.models.UserModel
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.database
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class LoginViewModel() : ViewModel() {
 
@@ -48,8 +54,7 @@ class LoginViewModel() : ViewModel() {
     }
 
     fun loginUser(email: String, password: String, callback: (AuthResult) -> Unit) {
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val user = auth.currentUser
                     if (user != null && user.isEmailVerified) {
@@ -64,8 +69,7 @@ class LoginViewModel() : ViewModel() {
     }
 
     fun sendPasswordResetEmail(email: String, callback: (AuthResult) -> Unit) {
-        auth.sendPasswordResetEmail(email)
-            .addOnCompleteListener { task ->
+        auth.sendPasswordResetEmail(email).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     callback(AuthResult.Success)
                 } else {
@@ -78,9 +82,8 @@ class LoginViewModel() : ViewModel() {
         val user = auth.currentUser ?: return false
         Log.e(TAG, "getOnBoardingStatusFromFirebase: User is not Null -> ${auth.uid}")
         val userId = user.uid
-        val databaseRef = FirebaseDatabase.getInstance()
-            .getReference("UsersResponses")
-            .child(userId)
+        val databaseRef =
+            FirebaseDatabase.getInstance().getReference("UsersResponses").child(userId)
 
         return try {
             val snapshot = databaseRef.get().await()
@@ -93,12 +96,36 @@ class LoginViewModel() : ViewModel() {
     }
 
 
-
     sealed class AuthResult {
         data object Success : AuthResult()
         data object EmailNotVerified : AuthResult()
         data class Failure(val message: String) : AuthResult()
     }
+
+
+    private val _user = MutableLiveData<UserModel?>()
+    val userData: LiveData<UserModel?> = _user
+
+    fun getUser() {
+        viewModelScope.launch {
+            _user.value = getUserDetail()
+        }
+    }
+
+    suspend fun getUserDetail(): UserModel? = withContext(Dispatchers.IO) {
+        try {
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+            val database: FirebaseDatabase =
+                Firebase.database("https://networkofone-3b9c4-default-rtdb.asia-southeast1.firebasedatabase.app")
+            val userRef = database.getReference("users").child(userId)
+            val snapshot = userRef.get().await()
+            val user = snapshot.getValue(UserModel::class.java)
+            user?.let { (it) } ?: null
+        } catch (e: Exception) {
+            null
+        }
+    }
+
 
 }
 
