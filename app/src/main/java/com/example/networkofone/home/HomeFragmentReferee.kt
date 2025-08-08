@@ -1,5 +1,6 @@
 package com.example.networkofone.home
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
@@ -7,6 +8,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.widget.NestedScrollView
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
@@ -15,14 +17,20 @@ import com.example.networkofone.R
 import com.example.networkofone.activities.GameDetailActivity
 import com.example.networkofone.adapters.RefereeGamesAdapter
 import com.example.networkofone.databinding.FragmentHomeRefereeBinding
+import com.example.networkofone.databinding.LayoutProvidePaymentDetailBinding
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
+import com.example.networkofone.mvvm.models.PaymentMethod
+import com.example.networkofone.mvvm.models.PaymentRequestData
 import com.example.networkofone.mvvm.models.UserModel
 import com.example.networkofone.mvvm.repo.GameRepositoryImpl
 import com.example.networkofone.mvvm.viewModels.GameUiState
 import com.example.networkofone.mvvm.viewModels.HomeViewModelReferee
 import com.example.networkofone.mvvm.viewModels.HomeViewModelRefereeFactory
+import com.example.networkofone.utils.DialogUtil
+import com.example.networkofone.utils.LoadingDialog
 import com.example.networkofone.utils.NewToastUtil
+import com.example.networkofone.utils.NumberFormatterUtil
 import com.example.networkofone.utils.SharedPrefManager
 import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
@@ -39,6 +47,9 @@ class HomeFragmentReferee(
     private var userModel: UserModel? = null
     private lateinit var gamesAdapter: RefereeGamesAdapter
 
+    private lateinit var loader: LoadingDialog
+
+
     override fun onCreate() {
         try {
             Handler(Looper.getMainLooper()).postDelayed({ initiateLayout() }, 1000)
@@ -54,6 +65,7 @@ class HomeFragmentReferee(
 
     private fun initiateLayout() {
         userModel = SharedPrefManager(context).getUser()
+        loader = LoadingDialog(context)
         settingUpBinding()
     }
 
@@ -127,8 +139,83 @@ class HomeFragmentReferee(
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initiatePayoutRequest(game: GameData) {
-        TODO("Not yet implemented")
+        val (dialog, dialogBinding) = DialogUtil.createBottomDialogWithBinding(
+            context, LayoutProvidePaymentDetailBinding::inflate
+        )
+        dialog.show()
+        dialogBinding.apply {
+            tvAmount.text = "$${NumberFormatterUtil.format(game.feeAmount)}"
+            ivBack.setOnClickListener { dialog.dismiss() }
+            btnCancel.setOnClickListener { dialog.dismiss() }
+            paymentMethodRadioGroup.setOnCheckedChangeListener { group, checkedId ->
+                when (checkedId) {
+                    R.id.rBtn1 -> setPaymentMethod(
+                        "Bitcoin Address",
+                        "Enter your Bitcoin wallet address",
+                        R.drawable.round_currency_bitcoin_24
+                    )
+
+                    R.id.rBtn2 -> // Bank transfer selected
+                        setPaymentMethod(
+                            "Bank Account Details",
+                            "Enter your bank account number",
+                            R.drawable.bank
+                        )
+
+                    R.id.rBtn3 -> // Credit card selected
+                        setPaymentMethod(
+                            "Card Details", "Enter your credit card number", R.drawable.cvv_card
+                        )
+
+                    R.id.rBtn4 -> // Other payment selected
+                        setPaymentMethod(
+                            "Payment Details", "Enter your payment details", R.drawable.sack_dollar
+                        )
+                }
+            }
+
+            btnSave.setOnClickListener {
+                if (isDataValid()) {
+                    val paymentDetail = PaymentRequestData(
+                        gameId = game.id,
+                        refereeId = userModel?.id ?: "Null",
+                        id = "",
+                        refereeName = userModel?.name ?: "Null",
+                        schedularName = game.schedularName,
+                        schedularId = game.createdBySchoolId,
+                        amount = game.feeAmount,
+                        paymentMethod = when (paymentMethodRadioGroup.checkedRadioButtonId) {
+                            R.id.rBtn1 -> PaymentMethod.XRPL
+                            R.id.rBtn2 -> PaymentMethod.BANK_TRANSFER
+                            R.id.rBtn3 -> PaymentMethod.PAYPAL
+                            R.id.rBtn4 -> PaymentMethod.VENMO
+                            else -> PaymentMethod.NONE
+                        },
+                    )
+                    loader.startLoadingAnimation()
+                    viewModel.createPaymentRequest(paymentDetail)
+                    dialog.dismiss()
+                }
+            }
+        }
+    }
+
+    fun LayoutProvidePaymentDetailBinding.isDataValid(): Boolean {
+        val accountDetail = etAccountDetail.getText().toString().trim()
+        if (accountDetail.isEmpty()) {
+            etLayPrice.error = "Required"
+            return false
+        }
+        etLayPrice.error = null
+        return true
+    }
+
+    fun LayoutProvidePaymentDetailBinding.setPaymentMethod(title: String, hint: String, iconRes: Int, ) {
+        t4.text = title
+        etAccountDetail.hint = hint
+        etLayPrice.startIconDrawable = ContextCompat.getDrawable(context, iconRes)
     }
 
     private fun setupTabs() {
@@ -205,6 +292,17 @@ class HomeFragmentReferee(
             }
         }
 
+        viewModel.paymentRequestResult.observe(context) { result ->
+            loader.endLoadingAnimation()
+            if (result.isSuccess) {
+                NewToastUtil.showSuccess(context, "Payment request submitted successfully!")
+            } else {
+                NewToastUtil.showError(
+                    context,
+                    "Failed to submit payment request: ${result.exceptionOrNull()?.message}"
+                )
+            }
+        }
     }
 
     private fun navigateToGoogleMaps(latitude: Double, longitude: Double) {

@@ -42,14 +42,14 @@ class RefereeGamesAdapter(
         fun bind(game: GameData) {
             with(binding) {
 
-                val context = itemView.context
+/*                val context = itemView.context
                 val typedValue = TypedValue()
                 context.theme.resolveAttribute(
                     com.google.android.material.R.attr.colorPrimary,
                     typedValue,
                     true
                 )
-                val colorPrimary = typedValue.data
+                val colorPrimary = typedValue.data*/
 
                 gameName.text = game.title
                 gameLocation.text = game.location
@@ -62,7 +62,7 @@ class RefereeGamesAdapter(
                         btnAccept.apply {
                             text = "Accept"
                             backgroundTintList =
-                                ContextCompat.getColorStateList(itemView.context, colorPrimary)
+                                ContextCompat.getColorStateList(itemView.context, R.color.textColor)
                         }
                         statusBar.setBackgroundColor(
                             ContextCompat.getColor(itemView.context, R.color.status_pending)

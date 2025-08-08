@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/top_25dp_round"
+    android:backgroundTint="?colorTertiary">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivBack"
+        style="@style/backBtn"
+        android:layout_marginEnd="4dp"
+        android:src="@drawable/cross"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeWidth="0dp" />
+
+
+    <TextView
+        android:id="@+id/tvHeading"
+        style="@style/textHeading"
+        android:layout_marginStart="20dp"
+        android:text="Provide Payout Detail"
+        app:layout_constraintBottom_toBottomOf="@id/ivBack"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/ivBack" />
+
+    <View
+        android:id="@+id/div"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="20dp"
+        android:background="?colorButtonNormal"
+        app:layout_constraintTop_toBottomOf="@id/tvHeading" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="wrap"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/div"
+        app:layout_constraintVertical_bias="0">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp">
+
+            <LinearLayout
+                android:id="@+id/lay1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/outlined_filled_round_bg"
+                android:backgroundTint="@color/status_processing_bg"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    style="@style/textHeading"
+                    android:drawableStart="@drawable/sack_dollar"
+                    android:drawablePadding="12dp"
+                    android:gravity="start"
+                    android:text="Complete Payout" />
+
+                <TextView
+                    android:id="@+id/tvAmount"
+                    style="@style/textHeading.Large"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_weight="1"
+                    android:text="$2,000"
+                    android:textAlignment="viewEnd"
+                    android:textColor="@color/status_processing" />
+
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/t3"
+                style="@style/textHeading.medium"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="24dp"
+                android:text="Select Payout Method"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lay1" />
+
+            <RadioGroup
+                android:id="@+id/paymentMethodRadioGroup"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="@id/btnSave"
+                app:layout_constraintStart_toStartOf="@id/t3"
+                app:layout_constraintTop_toBottomOf="@id/t3">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rBtn1"
+                    style="@style/radioBtn"
+                    android:layout_marginTop="16dp"
+                    android:drawableStart="@drawable/round_currency_bitcoin_24"
+                    android:drawablePadding="16dp"
+                    android:paddingStart="16dp"
+                    android:checked="true"
+                    android:text="@string/pay1" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rBtn2"
+                    style="@style/radioBtn"
+                    android:layout_marginTop="16dp"
+                    android:drawableStart="@drawable/bank"
+                    android:drawablePadding="16dp"
+                    android:paddingStart="16dp"
+                    android:text="@string/pay2" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rBtn3"
+                    style="@style/radioBtn"
+                    android:layout_marginTop="16dp"
+                    android:drawableStart="@drawable/cvv_card"
+                    android:drawablePadding="16dp"
+                    android:paddingStart="16dp"
+                    android:text="@string/pay3" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rBtn4"
+                    style="@style/radioBtn"
+                    android:layout_marginTop="16dp"
+                    android:drawableStart="@drawable/sack_dollar"
+                    android:drawablePadding="16dp"
+                    android:paddingStart="16dp"
+                    android:text="@string/pay4" />
+
+
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/t4"
+                style="@style/textHeading.Small"
+                android:layout_marginTop="16dp"
+                android:text="Account Detail"
+                app:layout_constraintStart_toStartOf="@id/lay1"
+                app:layout_constraintTop_toBottomOf="@id/paymentMethodRadioGroup" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/etLayPrice"
+                style="@style/textInputLayout.NoHint"
+                android:layout_width="0dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="@id/btnSave"
+                app:layout_constraintStart_toStartOf="@id/lay1"
+                app:layout_constraintTop_toBottomOf="@id/t4">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etAccountDetail"
+                    style="@style/editTextOutlined_round"
+                    android:drawableStart="@drawable/attribution_pencil"
+                    android:hint="Credit card detail etc."
+                    android:inputType="textPersonName" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancel"
+                style="@style/btn_lwm.outlined"
+                android:layout_width="0dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="12dp"
+                android:layout_weight="1"
+                android:text="Cancel"
+                app:layout_constraintEnd_toStartOf="@id/btnSave"
+                app:layout_constraintStart_toStartOf="@id/lay1"
+                app:layout_constraintTop_toBottomOf="@id/etLayPrice" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSave"
+                style="@style/btn_lwm"
+                android:layout_width="0dp"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="1"
+                android:text="Request Payout"
+                app:layout_constraintBottom_toBottomOf="@id/btnCancel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btnCancel"
+                app:layout_constraintTop_toTopOf="@id/btnCancel" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

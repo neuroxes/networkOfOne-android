@@ -24,6 +24,7 @@ import com.example.networkofone.utils.DialogUtil
 import com.example.networkofone.utils.LoadingDialog
 import com.example.networkofone.utils.LocationHelper
 import com.example.networkofone.utils.NewToastUtil
+import com.example.networkofone.utils.SharedPrefManager
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -193,6 +194,7 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
                                 latitude = gameDataForEditing.latitude,
                                 longitude = gameDataForEditing.longitude,
                                 id = gameDataForEditing.id,
+                                schedularName = gameDataForEditing.schedularName,
                                 createdBySchoolId = gameDataForEditing.createdBySchoolId,
                                 acceptedByRefereeId = gameDataForEditing.acceptedByRefereeId,
                                 acceptedAt = gameDataForEditing.acceptedAt,
@@ -355,6 +357,7 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
             feeAmount = etPrice.text.toString().trim(),
             specialNote = etDescription.text.toString().trim(),
             createdBySchoolId = userId,
+            schedularName = SharedPrefManager(this@MainActivityScheduler).getUser()?.name ?: "null",
             status = GameStatus.PENDING
         )
     }

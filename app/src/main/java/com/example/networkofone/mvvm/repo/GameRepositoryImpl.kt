@@ -2,6 +2,7 @@ package com.example.networkofone.mvvm.repo
 
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
+import com.example.networkofone.mvvm.models.PaymentRequestData
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -10,12 +11,14 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import com.google.firebase.database.getValue
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class GameRepositoryImpl() {
     private val database: FirebaseDatabase =
@@ -65,8 +68,7 @@ class GameRepositoryImpl() {
                 snapshot.children.forEach { child ->
                     child.getValue<GameData>()?.let { game ->
                         // Only include games that are either unassigned or assigned to this referee
-                        if (game.acceptedByRefereeId.isNullOrEmpty() ||
-                            game.acceptedByRefereeId == userId) {
+                        if (game.acceptedByRefereeId.isNullOrEmpty() || game.acceptedByRefereeId == userId) {
                             games.add(game)
                         }
                     }
@@ -149,9 +151,7 @@ class GameRepositoryImpl() {
         }
 
         // Use Firebase query to filter on the server side
-        gamesRef.orderByChild("createdBySchoolId")
-            .equalTo(userId)
-            .addValueEventListener(listener)
+        gamesRef.orderByChild("createdBySchoolId").equalTo(userId).addValueEventListener(listener)
 
         val timeoutJob = launch {
             delay(5000L)
@@ -161,9 +161,7 @@ class GameRepositoryImpl() {
         }
 
         awaitClose {
-            gamesRef.orderByChild("createdBySchoolId")
-                .equalTo(userId)
-                .removeEventListener(listener)
+            gamesRef.orderByChild("createdBySchoolId").equalTo(userId).removeEventListener(listener)
             timeoutJob.cancel()
         }
     }
@@ -178,13 +176,13 @@ class GameRepositoryImpl() {
     suspend fun updateGame(gameId: String, status: GameStatus): Result<Unit> = try {
         // Create a map of the fields to update
 
-        val updates = if(status== GameStatus.ACCEPTED){
+        val updates = if (status == GameStatus.ACCEPTED) {
             mapOf<String, Any>(
                 "status" to status,
                 "acceptedByRefereeId" to userId,
                 "acceptedAt" to System.currentTimeMillis()
             )
-        } else{
+        } else {
             mapOf<String, Any>(
                 "status" to status,
                 "checkInStatus" to true,
@@ -202,6 +200,32 @@ class GameRepositoryImpl() {
         Result.success(Unit)
     } catch (e: Exception) {
         Result.failure(e)
+    }
+
+
+    suspend fun createPaymentRequest(paymentRequestData: PaymentRequestData): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            val paymentRequestRef = database.getReference("paymentRequests")
+
+            // First query by refereeId (more efficient than getting all records)
+            val query = paymentRequestRef.orderByChild("refereeId").equalTo(paymentRequestData.refereeId)
+            val snapshot = query.get().await()
+
+            // Then check gameId in matching records
+            snapshot.children.forEach { child ->
+                val existingGameId = child.child("gameId").getValue(String::class.java)
+                if (existingGameId == paymentRequestData.gameId) {
+                    return@withContext Result.failure(Exception("Duplicate payment request exists"))
+                }
+            }
+
+            val id = paymentRequestRef.push().key ?: return@withContext Result.failure(Exception("ID generation failed"))
+            paymentRequestRef.child(id).setValue(paymentRequestData.copy(id = id)).await()
+
+            Result.success(id)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
 }

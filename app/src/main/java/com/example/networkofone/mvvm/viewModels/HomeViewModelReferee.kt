@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
+import com.example.networkofone.mvvm.models.PaymentRequestData
 import com.example.networkofone.mvvm.repo.GameRepositoryImpl
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
@@ -27,6 +28,9 @@ class HomeViewModelReferee(
 
     private val _updateResult = MutableLiveData<Result<Unit>>()
     val updateResult: LiveData<Result<Unit>> = _updateResult
+
+    private val _paymentRequestResult = MutableLiveData<Result<String>>()
+    val paymentRequestResult: LiveData<Result<String>> = _paymentRequestResult
 
     private var allGames: List<GameData> = emptyList()
 
@@ -81,6 +85,12 @@ class HomeViewModelReferee(
     fun updateGame(gameId: String, status: GameStatus) {
         viewModelScope.launch {
             _updateResult.value = repository.updateGame(gameId, status)
+        }
+    }
+
+    fun createPaymentRequest(paymentRequestData: PaymentRequestData) {
+        viewModelScope.launch {
+            _paymentRequestResult.value = repository.createPaymentRequest(paymentRequestData)
         }
     }
 

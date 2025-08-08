@@ -1,21 +1,23 @@
 package com.example.networkofone.adapters
 
 import android.view.LayoutInflater
-import android.view.View.VISIBLE
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.networkofone.R
 import com.example.networkofone.databinding.ItemPayoutsBinding
-import com.example.networkofone.mvvm.models.GameData
-import com.example.networkofone.mvvm.models.GameStatus
+import com.example.networkofone.mvvm.models.PaymentRequestData
+import com.example.networkofone.mvvm.models.PaymentStatus
 
 
 class PayoutsAdapter(
-    private val onAcceptClick: (GameData) -> Unit, private val onRejectClick: (GameData) -> Unit
-) : ListAdapter<GameData, PayoutsAdapter.PayoutViewHolder>(PayoutDiffCallback()) {
+    private val onAcceptClick: (PaymentRequestData) -> Unit,
+    private val onRejectClick: (PaymentRequestData) -> Unit,
+) : ListAdapter<PaymentRequestData, PayoutsAdapter.PayoutViewHolder>(PayoutDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PayoutViewHolder {
         val binding = ItemPayoutsBinding.inflate(
@@ -31,70 +33,82 @@ class PayoutsAdapter(
     inner class PayoutViewHolder(private val binding: ItemPayoutsBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(gameData: GameData) {
+        fun bind(paymentRequestData: PaymentRequestData) {
             binding.apply {
-                tvGameName.text = gameData.title
-                tvGameLocation.text = gameData.feeAmount
+                tvGameName.text = paymentRequestData.gameName
+                tvGameLocation.text = paymentRequestData.amount
 
                 // Handle accept button click
                 ivCancel.setOnClickListener {
-                    onAcceptClick(gameData)
+                    onAcceptClick(paymentRequestData)
                 }
 
                 // Handle reject button click
                 ivReject.setOnClickListener {
-                    onRejectClick(gameData)
+                    onRejectClick(paymentRequestData)
                 }
 
                 // Update UI based on status
-                when (gameData.status) {
-                    GameStatus.PENDING -> {
-                        ivCancel.visibility = VISIBLE
-                        ivReject.visibility = VISIBLE
+                when (paymentRequestData.status) {
+
+                    PaymentStatus.PENDING -> {
+                        ivCancel.visibility = View.VISIBLE
+                        ivReject.visibility = View.VISIBLE
+                        tvOrderStatus.visibility = GONE
                     }
 
-                    GameStatus.ACCEPTED -> {
+                    PaymentStatus.APPROVED -> {
                         ivCancel.visibility = View.GONE
                         ivReject.visibility = View.GONE
                         tvOrderStatus.apply {
                             visibility = VISIBLE
                             text = "Accepted"
                             setTextColor(itemView.context.getColor(R.color.status_delivered))
-                            backgroundTintList = itemView.context.getColorStateList(R.color.status_delivered_bg)
+                            backgroundTintList =
+                                itemView.context.getColorStateList(R.color.status_delivered_bg)
                         }
                     }
 
-                    GameStatus.REJECTED -> {
+                    PaymentStatus.REJECTED -> {
                         ivCancel.visibility = View.GONE
                         ivReject.visibility = View.GONE
                         tvOrderStatus.apply {
                             visibility = VISIBLE
                             text = "Rejected"
                             setTextColor(itemView.context.getColor(R.color.colorError))
-                            backgroundTintList = itemView.context.getColorStateList(R.color.status_cancelled_bg)
+                            backgroundTintList =
+                                itemView.context.getColorStateList(R.color.status_cancelled_bg)
                         }
                     }
 
-                    GameStatus.COMPLETED -> {
+                    PaymentStatus.PAID -> {
                         ivCancel.visibility = View.GONE
                         ivReject.visibility = View.GONE
-                    }
-
-                    GameStatus.CHECKED_IN -> {
-                        ivCancel.visibility = View.GONE
-                        ivReject.visibility = View.GONE
+                        tvOrderStatus.apply {
+                            visibility = VISIBLE
+                            text = "Paid"
+                            setTextColor(itemView.context.getColor(R.color.status_delivered))
+                            backgroundTintList =
+                                itemView.context.getColorStateList(R.color.status_delivered_bg)
+                        }
                     }
                 }
             }
         }
     }
 
-    class PayoutDiffCallback : DiffUtil.ItemCallback<GameData>() {
-        override fun areItemsTheSame(oldItem: GameData, newItem: GameData): Boolean {
+    class PayoutDiffCallback : DiffUtil.ItemCallback<PaymentRequestData>() {
+        override fun areItemsTheSame(
+            oldItem: PaymentRequestData,
+            newItem: PaymentRequestData,
+        ): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: GameData, newItem: GameData): Boolean {
+        override fun areContentsTheSame(
+            oldItem: PaymentRequestData,
+            newItem: PaymentRequestData,
+        ): Boolean {
             return oldItem == newItem
         }
     }

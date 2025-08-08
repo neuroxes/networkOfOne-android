@@ -10,4 +10,8 @@
     <string name="special_note_optional"><b>Special Note</b> <small>(optional)</small></string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="pay1">XRPL\n<small>XRP Ledger</small></string>
+    <string name="pay2">Bank\n<small>Transactions</small></string>
+    <string name="pay3">Paypal\n<small>Transaction</small></string>
+    <string name="pay4">Vimeo\n<small>Transaction</small></string>
 </resources>

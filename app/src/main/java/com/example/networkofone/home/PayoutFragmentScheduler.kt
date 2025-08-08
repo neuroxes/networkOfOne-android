@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.networkofone.R
 import com.example.networkofone.adapters.PayoutsAdapter
 import com.example.networkofone.databinding.LayoutPayoutFragmentBinding
-import com.example.networkofone.mvvm.models.GameData
+import com.example.networkofone.mvvm.models.PaymentRequestData
 import com.example.networkofone.mvvm.models.UserModel
 import com.example.networkofone.mvvm.viewModels.PayoutsUiState
 import com.example.networkofone.mvvm.viewModels.PayoutsViewModel
@@ -25,12 +25,11 @@ import com.example.networkofone.utils.SharedPrefManager
 import com.incity.incity_stores.AppFragmentLoader
 
 class PayoutFragmentScheduler(
-    private val context: AppCompatActivity
+    private val context: AppCompatActivity,
 ) : AppFragmentLoader(R.layout.fragment_root_constraint_layout) {
     private lateinit var binding: LayoutPayoutFragmentBinding
     private lateinit var base: ConstraintLayout
     private var userModel: UserModel? = null
-
     private lateinit var viewModel: PayoutsViewModel
     private lateinit var payoutsAdapter: PayoutsAdapter
 
@@ -83,10 +82,10 @@ class PayoutFragmentScheduler(
     }
 
     private fun setupRecyclerView() {
-        payoutsAdapter = PayoutsAdapter(onAcceptClick = { gameData ->
-            viewModel.acceptPayout(gameData.id)
-        }, onRejectClick = { gameData ->
-            showRejectConfirmationDialog(gameData)
+        payoutsAdapter = PayoutsAdapter(onAcceptClick = { it ->
+            viewModel.acceptPayout(it.id)
+        }, onRejectClick = { it ->
+            showRejectConfirmationDialog(it)
         })
 
         binding.rcvTemplate.apply {
@@ -143,11 +142,11 @@ class PayoutFragmentScheduler(
     }
 
 
-    private fun showRejectConfirmationDialog(game: GameData) {
+    private fun showRejectConfirmationDialog(payout: PaymentRequestData) {
         AlertDialog.Builder(context).setTitle("Reject Payout")
             .setMessage("Are you sure you want to reject this payout?")
             .setPositiveButton("Reject") { _, _ ->
-                if (viewModel.rejectPayout(game.id).value == true) {
+                if (viewModel.rejectPayout(payout.id).value == true) {
                     NewToastUtil.showSuccess(context, "Payout rejected.")
                 } else {
                     NewToastUtil.showError(context, "Something went wrong")

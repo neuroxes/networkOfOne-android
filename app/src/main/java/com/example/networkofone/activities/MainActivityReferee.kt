@@ -22,7 +22,6 @@ class MainActivityReferee : AppCompatActivity(), LocationHelper.LocationResultLi
     private lateinit var binding: ActivityMainRefreeBinding
     private lateinit var fragDashboard: AppFragment
     private lateinit var fragMore: AppFragment
-    private lateinit var loader: LoadingDialog
     private lateinit var locationHelper: LocationHelper
     private lateinit var homeFragmentReferee: HomeFragmentReferee
     private lateinit var payoutFragmentScheduler: PayoutFragmentScheduler
@@ -33,7 +32,6 @@ class MainActivityReferee : AppCompatActivity(), LocationHelper.LocationResultLi
         super.onCreate(savedInstanceState)
         binding = ActivityMainRefreeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        loader = LoadingDialog(this)
         fragDashboard = findViewById(R.id.fragDashboard)
         homeFragmentReferee = HomeFragmentReferee(this){ lat,long ->
             this.lat  = lat

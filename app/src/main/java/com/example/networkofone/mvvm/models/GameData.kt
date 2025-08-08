@@ -11,6 +11,7 @@ data class GameData(
     val time: String = "",
     val feeAmount: String = "",
     val specialNote: String = "",
+    var schedularName: String = "",
     var createdBySchoolId: String = "",
     val createdAt: Long = System.currentTimeMillis(),
     var status: GameStatus = GameStatus.PENDING,
@@ -31,10 +32,13 @@ enum class GameStatus {
 data class PaymentRequestData(
     val id: String = "",
     val gameId: String = "",
+    val gameName: String = "",
     val refereeId: String = "",
-    val schoolId: String = "",
+    val refereeName: String = "",
+    val schedularId: String = "",
+    val schedularName: String = "",
     val amount: String = "",
-    val paymentMethod: String = "", // e.g., "Bank Transfer", "Cash", etc.
+    val paymentMethod: PaymentMethod = PaymentMethod.NONE,
     val status: PaymentStatus = PaymentStatus.PENDING,
     val requestedAt: Long = System.currentTimeMillis(),
     val paidAt: Long? = null,
@@ -48,3 +52,12 @@ enum class PaymentStatus {
     REJECTED,
     PAID
 }
+
+enum class PaymentMethod {
+    XRPL,
+    BANK_TRANSFER,
+    PAYPAL,
+    VENMO,
+    NONE // Default or placeholder
+}
+

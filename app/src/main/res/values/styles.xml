@@ -279,7 +279,7 @@
     <style name="radioBtn">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <!--        <item name="android:background">@drawable/radio_btn_outlined_bg</item>-->
+        <item name="android:background">@drawable/radio_btn_outlined_bg</item>
         <item name="android:layout_marginTop">15dp</item>
         <item name="android:paddingTop">17dp</item>
         <item name="android:paddingStart">3dp</item>
