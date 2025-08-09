@@ -1,5 +1,6 @@
 package com.example.networkofone.mvvm.repo
 
+import android.util.Log
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
 import com.example.networkofone.mvvm.models.PaymentRequestData
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import kotlin.math.log
 
 class GameRepositoryImpl() {
     private val database: FirebaseDatabase =
@@ -166,6 +168,19 @@ class GameRepositoryImpl() {
         }
     }
 
+    suspend fun getGameById(id: String): GameData? {
+        return try {
+            val snapshot = gamesRef.child(id).get().await()
+            snapshot.getValue(GameData::class.java).also {
+                if (it == null) {
+                    Log.e("Firebase", "Payout with ID $id not found or parsing failed")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("Firebase", "Error fetching payout $id", e)
+            null
+        }
+    }
     suspend fun updateGame(game: GameData): Result<Unit> = try {
         gamesRef.child(game.id).setValue(game).await()
         Result.success(Unit)
@@ -207,7 +222,7 @@ class GameRepositoryImpl() {
         try {
             val paymentRequestRef = database.getReference("paymentRequests")
 
-            // First query by refereeId (more efficient than getting all records)
+            /*// First query by refereeId (more efficient than getting all records)
             val query = paymentRequestRef.orderByChild("refereeId").equalTo(paymentRequestData.refereeId)
             val snapshot = query.get().await()
 
@@ -217,7 +232,7 @@ class GameRepositoryImpl() {
                 if (existingGameId == paymentRequestData.gameId) {
                     return@withContext Result.failure(Exception("Duplicate payment request exists"))
                 }
-            }
+            }*/
 
             val id = paymentRequestRef.push().key ?: return@withContext Result.failure(Exception("ID generation failed"))
             paymentRequestRef.child(id).setValue(paymentRequestData.copy(id = id)).await()

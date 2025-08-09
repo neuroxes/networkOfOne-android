@@ -180,6 +180,7 @@ class HomeFragmentReferee(
                 if (isDataValid()) {
                     val paymentDetail = PaymentRequestData(
                         gameId = game.id,
+                        gameName = game.title,
                         refereeId = userModel?.id ?: "Null",
                         id = "",
                         refereeName = userModel?.name ?: "Null",
@@ -295,6 +296,7 @@ class HomeFragmentReferee(
         viewModel.paymentRequestResult.observe(context) { result ->
             loader.endLoadingAnimation()
             if (result.isSuccess) {
+                viewModel.observeGames()
                 NewToastUtil.showSuccess(context, "Payment request submitted successfully!")
             } else {
                 NewToastUtil.showError(
@@ -337,10 +339,11 @@ class HomeFragmentReferee(
         val updatedGame = game.copy(
             status = when (game.status) {
                 GameStatus.PENDING -> GameStatus.ACCEPTED
-                GameStatus.ACCEPTED -> GameStatus.COMPLETED
-                GameStatus.COMPLETED -> GameStatus.CHECKED_IN
+                GameStatus.ACCEPTED -> GameStatus.CHECKED_IN
+                GameStatus.COMPLETED -> GameStatus.COMPLETED
                 GameStatus.REJECTED -> GameStatus.PENDING
                 GameStatus.CHECKED_IN -> GameStatus.CHECKED_IN
+                GameStatus.PAYMENT_REQUESTED -> GameStatus.COMPLETED
             }
         )
         //viewModel.updateGame(updatedGame)

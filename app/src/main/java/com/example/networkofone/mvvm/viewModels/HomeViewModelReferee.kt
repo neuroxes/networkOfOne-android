@@ -1,5 +1,7 @@
 package com.example.networkofone.mvvm.viewModels
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -89,8 +91,13 @@ class HomeViewModelReferee(
     }
 
     fun createPaymentRequest(paymentRequestData: PaymentRequestData) {
-        viewModelScope.launch {
-            _paymentRequestResult.value = repository.createPaymentRequest(paymentRequestData)
+        try {
+            viewModelScope.launch {
+                _paymentRequestResult.value = repository.createPaymentRequest(paymentRequestData)
+                updateGame(paymentRequestData.gameId, GameStatus.PAYMENT_REQUESTED)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "createPaymentRequest: ${e.message}")
         }
     }
 

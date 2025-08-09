@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -12,6 +13,8 @@ import com.example.networkofone.databinding.ActivityGameDetailBinding
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
 import com.example.networkofone.mvvm.models.UserModel
+import com.example.networkofone.mvvm.viewModels.GameDetailActivityViewModel
+import com.example.networkofone.utils.LoadingDialog
 import com.example.networkofone.utils.NumberFormatterUtil
 import com.example.networkofone.utils.SharedPrefManager
 import com.google.gson.Gson
@@ -23,15 +26,27 @@ class GameDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityGameDetailBinding
     private lateinit var gameData: GameData
     private var userData: UserModel? = null
+    private lateinit var loader: LoadingDialog
+    private val viewModel: GameDetailActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGameDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        loader = LoadingDialog(this)
 
         getIntentData()
-        setupViews()
+        observeViewModel()
+
         onClicks()
+    }
+
+    private fun observeViewModel() {
+        viewModel.payoutsLiveData.observe(this) {
+            gameData = it
+            loader.endLoadingAnimation()
+            setupViews()
+        }
     }
 
     private fun onClicks() {
@@ -56,14 +71,21 @@ class GameDetailActivity : AppCompatActivity() {
     }
 
     private fun getIntentData() {
-        val gameDataJson = intent.getStringExtra("game_data")
-        if (gameDataJson != null) {
-            gameData = Gson().fromJson(gameDataJson, GameData::class.java)
-        } else {
-            gameData = GameData() // Initialize with default if no data is passed
-        }
+        try {
+            val gameDataJson = intent.getStringExtra("game_data")
+            if (gameDataJson != null) {
+                gameData = Gson().fromJson(gameDataJson, GameData::class.java)
+                setupViews()
+            } else {
+                val gameId = intent.getStringExtra("gameId")
+                loader.startLoadingAnimation()
+                gameId?.let { viewModel.getData(it) }
+            }
 
-        userData = SharedPrefManager(this).getUser()
+            userData = SharedPrefManager(this).getUser()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun setupViews() {
@@ -112,6 +134,16 @@ class GameDetailActivity : AppCompatActivity() {
                     )
                     statusIcon.setImageResource(R.drawable.ic_clock)
                     statusText.text = "Pending"
+                }
+
+                GameStatus.PAYMENT_REQUESTED -> {
+                    statusCard.setCardBackgroundColor(
+                        ContextCompat.getColor(
+                            this@GameDetailActivity, R.color.status_pending
+                        )
+                    )
+                    statusIcon.setImageResource(R.drawable.round_access_alarm_24)
+                    statusText.text = "Payment Requested"
                 }
 
                 GameStatus.ACCEPTED -> {
@@ -190,6 +222,12 @@ class GameDetailActivity : AppCompatActivity() {
 
                 GameStatus.PENDING -> {
                     btnAccept.isEnabled = true
+                    checkInBtn.isEnabled = false
+                    btnReqPay.isEnabled = false
+                }
+
+                GameStatus.PAYMENT_REQUESTED -> {
+                    btnAccept.isEnabled = false
                     checkInBtn.isEnabled = false
                     btnReqPay.isEnabled = false
                 }

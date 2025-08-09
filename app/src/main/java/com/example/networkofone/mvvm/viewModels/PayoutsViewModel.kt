@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.PaymentRequestData
 import com.example.networkofone.mvvm.repo.PayoutsRepository
 import kotlinx.coroutines.launch
@@ -29,6 +28,7 @@ class PayoutsViewModel : ViewModel() {
         _uiState.value = PayoutsUiState.Loading
         viewModelScope.launch {
             _payoutsData.value = repository.getPayoutsBySchedulerId()
+            Log.e("TAG", "loadPayouts viewmodel: ${_payoutsData.value}")
         }
         payoutsLiveData.observeForever { payouts ->
             when {
@@ -57,23 +57,30 @@ class PayoutsViewModel : ViewModel() {
         }*/
     }
 
-    fun acceptPayout(gameId: String): LiveData<Boolean> {
+    fun acceptPayout(payoutId: String,gameId: String,): LiveData<Boolean> {
         val result = MutableLiveData<Boolean>()
-        repository.acceptPayout(gameId) { success ->
-            Log.e("", "acceptPayoutViewModel: $success" )
-            result.value = success
+
+        viewModelScope.launch {
+            try {
+                val success = repository.acceptPayout(payoutId,gameId)
+                Log.d("PayoutVM", "Payout approval result: $success")
+                result.value = success
+            } catch (e: Exception) {
+                Log.e("PayoutVM", "Error in payout approval", e)
+                result.value = false
+            }
         }
+
         return result
     }
-
-    fun rejectPayout(gameId: String): LiveData<Boolean> {
+    fun rejectPayout(payoutId: String, gameId: String): LiveData<Boolean> {
         val result = MutableLiveData<Boolean>()
-        repository.rejectPayout(gameId) { success ->
+
+        viewModelScope.launch {
+            val success = repository.rejectPayout(payoutId, gameId)
             result.value = success
-            // if (!success) {
-            //     // Handle failure, e.g., show an error message
-            // }
         }
+
         return result
     }
     override fun onCleared() {

@@ -209,6 +209,7 @@ class HomeFragmentScheduler(
                 GameStatus.COMPLETED -> GameStatus.CHECKED_IN
                 GameStatus.REJECTED -> GameStatus.PENDING
                 GameStatus.CHECKED_IN -> GameStatus.CHECKED_IN
+                GameStatus.PAYMENT_REQUESTED -> GameStatus.ACCEPTED
             }
         )
         viewModel.editGame(updatedGame)

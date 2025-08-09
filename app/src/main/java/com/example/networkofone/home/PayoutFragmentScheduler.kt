@@ -1,6 +1,7 @@
 package com.example.networkofone.home
 
 
+import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
@@ -14,12 +15,14 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.networkofone.R
+import com.example.networkofone.activities.GameDetailActivity
 import com.example.networkofone.adapters.PayoutsAdapter
 import com.example.networkofone.databinding.LayoutPayoutFragmentBinding
 import com.example.networkofone.mvvm.models.PaymentRequestData
 import com.example.networkofone.mvvm.models.UserModel
 import com.example.networkofone.mvvm.viewModels.PayoutsUiState
 import com.example.networkofone.mvvm.viewModels.PayoutsViewModel
+import com.example.networkofone.utils.LoadingDialog
 import com.example.networkofone.utils.NewToastUtil
 import com.example.networkofone.utils.SharedPrefManager
 import com.incity.incity_stores.AppFragmentLoader
@@ -32,6 +35,9 @@ class PayoutFragmentScheduler(
     private var userModel: UserModel? = null
     private lateinit var viewModel: PayoutsViewModel
     private lateinit var payoutsAdapter: PayoutsAdapter
+
+    private lateinit var loader: LoadingDialog
+
 
     override fun onCreate() {
         try {
@@ -47,8 +53,9 @@ class PayoutFragmentScheduler(
     }
 
     private fun initiateLayout() {
-        settingUpBinding()
+        loader = LoadingDialog(context)
         userModel = SharedPrefManager(context).getUser()
+        settingUpBinding()
     }
 
     private fun settingUpBinding() {
@@ -66,15 +73,6 @@ class PayoutFragmentScheduler(
         observeUiState()
     }
 
-    private fun onClicks() {
-
-    }
-
-    private fun setupUI() {
-        binding.apply {
-
-        }
-    }
 
 
     private fun setupViewModel() {
@@ -83,9 +81,12 @@ class PayoutFragmentScheduler(
 
     private fun setupRecyclerView() {
         payoutsAdapter = PayoutsAdapter(onAcceptClick = { it ->
-            viewModel.acceptPayout(it.id)
+            showConfirmationDialog(it)
         }, onRejectClick = { it ->
             showRejectConfirmationDialog(it)
+        },onClick = { it ->
+            val intent = Intent(context, GameDetailActivity::class.java).putExtra("gameId",it.gameId)
+            context.startActivity(intent)
         })
 
         binding.rcvTemplate.apply {
@@ -112,12 +113,14 @@ class PayoutFragmentScheduler(
         viewModel.uiState.observe(context) { state ->
             when (state) {
                 is PayoutsUiState.Loading -> {
+                    Log.e(TAG, "observeUiState: payouts -> Loading", )
                     binding.progressBar.visibility = View.VISIBLE
                     binding.cardData.visibility = View.GONE
                     binding.layResult.visibility = View.GONE
                 }
 
                 is PayoutsUiState.Empty -> {
+                    Log.e(TAG, "observeUiState: payouts -> Empty", )
                     binding.progressBar.visibility = View.GONE
                     binding.cardData.visibility = View.GONE
                     binding.layResult.visibility = View.VISIBLE
@@ -127,10 +130,12 @@ class PayoutFragmentScheduler(
                     binding.progressBar.visibility = View.GONE
                     binding.cardData.visibility = View.VISIBLE
                     binding.layResult.visibility = View.GONE
+                    Log.e(TAG, "observeUiState: payouts -> ${state.payouts}", )
                     payoutsAdapter.submitList(state.payouts)
                 }
 
                 is PayoutsUiState.Error -> {
+                    Log.e(TAG, "observeUiState: payouts -> Error", )
                     binding.progressBar.visibility = View.GONE
                     binding.cardData.visibility = View.GONE
                     binding.layResult.visibility = View.VISIBLE
@@ -146,11 +151,30 @@ class PayoutFragmentScheduler(
         AlertDialog.Builder(context).setTitle("Reject Payout")
             .setMessage("Are you sure you want to reject this payout?")
             .setPositiveButton("Reject") { _, _ ->
-                if (viewModel.rejectPayout(payout.id).value == true) {
+                loader.startLoadingAnimation()
+                if (viewModel.rejectPayout(payout.id,payout.gameId).value == true) {
+                    loader.endLoadingAnimation()
                     NewToastUtil.showSuccess(context, "Payout rejected.")
                 } else {
+                    loader.endLoadingAnimation()
                     NewToastUtil.showError(context, "Something went wrong")
                 }
+                viewModel.loadPayouts()
+            }.setNegativeButton("Cancel", null).show()
+    }
+    private fun showConfirmationDialog(payout: PaymentRequestData) {
+        AlertDialog.Builder(context).setTitle("Approve Payout")
+            .setMessage("Are you sure you want to approve this payout?")
+            .setPositiveButton("Approve") { _, _ ->
+                loader.startLoadingAnimation()
+                if (viewModel.acceptPayout(payout.id,payout.gameId).value == true) {
+                    loader.endLoadingAnimation()
+                    NewToastUtil.showSuccess(context, "Payout Approved.")
+                } else {
+                    loader.endLoadingAnimation()
+                    NewToastUtil.showError(context, "Something went wrong")
+                }
+                viewModel.loadPayouts()
             }.setNegativeButton("Cancel", null).show()
     }
 

@@ -25,11 +25,15 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_default="spread"
         app:layout_constraintTop_toBottomOf="@id/ivBack">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <!-- Status Card -->
             <androidx.cardview.widget.CardView
@@ -37,7 +41,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="2dp"
                 app:cardBackgroundColor="@color/status_confirmed"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="2dp"
@@ -236,8 +240,7 @@
                             style="@style/selectableIcon"
                             android:layout_gravity="center_vertical"
                             android:layout_marginTop="0dp"
-                            android:src="@drawable/up_right_from_square_1_"
-                            app:tint="?colorPrimary" />
+                            android:src="@drawable/up_right_from_square_1_" />
 
                     </LinearLayout>
 

@@ -1,9 +1,11 @@
 package com.example.networkofone.adapters
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -42,14 +44,6 @@ class RefereeGamesAdapter(
         fun bind(game: GameData) {
             with(binding) {
 
-/*                val context = itemView.context
-                val typedValue = TypedValue()
-                context.theme.resolveAttribute(
-                    com.google.android.material.R.attr.colorPrimary,
-                    typedValue,
-                    true
-                )
-                val colorPrimary = typedValue.data*/
 
                 gameName.text = game.title
                 gameLocation.text = game.location
@@ -62,11 +56,12 @@ class RefereeGamesAdapter(
                         btnAccept.apply {
                             text = "Accept"
                             backgroundTintList =
-                                ContextCompat.getColorStateList(itemView.context, R.color.textColor)
+                                ContextCompat.getColorStateList(itemView.context, R.color.btnColor)
                         }
                         statusBar.setBackgroundColor(
                             ContextCompat.getColor(itemView.context, R.color.status_pending)
                         )
+                        gameStatusNote.visibility = GONE
                     }
 
                     GameStatus.ACCEPTED -> {
@@ -78,6 +73,22 @@ class RefereeGamesAdapter(
                         statusBar.setBackgroundColor(
                             ContextCompat.getColor(itemView.context, R.color.status_processing)
                         )
+                        gameStatusNote.apply {
+                            visibility = VISIBLE
+                            text = "Game Accepted"
+                            setBackgroundTintList(
+                                ColorStateList.valueOf(
+                                    ContextCompat.getColor(context, R.color.status_delivered_bg)
+                                )
+                            )
+                            setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.check_circle, 0, 0, 0
+                            )
+                            compoundDrawableTintList = ColorStateList.valueOf(
+                                ContextCompat.getColor(context, R.color.status_delivered)
+                            )
+                        }
+
                     }
 
                     GameStatus.COMPLETED -> {
@@ -85,6 +96,45 @@ class RefereeGamesAdapter(
                         statusBar.setBackgroundColor(
                             ContextCompat.getColor(itemView.context, R.color.status_confirmed)
                         )
+                        gameStatusNote.apply {
+                            visibility = VISIBLE
+                            text = "Game is finished."
+                            setBackgroundTintList(
+                                ColorStateList.valueOf(
+                                    ContextCompat.getColor(context, R.color.status_delivered_bg)
+                                )
+                            )
+                            setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.check_circle, 0, 0, 0
+                            )
+                            compoundDrawableTintList = ColorStateList.valueOf(
+                                ContextCompat.getColor(context, R.color.status_delivered)
+                            )
+                        }
+
+                    }
+
+                    GameStatus.PAYMENT_REQUESTED -> {
+                        btnAccept.visibility = GONE
+                        statusBar.setBackgroundColor(
+                            ContextCompat.getColor(itemView.context, R.color.status_confirmed)
+                        )
+                        gameStatusNote.apply {
+                            visibility = VISIBLE
+                            text = "Payment is requested."
+                            setBackgroundTintList(
+                                ColorStateList.valueOf(
+                                    ContextCompat.getColor(context, R.color.status_pending_bg)
+                                )
+                            )
+                            setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.round_access_alarm_24, 0, 0, 0
+                            )
+                            compoundDrawableTintList = ColorStateList.valueOf(
+                                ContextCompat.getColor(context, R.color.status_pending)
+                            )
+                        }
+
                     }
 
                     GameStatus.REJECTED -> {
@@ -105,6 +155,22 @@ class RefereeGamesAdapter(
                         statusBar.setBackgroundColor(
                             ContextCompat.getColor(itemView.context, R.color.status_processing)
                         )
+                        gameStatusNote.apply {
+                            visibility = VISIBLE
+                            text = "Game checked-in."
+                            setBackgroundTintList(
+                                ColorStateList.valueOf(
+                                    ContextCompat.getColor(context, R.color.status_delivered_bg)
+                                )
+                            )
+                            setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.check_circle, 0, 0, 0
+                            )
+                            compoundDrawableTintList = ColorStateList.valueOf(
+                                ContextCompat.getColor(context, R.color.status_delivered)
+                            )
+                        }
+
                     }
                 }
 

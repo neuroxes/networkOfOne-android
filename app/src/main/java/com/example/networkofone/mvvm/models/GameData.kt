@@ -26,6 +26,7 @@ enum class GameStatus {
     ACCEPTED,
     REJECTED,
     CHECKED_IN,
+    PAYMENT_REQUESTED,
     COMPLETED
 }
 

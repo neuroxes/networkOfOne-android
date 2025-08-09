@@ -17,6 +17,7 @@ import com.example.networkofone.mvvm.models.PaymentStatus
 class PayoutsAdapter(
     private val onAcceptClick: (PaymentRequestData) -> Unit,
     private val onRejectClick: (PaymentRequestData) -> Unit,
+    private val onClick: (PaymentRequestData) -> Unit,
 ) : ListAdapter<PaymentRequestData, PayoutsAdapter.PayoutViewHolder>(PayoutDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PayoutViewHolder {
@@ -47,6 +48,8 @@ class PayoutsAdapter(
                 ivReject.setOnClickListener {
                     onRejectClick(paymentRequestData)
                 }
+
+                binding.root.setOnClickListener { onClick(paymentRequestData) }
 
                 // Update UI based on status
                 when (paymentRequestData.status) {

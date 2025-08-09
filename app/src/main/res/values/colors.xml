@@ -18,6 +18,7 @@
     <color name="textColorSecondary">#5a5a5a</color>
     <color name="textColorSecondaryAlt">#afafaf</color>
 
+    <color name="btnColor">#222</color>
 
 
     <color name="btmNavDark">#1e1f20</color>

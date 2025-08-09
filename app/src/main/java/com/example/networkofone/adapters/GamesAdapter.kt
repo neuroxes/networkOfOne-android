@@ -63,13 +63,32 @@ class GamesAdapter(
                             )
                         }
                     }
+                    GameStatus.PAYMENT_REQUESTED -> {
+                        statusBar.setBackgroundColor(
+                            ContextCompat.getColor(itemView.context, R.color.status_pending)
+                        )
+                        gameStatusNote.apply {
+                            text = "Payment is requested."
+                            setBackgroundTintList(
+                                ColorStateList.valueOf(
+                                    ContextCompat.getColor(context, R.color.status_pending_bg)
+                                )
+                            )
+                            setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.round_access_alarm_24, 0, 0, 0
+                            )
+                            compoundDrawableTintList = ColorStateList.valueOf(
+                                ContextCompat.getColor(context, R.color.status_pending)
+                            )
+                        }
+                    }
 
                     GameStatus.ACCEPTED -> {
                         statusBar.setBackgroundColor(
                             ContextCompat.getColor(itemView.context, R.color.status_processing)
                         )
                         gameStatusNote.apply {
-                            text = "Game is active and in progress"
+                            text = "Game is accepted by referee"
                             setBackgroundTintList(
                                 ColorStateList.valueOf(
                                     ContextCompat.getColor(context, R.color.status_processing_bg)
