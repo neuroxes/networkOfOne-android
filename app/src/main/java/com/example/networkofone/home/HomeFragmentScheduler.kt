@@ -1,16 +1,21 @@
 package com.example.networkofone.home
 
+import android.content.ContentValues
+import android.content.Context.MODE_PRIVATE
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.core.widget.NestedScrollView
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.ViewModelProvider
 import com.example.networkofone.R
+import com.example.networkofone.activities.AuthenticationActivity
 import com.example.networkofone.adapters.GamesAdapter
+import com.example.networkofone.databinding.DialogLogoutBinding
 import com.example.networkofone.databinding.FragmentHomeBinding
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
@@ -19,13 +24,17 @@ import com.example.networkofone.mvvm.repo.GameRepositoryImpl
 import com.example.networkofone.mvvm.viewModels.GameUiState
 import com.example.networkofone.mvvm.viewModels.HomeViewModel
 import com.example.networkofone.mvvm.viewModels.HomeViewModelFactory
+import com.example.networkofone.utils.ActivityNavigatorUtil
+import com.example.networkofone.utils.DialogUtil
 import com.example.networkofone.utils.SharedPrefManager
+import com.firebase.ui.auth.AuthUI
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.auth.FirebaseAuth
 import com.incity.incity_stores.AppFragmentLoader
 import java.util.Calendar
 
 class HomeFragmentScheduler(
-    private val context: AppCompatActivity, private val onGameEditing: (GameData) -> Unit
+    private val context: AppCompatActivity, private val onGameEditing: (GameData) -> Unit,
 ) : AppFragmentLoader(R.layout.fragment_store_info_root) {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var base: NestedScrollView
@@ -70,8 +79,54 @@ class HomeFragmentScheduler(
     }
 
     private fun onClicks() {
-
+        binding.apply {
+            ivLogout.setOnClickListener { setupLogoutDialog() }
+        }
     }
+
+    private fun setupLogoutDialog() {
+        val (dialog, dialogBinding) = DialogUtil.createBottomDialogWithBinding(
+            context, DialogLogoutBinding::inflate
+        )
+        dialog.show()
+        dialogBinding.apply {
+            btnCancel.setOnClickListener { dialog.dismiss() }
+            btnLogout.setOnClickListener {
+                clearAllUserSettings()
+                val userType = checkSignInMethod()
+                Log.e(ContentValues.TAG, "setupLogoutDialog: Logout User type : $userType")
+                if (userType == 0) FirebaseAuth.getInstance().signOut()
+                else if (userType == 1) AuthUI.getInstance().signOut(context)
+
+                ActivityNavigatorUtil.startActivity(
+                    context, AuthenticationActivity::class.java, findView(R.id.animator), true
+                )
+                dialog.dismiss()
+                context.finish()
+            }
+        }
+    }
+
+    private fun clearAllUserSettings() {
+        context.getSharedPreferences("Logged", MODE_PRIVATE).edit { putInt("isLogged", 0) }/*val localDb = LocalDatabaseManager(context,"courseDB")
+        Log.e(TAG, "course Data Removed : " + localDb.delete())*/
+    }
+
+
+    private fun checkSignInMethod(): Int {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            for (profile in user.providerData) {
+                when (profile.providerId) {
+                    "password" -> return 0
+                    "google.com" -> return 1
+                    "phone" -> return 2
+                }
+            }
+        }
+        return -1
+    }
+
 
     private fun setupUI() {
         binding.apply {

@@ -3,7 +3,6 @@ package com.example.networkofone.activities
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -29,10 +28,10 @@ class SplashActivity : AppCompatActivity() {
         // Restore timer state
         timerStarted = savedInstanceState?.getBoolean("TIMER_STARTED", false) == true
 
-        img.animate().scaleX(1f).scaleY(1f).translationY(0F).setDuration(1500)
-            .setInterpolator(AccelerateDecelerateInterpolator()).start()
+        img.animate().alpha(1f).translationY(0F).setDuration(1500)
+            .setInterpolator(OvershootInterpolator()).start()
         tvAppName.animate().alpha(1f).translationY(0F).setDuration(1000)
-            .setInterpolator(OvershootInterpolator()).setStartDelay(1500).start()
+            .setInterpolator(OvershootInterpolator()).setStartDelay(1000).start()
 
         if (!timerStarted) {
             startCountDown()
@@ -70,6 +69,7 @@ class SplashActivity : AppCompatActivity() {
                                         )
                                     )
                                 }
+
                                 UserType.ADMIN -> {}
                             }
                         }

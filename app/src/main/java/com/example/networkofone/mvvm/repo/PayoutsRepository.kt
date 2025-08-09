@@ -41,6 +41,30 @@ class PayoutsRepository {
             emptyList()
         }
     }
+    suspend fun getPayoutsByRefereeId(): List<PaymentRequestData> = withContext(
+        Dispatchers.IO
+    ) {
+        try {
+            // Query payment requests by schedulerId
+            val query = payoutsRef.orderByChild("refereeId").equalTo(userId)
+            val snapshot = query.get().await()
+
+            // Convert snapshot to list of PaymentRequestData objects
+            val payouts = snapshot.children.mapNotNull { child ->
+                child.getValue(PaymentRequestData::class.java)
+            }
+
+            if (payouts.isEmpty()) {
+                Log.e("Payout Repo", "No payouts found for refereeId: $userId")
+                emptyList()
+            } else {
+                (payouts)
+            }
+        } catch (e: Exception) {
+            Log.e("PayRepo", "getPayoutsByRefereeId: ${e.message}")
+            emptyList()
+        }
+    }
 
 
     suspend fun acceptPayout(payoutId: String, gameId: String): Boolean {

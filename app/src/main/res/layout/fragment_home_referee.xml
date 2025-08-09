@@ -42,6 +42,15 @@
             app:layout_constraintWidth_default="wrap" />
 
         <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivLogout"
+            style="@style/selectableIcon"
+            android:layout_marginEnd="4dp"
+            android:src="@drawable/round_logout_24"
+            app:layout_constraintBottom_toBottomOf="@id/picHome"
+            app:layout_constraintEnd_toStartOf="@id/notification"
+            app:layout_constraintTop_toTopOf="@id/picHome" />
+
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/notification"
             style="@style/selectableIcon"
             android:layout_marginEnd="16dp"
@@ -148,7 +157,8 @@
             android:orientation="vertical"
             android:overScrollMode="never"
             android:paddingTop="15dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:spanCount="@integer/rcv_column"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/div"
             tools:itemCount="2"

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -42,11 +43,16 @@ class GameDetailActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel() {
-        viewModel.payoutsLiveData.observe(this) {
-            gameData = it
-            loader.endLoadingAnimation()
-            setupViews()
+        try {
+            viewModel.payoutsLiveData.observe(this) {
+                gameData = it ?: GameData()
+                loader.endLoadingAnimation()
+                setupViews()
+            }
+        } catch (e: Exception){
+            e.printStackTrace()
         }
+
     }
 
     private fun onClicks() {
@@ -81,7 +87,6 @@ class GameDetailActivity : AppCompatActivity() {
                 loader.startLoadingAnimation()
                 gameId?.let { viewModel.getData(it) }
             }
-
             userData = SharedPrefManager(this).getUser()
         } catch (e: Exception) {
             e.printStackTrace()

@@ -63,12 +63,13 @@ class GamesAdapter(
                             )
                         }
                     }
+
                     GameStatus.PAYMENT_REQUESTED -> {
                         statusBar.setBackgroundColor(
                             ContextCompat.getColor(itemView.context, R.color.status_pending)
                         )
                         gameStatusNote.apply {
-                            text = "Payment is requested."
+                            text = "Payment requested. Please check your payouts."
                             setBackgroundTintList(
                                 ColorStateList.valueOf(
                                     ContextCompat.getColor(context, R.color.status_pending_bg)
@@ -125,7 +126,7 @@ class GamesAdapter(
                             ContextCompat.getColor(itemView.context, R.color.status_cancelled)
                         )
                         gameStatusNote.apply {
-                            text = "Game request was rejected"
+                            text = "You rejected the payment."
                             setBackgroundTintList(
                                 ColorStateList.valueOf(
                                     ContextCompat.getColor(context, R.color.status_cancelled_bg)

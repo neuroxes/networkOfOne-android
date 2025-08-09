@@ -1,6 +1,8 @@
 package com.example.networkofone.home
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
@@ -9,13 +11,17 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.core.widget.NestedScrollView
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.ViewModelProvider
 import com.example.networkofone.R
+import com.example.networkofone.activities.AuthenticationActivity
 import com.example.networkofone.activities.GameDetailActivity
 import com.example.networkofone.adapters.RefereeGamesAdapter
+import com.example.networkofone.databinding.DialogLogoutBinding
+import com.example.networkofone.databinding.DialogLogoutBinding.inflate
 import com.example.networkofone.databinding.FragmentHomeRefereeBinding
 import com.example.networkofone.databinding.LayoutProvidePaymentDetailBinding
 import com.example.networkofone.mvvm.models.GameData
@@ -27,12 +33,15 @@ import com.example.networkofone.mvvm.repo.GameRepositoryImpl
 import com.example.networkofone.mvvm.viewModels.GameUiState
 import com.example.networkofone.mvvm.viewModels.HomeViewModelReferee
 import com.example.networkofone.mvvm.viewModels.HomeViewModelRefereeFactory
+import com.example.networkofone.utils.ActivityNavigatorUtil
 import com.example.networkofone.utils.DialogUtil
 import com.example.networkofone.utils.LoadingDialog
 import com.example.networkofone.utils.NewToastUtil
 import com.example.networkofone.utils.NumberFormatterUtil
 import com.example.networkofone.utils.SharedPrefManager
+import com.firebase.ui.auth.AuthUI
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.incity.incity_stores.AppFragmentLoader
 import java.util.Calendar
@@ -85,11 +94,6 @@ class HomeFragmentReferee(
         observeViewModel()
         onClicks()
     }
-
-    private fun onClicks() {
-
-    }
-
     private fun setupUI() {
         binding.apply {
             tvUserName.text = userModel?.name ?: "Referee Dashboard"
@@ -287,7 +291,7 @@ class HomeFragmentReferee(
 
         viewModel.updateResult.observe(context) { result ->
             if (result.isSuccess) {
-                NewToastUtil.showSuccess(context, "Game accepted!")
+                NewToastUtil.showSuccess(context, "Action Completed")
             } else {
                 NewToastUtil.showError(context, "Something went wrong")
             }
@@ -349,6 +353,57 @@ class HomeFragmentReferee(
         //viewModel.updateGame(updatedGame)
     }
 
+
+    private fun onClicks() {
+        binding.apply {
+            ivLogout.setOnClickListener { setupLogoutDialog() }
+        }
+    }
+
+    private fun setupLogoutDialog() {
+        val (dialog, dialogBinding) = DialogUtil.createBottomDialogWithBinding(
+            context, DialogLogoutBinding::inflate
+        )
+        dialog.show()
+        dialogBinding.apply {
+            btnCancel.setOnClickListener { dialog.dismiss() }
+            btnLogout.setOnClickListener {
+                clearAllUserSettings()
+                val userType = checkSignInMethod()
+                Log.e(ContentValues.TAG, "setupLogoutDialog: Logout User type : $userType")
+                if (userType == 0) FirebaseAuth.getInstance().signOut()
+                else if (userType == 1) AuthUI.getInstance().signOut(context)
+
+                ActivityNavigatorUtil.startActivity(
+                    context, AuthenticationActivity::class.java, findView(R.id.animator), true
+                )
+                dialog.dismiss()
+                context.finish()
+            }
+        }
+    }
+
+    private fun clearAllUserSettings() {
+        context.getSharedPreferences("Logged", MODE_PRIVATE).edit { putInt("isLogged", 0) }/*val localDb = LocalDatabaseManager(context,"courseDB")
+        Log.e(TAG, "course Data Removed : " + localDb.delete())*/
+    }
+
+
+    private fun checkSignInMethod(): Int {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            for (profile in user.providerData) {
+                when (profile.providerId) {
+                    "password" -> return 0
+                    "google.com" -> return 1
+                    "phone" -> return 2
+                }
+            }
+        }
+        return -1
+    }
+
+
     private fun showDeleteConfirmationDialog(game: GameData) {
         AlertDialog.Builder(context).setTitle("Delete Game")
             .setMessage("Are you sure you want to delete this game?")
@@ -357,14 +412,14 @@ class HomeFragmentReferee(
             }.setNegativeButton("Cancel", null).show()
     }
 
-    fun onCheckInAttempt(isWithinRange: Boolean) {
-        if (isWithinRange) {
+    fun onCheckInAttempt(isWithinRange: Float) {
+        if (isWithinRange<100) {
             viewModel.checkInGame?.let {
                 viewModel.updateGame(it.id, GameStatus.CHECKED_IN)
             }
         } else {
             NewToastUtil.showError(
-                context, "You are not in the check-in range of the game location."
+                context, "You are not in the check-in range of the game location. Distance $isWithinRange"
             )
         }
     }

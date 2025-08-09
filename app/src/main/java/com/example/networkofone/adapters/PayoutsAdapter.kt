@@ -12,6 +12,7 @@ import com.example.networkofone.R
 import com.example.networkofone.databinding.ItemPayoutsBinding
 import com.example.networkofone.mvvm.models.PaymentRequestData
 import com.example.networkofone.mvvm.models.PaymentStatus
+import com.google.firebase.auth.FirebaseAuth
 
 
 class PayoutsAdapter(
@@ -19,6 +20,7 @@ class PayoutsAdapter(
     private val onRejectClick: (PaymentRequestData) -> Unit,
     private val onClick: (PaymentRequestData) -> Unit,
 ) : ListAdapter<PaymentRequestData, PayoutsAdapter.PayoutViewHolder>(PayoutDiffCallback()) {
+    val userId = FirebaseAuth.getInstance().currentUser?.uid
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PayoutViewHolder {
         val binding = ItemPayoutsBinding.inflate(
@@ -36,6 +38,10 @@ class PayoutsAdapter(
 
         fun bind(paymentRequestData: PaymentRequestData) {
             binding.apply {
+                if (paymentRequestData.refereeId == userId) {
+                    ivCancel.visibility = GONE
+                    ivReject.visibility = GONE
+                }
                 tvGameName.text = paymentRequestData.gameName
                 tvGameLocation.text = paymentRequestData.amount
 

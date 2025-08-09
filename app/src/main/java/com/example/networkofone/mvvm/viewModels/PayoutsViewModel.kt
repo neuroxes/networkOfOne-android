@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.networkofone.mvvm.models.PaymentRequestData
+import com.example.networkofone.mvvm.models.UserType
 import com.example.networkofone.mvvm.repo.PayoutsRepository
 import kotlinx.coroutines.launch
 
@@ -20,14 +21,26 @@ class PayoutsViewModel : ViewModel() {
     private var _payoutsData = MutableLiveData<List<PaymentRequestData>>()
     private var payoutsLiveData: LiveData<List<PaymentRequestData>> = _payoutsData
 
-    init {
-        loadPayouts()
-    }
 
-    fun loadPayouts() {
+    fun loadPayouts(userType: UserType? = UserType.SCHOOL) {
         _uiState.value = PayoutsUiState.Loading
         viewModelScope.launch {
-            _payoutsData.value = repository.getPayoutsBySchedulerId()
+            userType?.let {
+                when (it) {
+                    UserType.SCHOOL -> {
+                        _payoutsData.value = repository.getPayoutsBySchedulerId()
+                    }
+
+                    UserType.REFEREE -> {
+                        _payoutsData.value = repository.getPayoutsByRefereeId()
+                    }
+
+                    UserType.ADMIN -> {
+
+                    }
+                }
+            }
+
             Log.e("TAG", "loadPayouts viewmodel: ${_payoutsData.value}")
         }
         payoutsLiveData.observeForever { payouts ->
@@ -39,30 +52,40 @@ class PayoutsViewModel : ViewModel() {
     }
 
     fun searchPayouts(query: String) {
-        /*_searchQuery.value = query
+        _searchQuery.value = query
         _uiState.value = PayoutsUiState.Loading
 
         if (query.isBlank()) {
-            loadPayouts()
+            // If query is empty, show all payouts
+            _payoutsData.value?.let { payouts ->
+                _uiState.value = PayoutsUiState.Success(payouts)
+            }
             return
         }
 
-        payoutsLiveData.removeObserver { }
-        //payoutsLiveData = repository.searchPayouts(query)
-        payoutsLiveData.observeForever { payouts ->
-            when {
-                payouts.isEmpty() -> _uiState.value = PayoutsUiState.Empty
-                else -> _uiState.value = PayoutsUiState.Success(payouts)
-            }
-        }*/
+        // Filter the existing payouts data based on the search query
+        val filteredPayouts = _payoutsData.value?.filter { payout ->
+            payout.id.contains(query, ignoreCase = true) || payout.gameId.contains(
+                query, ignoreCase = true
+            ) || payout.refereeName.contains(
+                query, ignoreCase = true
+            ) || payout.schedularName.contains(query, ignoreCase = true) || payout.amount.contains(
+                query, ignoreCase = true
+            )
+        } ?: emptyList()
+
+        when {
+            filteredPayouts.isEmpty() -> _uiState.value = PayoutsUiState.Empty
+            else -> _uiState.value = PayoutsUiState.Success(filteredPayouts)
+        }
     }
 
-    fun acceptPayout(payoutId: String,gameId: String,): LiveData<Boolean> {
+    fun acceptPayout(payoutId: String, gameId: String): LiveData<Boolean> {
         val result = MutableLiveData<Boolean>()
 
         viewModelScope.launch {
             try {
-                val success = repository.acceptPayout(payoutId,gameId)
+                val success = repository.acceptPayout(payoutId, gameId)
                 Log.d("PayoutVM", "Payout approval result: $success")
                 result.value = success
             } catch (e: Exception) {
@@ -73,6 +96,7 @@ class PayoutsViewModel : ViewModel() {
 
         return result
     }
+
     fun rejectPayout(payoutId: String, gameId: String): LiveData<Boolean> {
         val result = MutableLiveData<Boolean>()
 
@@ -83,6 +107,7 @@ class PayoutsViewModel : ViewModel() {
 
         return result
     }
+
     override fun onCleared() {
         super.onCleared()
         payoutsLiveData.removeObserver { }

@@ -11,7 +11,6 @@ import com.example.networkofone.R
 import com.example.networkofone.databinding.ActivityMainRefreeBinding
 import com.example.networkofone.home.HomeFragmentReferee
 import com.example.networkofone.home.PayoutFragmentScheduler
-import com.example.networkofone.utils.LoadingDialog
 import com.example.networkofone.utils.LocationHelper
 import com.example.networkofone.utils.NewToastUtil
 import com.incity.incity_stores.AppFragment
@@ -111,7 +110,7 @@ class MainActivityReferee : AppCompatActivity(), LocationHelper.LocationResultLi
         val distanceInMeters = calculateDistance(latitude, longitude,
             lat, long)
         Log.e(TAG, "onLocationReceived: $distanceInMeters")
-        homeFragmentReferee.onCheckInAttempt(distanceInMeters < 100)
+        homeFragmentReferee.onCheckInAttempt(distanceInMeters)
 
     }
 
