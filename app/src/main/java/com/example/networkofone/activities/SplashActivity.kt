@@ -53,24 +53,24 @@ class SplashActivity : AppCompatActivity() {
                                 UserType.SCHOOL -> {
                                     ActivityNavigatorUtil.startActivity(
                                         this@SplashActivity,
-                                        MainActivityScheduler::class.java,
-                                        findViewById(
-                                            R.id.animator
-                                        )
+                                        MainActivityScheduler::class.java
                                     )
                                 }
 
                                 UserType.REFEREE -> {
                                     ActivityNavigatorUtil.startActivity(
                                         this@SplashActivity,
-                                        MainActivityReferee::class.java,
-                                        findViewById(
-                                            R.id.animator
-                                        )
+                                        RefereeMainActivity::class.java
                                     )
                                 }
 
-                                UserType.ADMIN -> {}
+                                UserType.ADMIN -> {
+                                    ActivityNavigatorUtil.startActivity(
+                                        this@SplashActivity,
+                                        AdminMainActivity::class.java
+                                    )
+                                }
+                                UserType.UNKNOWN -> {}
                             }
                         }
                     }

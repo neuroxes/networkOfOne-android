@@ -151,7 +151,7 @@ class PayoutFragmentScheduler(
             .setMessage("Are you sure you want to reject this payout?")
             .setPositiveButton("Reject") { _, _ ->
                 loader.startLoadingAnimation()
-                viewModel.rejectPayout(payout.id, payout.gameId).observe(context) {
+                viewModel.rejectPayout(payout).observe(context) {
                     loader.endLoadingAnimation()
                     viewModel.loadPayouts(userModel?.userType)
 
@@ -164,7 +164,7 @@ class PayoutFragmentScheduler(
             .setMessage("Are you sure you want to approve this payout?")
             .setPositiveButton("Approve") { _, _ ->
                 loader.startLoadingAnimation()
-                viewModel.acceptPayout(payout.id, payout.gameId).observe(context) {
+                viewModel.acceptPayout(payout).observe(context) {
                     loader.endLoadingAnimation()
                     viewModel.loadPayouts(userModel?.userType)
                 }

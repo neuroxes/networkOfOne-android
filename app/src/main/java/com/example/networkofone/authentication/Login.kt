@@ -6,7 +6,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
@@ -15,11 +14,11 @@ import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.example.networkofone.MainActivityScheduler
-import com.example.networkofone.activities.MainActivityReferee
+import com.example.networkofone.activities.AdminMainActivity
+import com.example.networkofone.activities.RefereeMainActivity
 import com.example.networkofone.databinding.DialogForgotPasswordBinding
 import com.example.networkofone.databinding.FragmentLoginBinding
 import com.example.networkofone.databinding.LayoutProgressDialogBinding
@@ -248,9 +247,10 @@ class Login : Fragment() {
 
     private fun navigateToNextScreen(userType: UserType) {
         val targetActivity = when (userType) {
-            UserType.ADMIN -> MainActivityScheduler::class.java
             UserType.SCHOOL -> MainActivityScheduler::class.java
-            UserType.REFEREE -> MainActivityReferee::class.java
+            UserType.REFEREE -> RefereeMainActivity::class.java
+            UserType.ADMIN -> AdminMainActivity::class.java
+            else ->  MainActivityScheduler::class.java
         }
         ActivityNavigatorUtil.startActivity(requireActivity(), targetActivity, clearStack = true)
         requireActivity().finish()

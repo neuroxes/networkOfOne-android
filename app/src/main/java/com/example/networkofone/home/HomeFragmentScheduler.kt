@@ -1,19 +1,27 @@
 package com.example.networkofone.home
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.ContentValues
+import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
 import androidx.core.content.edit
 import androidx.core.widget.NestedScrollView
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.ViewModelProvider
 import com.example.networkofone.R
 import com.example.networkofone.activities.AuthenticationActivity
+import com.example.networkofone.activities.NotificationActivity
 import com.example.networkofone.adapters.GamesAdapter
 import com.example.networkofone.databinding.DialogLogoutBinding
 import com.example.networkofone.databinding.FragmentHomeBinding
@@ -21,6 +29,7 @@ import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
 import com.example.networkofone.mvvm.models.UserModel
 import com.example.networkofone.mvvm.repo.GameRepositoryImpl
+import com.example.networkofone.mvvm.repo.NotificationRepository
 import com.example.networkofone.mvvm.viewModels.GameUiState
 import com.example.networkofone.mvvm.viewModels.HomeViewModel
 import com.example.networkofone.mvvm.viewModels.HomeViewModelFactory
@@ -35,12 +44,14 @@ import java.util.Calendar
 
 class HomeFragmentScheduler(
     private val context: AppCompatActivity, private val onGameEditing: (GameData) -> Unit,
-) : AppFragmentLoader(R.layout.fragment_store_info_root) {
+) : AppFragmentLoader(R.layout.fragment_root_nested_scroll_view) {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var base: NestedScrollView
     private lateinit var viewModel: HomeViewModel
     private var userModel: UserModel? = null
     private lateinit var gamesAdapter: GamesAdapter
+    private val notificationRepository = NotificationRepository()
+
 
     override fun onCreate() {
         try {
@@ -76,11 +87,19 @@ class HomeFragmentScheduler(
         setupUI()
         observeViewModel()
         onClicks()
+        setupUnreadCountListener()
     }
 
     private fun onClicks() {
         binding.apply {
             ivLogout.setOnClickListener { setupLogoutDialog() }
+            notification.setOnClickListener {
+                context.startActivity(
+                    Intent(
+                        context, NotificationActivity::class.java
+                    ).putExtra("userType", userModel?.userType)
+                )
+            }
         }
     }
 
@@ -276,6 +295,91 @@ class HomeFragmentScheduler(
             .setPositiveButton("Delete") { _, _ ->
                 viewModel.deleteGame(game.id)
             }.setNegativeButton("Cancel", null).show()
+    }
+
+    private fun setupUnreadCountListener() {
+        notificationRepository.getUnreadNotificationCountRealtime(userModel!!.userType) { listNotifications ->
+            context.runOnUiThread {
+                updateNotificationBadge(listNotifications.size)
+                listNotifications.forEach { it ->
+                    showSystemNotification(
+                        channelId = "default_channel",
+                        channelName = "General Notifications",
+                        notificationId = 1,
+                        title = it.title,
+                        message = it.message,
+                        smallIconResId = R.drawable.bell,
+                        largeIconResId = R.drawable.logo_transparent
+                    )
+                }
+            }
+        }
+    }
+
+    private fun updateNotificationBadge(count: Int) {
+        // Update your notification badge/indicator
+        val badge = binding.noOfNotifications
+        if (count > 0) {
+            badge.visibility = View.VISIBLE
+            badge.text = if (count > 99) "99+" else count.toString()
+        } else {
+            badge.visibility = View.GONE
+        }
+    }
+
+
+    fun showSystemNotification(
+        channelId: String,
+        channelName: String,
+        notificationId: Int,
+        title: String,
+        message: String,
+        smallIconResId: Int,
+        largeIconResId: Int? = null,
+        autoCancel: Boolean = true,
+    ) {
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Create notification channel (required for Android 8.0+)
+        val channel = NotificationChannel(
+            channelId,
+            channelName,
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "App Notifications"
+        }
+        notificationManager.createNotificationChannel(channel)
+
+        // Create intent for MainActivity
+        val intent = Intent(context, NotificationActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+
+        // Create pending intent
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Build notification
+        val builder = NotificationCompat.Builder(context, channelId)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setSmallIcon(smallIconResId)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(autoCancel) // Dismiss when tapped
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        // Set large icon if provided
+        largeIconResId?.let {
+            builder.setLargeIcon(BitmapFactory.decodeResource(context.resources, it))
+        }
+
+        // Show notification
+        notificationManager.notify(notificationId, builder.build())
     }
 
     companion object {

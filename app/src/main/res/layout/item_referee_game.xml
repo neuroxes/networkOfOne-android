@@ -131,6 +131,7 @@
             android:backgroundTint="@color/status_pending_bg"
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
+            android:textColor="@color/textColor"
             android:paddingHorizontal="16dp"
             android:paddingVertical="16dp"
             android:text="Game acceptance request is pending"

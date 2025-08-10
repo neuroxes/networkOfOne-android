@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".NetworkOfOne"
@@ -17,18 +18,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NETWORKOFONE">
         <activity
-            android:name=".activities.MainActivityReferee"
+            android:name=".activities.AdminMainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.NotificationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.RefereeMainActivity"
             android:exported="false"
             android:theme="@style/Base.Theme.inCityStores.Home"
             android:windowSoftInputMode="adjustNothing" />
-
         <activity
             android:name=".activities.GameDetailActivity"
             android:exported="false" />
         <activity
             android:name=".activities.SplashActivity"
-            android:theme="@style/Theme.Splash"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -45,6 +51,14 @@
             android:exported="false"
             android:theme="@style/Theme.AuthenticationScreen"
             android:windowSoftInputMode="adjustResize" />
+
+        <service
+            android:name=".fcm.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

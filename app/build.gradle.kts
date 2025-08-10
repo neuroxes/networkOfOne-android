@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.room.common)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    implementation(libs.firebase.messaging)
     kapt(libs.room.compiler)
 
     //implementation("com.github.dhaval2404:imagepicker:2.1")

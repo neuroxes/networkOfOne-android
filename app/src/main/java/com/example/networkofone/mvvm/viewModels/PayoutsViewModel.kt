@@ -35,7 +35,7 @@ class PayoutsViewModel : ViewModel() {
                         _payoutsData.value = repository.getPayoutsByRefereeId()
                     }
 
-                    UserType.ADMIN -> {
+                    else -> {
 
                     }
                 }
@@ -80,12 +80,12 @@ class PayoutsViewModel : ViewModel() {
         }
     }
 
-    fun acceptPayout(payoutId: String, gameId: String): LiveData<Boolean> {
+    fun acceptPayout(payout: PaymentRequestData): LiveData<Boolean> {
         val result = MutableLiveData<Boolean>()
 
         viewModelScope.launch {
             try {
-                val success = repository.acceptPayout(payoutId, gameId)
+                val success = repository.acceptPayout(payout)
                 Log.d("PayoutVM", "Payout approval result: $success")
                 result.value = success
             } catch (e: Exception) {
@@ -97,11 +97,11 @@ class PayoutsViewModel : ViewModel() {
         return result
     }
 
-    fun rejectPayout(payoutId: String, gameId: String): LiveData<Boolean> {
+    fun rejectPayout(payout: PaymentRequestData): LiveData<Boolean> {
         val result = MutableLiveData<Boolean>()
 
         viewModelScope.launch {
-            val success = repository.rejectPayout(payoutId, gameId)
+            val success = repository.rejectPayout(payout)
             result.value = success
         }
 

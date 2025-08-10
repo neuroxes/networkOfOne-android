@@ -19,9 +19,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.networkofone.R
 import com.example.networkofone.activities.AuthenticationActivity
 import com.example.networkofone.activities.GameDetailActivity
+import com.example.networkofone.activities.NotificationActivity
 import com.example.networkofone.adapters.RefereeGamesAdapter
 import com.example.networkofone.databinding.DialogLogoutBinding
-import com.example.networkofone.databinding.DialogLogoutBinding.inflate
 import com.example.networkofone.databinding.FragmentHomeRefereeBinding
 import com.example.networkofone.databinding.LayoutProvidePaymentDetailBinding
 import com.example.networkofone.mvvm.models.GameData
@@ -30,6 +30,7 @@ import com.example.networkofone.mvvm.models.PaymentMethod
 import com.example.networkofone.mvvm.models.PaymentRequestData
 import com.example.networkofone.mvvm.models.UserModel
 import com.example.networkofone.mvvm.repo.GameRepositoryImpl
+import com.example.networkofone.mvvm.repo.NotificationRepository
 import com.example.networkofone.mvvm.viewModels.GameUiState
 import com.example.networkofone.mvvm.viewModels.HomeViewModelReferee
 import com.example.networkofone.mvvm.viewModels.HomeViewModelRefereeFactory
@@ -49,7 +50,7 @@ import java.util.Calendar
 class HomeFragmentReferee(
     private val context: AppCompatActivity,
     private val verifyLocationForCheckIn: (Double, Double) -> Unit,
-) : AppFragmentLoader(R.layout.fragment_store_info_root) {
+) : AppFragmentLoader(R.layout.fragment_root_nested_scroll_view) {
     private lateinit var binding: FragmentHomeRefereeBinding
     private lateinit var base: NestedScrollView
     private lateinit var viewModel: HomeViewModelReferee
@@ -57,6 +58,8 @@ class HomeFragmentReferee(
     private lateinit var gamesAdapter: RefereeGamesAdapter
 
     private lateinit var loader: LoadingDialog
+
+    private val notificationRepository = NotificationRepository()
 
 
     override fun onCreate() {
@@ -93,7 +96,9 @@ class HomeFragmentReferee(
         setupUI()
         observeViewModel()
         onClicks()
+        setupUnreadCountListener()
     }
+
     private fun setupUI() {
         binding.apply {
             tvUserName.text = userModel?.name ?: "Referee Dashboard"
@@ -128,7 +133,7 @@ class HomeFragmentReferee(
             intent.putExtra("game_data", gameJson)
             context.startActivity(intent)
         }, onAcceptClick = { game ->
-            viewModel.updateGame(game.id, GameStatus.ACCEPTED)
+            viewModel.updateGame(game, GameStatus.ACCEPTED)
         }, onCheckInClick = { game ->
             viewModel.checkInGame = game
             verifyLocationForCheckIn(game.latitude, game.longitude)
@@ -217,10 +222,18 @@ class HomeFragmentReferee(
         return true
     }
 
-    fun LayoutProvidePaymentDetailBinding.setPaymentMethod(title: String, hint: String, iconRes: Int, ) {
+    fun LayoutProvidePaymentDetailBinding.setPaymentMethod(
+        title: String,
+        hint: String,
+        iconRes: Int,
+    ) {
         t4.text = title
         etAccountDetail.hint = hint
-        etLayPrice.startIconDrawable = ContextCompat.getDrawable(context, iconRes)
+        etAccountDetail.setCompoundDrawablesWithIntrinsicBounds(
+            ContextCompat.getDrawable(
+                context, iconRes
+            ), null, null, null
+        )
     }
 
     private fun setupTabs() {
@@ -357,6 +370,13 @@ class HomeFragmentReferee(
     private fun onClicks() {
         binding.apply {
             ivLogout.setOnClickListener { setupLogoutDialog() }
+            notification.setOnClickListener {
+                context.startActivity(
+                    Intent(
+                        context, NotificationActivity::class.java
+                    ).putExtra("userType", userModel?.userType)
+                )
+            }
         }
     }
 
@@ -413,14 +433,35 @@ class HomeFragmentReferee(
     }
 
     fun onCheckInAttempt(isWithinRange: Float) {
-        if (isWithinRange<100) {
+        if (isWithinRange < 100) {
             viewModel.checkInGame?.let {
-                viewModel.updateGame(it.id, GameStatus.CHECKED_IN)
+                viewModel.updateGame(it, GameStatus.CHECKED_IN)
             }
         } else {
             NewToastUtil.showError(
-                context, "You are not in the check-in range of the game location. Distance $isWithinRange"
+                context,
+                "You are not in the check-in range of the game location. Distance $isWithinRange"
             )
+        }
+    }
+
+
+    private fun setupUnreadCountListener() {
+        notificationRepository.getUnreadNotificationCountRealtime(userModel!!.userType) { count ->
+            context.runOnUiThread {
+                updateNotificationBadge(count)
+            }
+        }
+    }
+
+    private fun updateNotificationBadge(count: Int) {
+        // Update your notification badge/indicator
+        val badge = binding.noOfNotifications
+        if (count > 0) {
+            badge.visibility = View.VISIBLE
+            badge.text = if (count > 99) "99+" else count.toString()
+        } else {
+            badge.visibility = View.GONE
         }
     }
 

@@ -102,10 +102,10 @@
                     android:id="@+id/rBtn1"
                     style="@style/radioBtn"
                     android:layout_marginTop="16dp"
+                    android:checked="true"
                     android:drawableStart="@drawable/round_currency_bitcoin_24"
                     android:drawablePadding="16dp"
                     android:paddingStart="16dp"
-                    android:checked="true"
                     android:text="@string/pay1" />
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
@@ -142,7 +142,7 @@
                 android:id="@+id/t4"
                 style="@style/textHeading.Small"
                 android:layout_marginTop="16dp"
-                android:text="Account Detail"
+                android:text="Bitcoin Address"
                 app:layout_constraintStart_toStartOf="@id/lay1"
                 app:layout_constraintTop_toBottomOf="@id/paymentMethodRadioGroup" />
 
@@ -158,8 +158,8 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etAccountDetail"
                     style="@style/editTextOutlined_round"
-                    android:drawableStart="@drawable/attribution_pencil"
-                    android:hint="Credit card detail etc."
+                    android:drawableStart="@drawable/round_currency_bitcoin_24"
+                    android:hint="Enter your Bitcoin wallet address"
                     android:inputType="textPersonName" />
             </com.google.android.material.textfield.TextInputLayout>
 

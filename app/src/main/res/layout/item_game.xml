@@ -103,6 +103,7 @@
             android:background="@drawable/outlined_10dp_round_simple"
             android:backgroundTint="@color/status_pending_bg"
             android:drawablePadding="8dp"
+            android:textColor="@color/textColor"
             android:paddingHorizontal="16dp"
             android:gravity="center_vertical"
             android:paddingVertical="16dp"

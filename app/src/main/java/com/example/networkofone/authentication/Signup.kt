@@ -62,21 +62,39 @@ class Signup : Fragment() {
                 )
                 dialog.show()
                 dialogBinding.apply {
+                    if (email=="fawad.hanif24@gmail.com"){
+                        tvTitle.append(" or Admin")
+                        layAdmin.visibility = View.VISIBLE
+                    }
                     layClient.setOnClickListener {
                         layClient.setBackgroundResource(R.drawable.outlined_10dp_round_simple_selected)
+                        layProf.setBackgroundResource(R.drawable.outlined_10dp_round_simple)
+                        layAdmin.setBackgroundResource(R.drawable.outlined_10dp_round_simple)
                         img1.strokeWidth = 1f
                         img2.strokeWidth = 0f
-                        layProf.setBackgroundResource(R.drawable.outlined_10dp_round_simple)
+                        img3.strokeWidth = 0f
                         btnContinue.setEnabled(true)
                         viewModel.userType = UserType.SCHOOL
                     }
                     layProf.setOnClickListener {
                         layProf.setBackgroundResource(R.drawable.outlined_10dp_round_simple_selected)
                         layClient.setBackgroundResource(R.drawable.outlined_10dp_round_simple)
+                        layAdmin.setBackgroundResource(R.drawable.outlined_10dp_round_simple)
                         img1.strokeWidth = 0f
+                        img3.strokeWidth = 0f
                         img2.strokeWidth = 1f
                         btnContinue.setEnabled(true)
                         viewModel.userType = UserType.REFEREE
+                    }
+                    layAdmin.setOnClickListener {
+                        layAdmin.setBackgroundResource(R.drawable.outlined_10dp_round_simple_selected)
+                        layClient.setBackgroundResource(R.drawable.outlined_10dp_round_simple)
+                        layProf.setBackgroundResource(R.drawable.outlined_10dp_round_simple)
+                        img1.strokeWidth = 0f
+                        img2.strokeWidth = 0f
+                        img3.strokeWidth = 1f
+                        btnContinue.setEnabled(true)
+                        viewModel.userType = UserType.ADMIN
                     }
                     btnContinue.setOnClickListener {
                         dialog.dismiss()

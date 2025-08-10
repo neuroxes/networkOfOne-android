@@ -13,8 +13,3 @@ data class UserModel(
     // 3. Empty constructor for Firebase deserialization
     constructor() : this("", "", "", "", UserType.SCHOOL)
 }
-enum class UserType{
-    SCHOOL,
-    REFEREE,
-    ADMIN
-}

@@ -84,9 +84,14 @@ class HomeViewModelReferee(
         _filteredGames.value = filtered
     }
 
-    fun updateGame(gameId: String, status: GameStatus) {
+    fun updateGame(game: GameData, status: GameStatus) {
         viewModelScope.launch {
-            _updateResult.value = repository.updateGame(gameId, status)
+            _updateResult.value = repository.updateGame(game, status)
+        }
+    }
+    fun updateGame(payout: PaymentRequestData, status: GameStatus) {
+        viewModelScope.launch {
+            _updateResult.value = repository.updateGame(payout, status)
         }
     }
 
@@ -94,7 +99,7 @@ class HomeViewModelReferee(
         try {
             viewModelScope.launch {
                 _paymentRequestResult.value = repository.createPaymentRequest(paymentRequestData)
-                updateGame(paymentRequestData.gameId, GameStatus.PAYMENT_REQUESTED)
+                updateGame(paymentRequestData, GameStatus.PAYMENT_REQUESTED)
             }
         } catch (e: Exception) {
             Log.e(TAG, "createPaymentRequest: ${e.message}")

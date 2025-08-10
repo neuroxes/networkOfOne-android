@@ -13,10 +13,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.networkofone.databinding.ActivityMainBinding
 import com.example.networkofone.databinding.DialogCreateGameBinding
+import com.example.networkofone.fcm.FCMTokenManager
 import com.example.networkofone.home.HomeFragmentScheduler
 import com.example.networkofone.home.PayoutFragmentScheduler
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
+import com.example.networkofone.mvvm.models.UserType
 import com.example.networkofone.mvvm.repo.GameRepository
 import com.example.networkofone.mvvm.viewModels.GameViewModelFactory
 import com.example.networkofone.mvvm.viewModels.MainActivityViewModel
@@ -59,6 +61,9 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
     private var isEditing = false
 
 
+    private val fcmTokenManager = FCMTokenManager()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -79,6 +84,8 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
         locationHelper.initialize(this, this)
 
         loadFragment(0)
+        fcmTokenManager.initializeFCMToken(UserType.SCHOOL)
+
 
         binding.btmNav.setOnItemSelectedListener {
             when (it.itemId) {

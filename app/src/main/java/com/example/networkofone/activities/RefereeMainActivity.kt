@@ -9,15 +9,17 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.networkofone.R
 import com.example.networkofone.databinding.ActivityMainRefreeBinding
+import com.example.networkofone.fcm.FCMTokenManager
 import com.example.networkofone.home.HomeFragmentReferee
 import com.example.networkofone.home.PayoutFragmentScheduler
+import com.example.networkofone.mvvm.models.UserType
 import com.example.networkofone.utils.LocationHelper
 import com.example.networkofone.utils.NewToastUtil
 import com.incity.incity_stores.AppFragment
 import java.io.IOException
 import java.util.Locale
 
-class MainActivityReferee : AppCompatActivity(), LocationHelper.LocationResultListener {
+class RefereeMainActivity : AppCompatActivity(), LocationHelper.LocationResultListener {
     private lateinit var binding: ActivityMainRefreeBinding
     private lateinit var fragDashboard: AppFragment
     private lateinit var fragMore: AppFragment
@@ -27,13 +29,15 @@ class MainActivityReferee : AppCompatActivity(), LocationHelper.LocationResultLi
     private var lat = 0.0
     private var long = 0.0
 
+    private val fcmTokenManager = FCMTokenManager()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainRefreeBinding.inflate(layoutInflater)
         setContentView(binding.root)
         fragDashboard = findViewById(R.id.fragDashboard)
-        homeFragmentReferee = HomeFragmentReferee(this){ lat,long ->
-            this.lat  = lat
+        homeFragmentReferee = HomeFragmentReferee(this) { lat, long ->
+            this.lat = lat
             this.long = long
             getMyCurrentLocation()
         }
@@ -47,6 +51,8 @@ class MainActivityReferee : AppCompatActivity(), LocationHelper.LocationResultLi
         locationHelper.initialize(this, this)
 
         loadFragment(0)
+
+        fcmTokenManager.initializeFCMToken(UserType.REFEREE)
 
         binding.btmNav.setOnItemSelectedListener {
             when (it.itemId) {
@@ -107,15 +113,17 @@ class MainActivityReferee : AppCompatActivity(), LocationHelper.LocationResultLi
     override fun onLocationReceived(latitude: Double, longitude: Double) {
         // Use the received location coordinates
         Log.e("Location", "Current location: $latitude, $longitude")
-        val distanceInMeters = calculateDistance(latitude, longitude,
-            lat, long)
+        val distanceInMeters = calculateDistance(
+            latitude, longitude,
+            lat, long
+        )
         Log.e(TAG, "onLocationReceived: $distanceInMeters")
         homeFragmentReferee.onCheckInAttempt(distanceInMeters)
 
     }
 
     override fun onLocationError(error: String) {
-        NewToastUtil.showError(this@MainActivityReferee, "Error: $error")
+        NewToastUtil.showError(this@RefereeMainActivity, "Error: $error")
         Log.e("Location", "Error: $error")
     }
 
@@ -128,7 +136,6 @@ class MainActivityReferee : AppCompatActivity(), LocationHelper.LocationResultLi
         Location.distanceBetween(lat1, lng1, lat2, lng2, results)
         return results[0] // distance in meters
     }
-
 
 
     override fun onDestroy() {
@@ -180,6 +187,6 @@ class MainActivityReferee : AppCompatActivity(), LocationHelper.LocationResultLi
     }
 
     companion object {
-        private const val TAG = "MainActivityReferee"
+        private const val TAG = "RefereeMainActivity"
     }
 }

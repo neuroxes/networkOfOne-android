@@ -40,169 +40,169 @@ class RefereeGamesAdapter(
         private val binding: ItemRefereeGameBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        @SuppressLint("UseCompatTextViewDrawableApis", "SetTextI18n")
         fun bind(game: GameData) {
-            with(binding) {
+            try {
+                with(binding) {
+                    gameName.text = game.title
+                    gameLocation.text = game.location
+                    gameTime.text = "${game.date} ${game.time}"
+                    gamePrice.text = "$${NumberFormatterUtil.format(game.feeAmount.toDouble())}"
 
-
-                gameName.text = game.title
-                gameLocation.text = game.location
-                gameTime.text = "${game.date} ${game.time}"
-                gamePrice.text = "$${NumberFormatterUtil.format(game.feeAmount.toDouble())}"
-
-                // Set status bar color and note based on game status
-                when (game.status) {
-                    GameStatus.PENDING -> {
-                        btnAccept.apply {
-                            visibility = VISIBLE
-                            text = "Accept"
-                            backgroundTintList =
-                                ContextCompat.getColorStateList(itemView.context, R.color.btnColor)
+                    // Set status bar color and note based on game status
+                    when (game.status) {
+                        GameStatus.PENDING -> {
+                            btnAccept.apply {
+                                visibility = VISIBLE
+                                text = "Accept"
+                                backgroundTintList =
+                                    ContextCompat.getColorStateList(itemView.context, R.color.btnColor)
+                            }
+                            statusBar.setBackgroundColor(
+                                ContextCompat.getColor(itemView.context, R.color.status_pending)
+                            )
+                            gameStatusNote.visibility = GONE
                         }
-                        statusBar.setBackgroundColor(
-                            ContextCompat.getColor(itemView.context, R.color.status_pending)
-                        )
-                        gameStatusNote.visibility = GONE
-                    }
 
-                    GameStatus.ACCEPTED -> {
-                        btnAccept.apply {
-                            visibility = VISIBLE
-                            text = "Check in"
-                            backgroundTintList =
-                                ContextCompat.getColorStateList(itemView.context, R.color.brand)
-                        }
-                        statusBar.setBackgroundColor(
-                            ContextCompat.getColor(itemView.context, R.color.status_processing)
-                        )
-                        gameStatusNote.apply {
-                            visibility = VISIBLE
-                            text = "Game Accepted"
-                            setBackgroundTintList(
-                                ColorStateList.valueOf(
-                                    ContextCompat.getColor(context, R.color.status_delivered_bg)
+                        GameStatus.ACCEPTED -> {
+                            btnAccept.apply {
+                                visibility = VISIBLE
+                                text = "Check in"
+                                backgroundTintList =
+                                    ContextCompat.getColorStateList(itemView.context, R.color.brand)
+                            }
+                            statusBar.setBackgroundColor(
+                                ContextCompat.getColor(itemView.context, R.color.status_processing)
+                            )
+                            gameStatusNote.apply {
+                                visibility = VISIBLE
+                                text = "Game Accepted"
+                                setBackgroundTintList(
+                                    ColorStateList.valueOf(
+                                        ContextCompat.getColor(context, R.color.status_delivered_bg)
+                                    )
                                 )
-                            )
-                            setCompoundDrawablesWithIntrinsicBounds(
-                                R.drawable.check_circle, 0, 0, 0
-                            )
-                            compoundDrawableTintList = ColorStateList.valueOf(
-                                ContextCompat.getColor(context, R.color.status_delivered)
-                            )
-                        }
-
-                    }
-
-                    GameStatus.COMPLETED -> {
-                        btnAccept.visibility = GONE
-                        statusBar.setBackgroundColor(
-                            ContextCompat.getColor(itemView.context, R.color.status_confirmed)
-                        )
-                        gameStatusNote.apply {
-                            visibility = VISIBLE
-                            text = "Payment received. Game is finished."
-                            setBackgroundTintList(
-                                ColorStateList.valueOf(
-                                    ContextCompat.getColor(context, R.color.status_delivered_bg)
+                                setCompoundDrawablesWithIntrinsicBounds(
+                                    R.drawable.check_circle, 0, 0, 0
                                 )
-                            )
-                            setCompoundDrawablesWithIntrinsicBounds(
-                                R.drawable.check_circle, 0, 0, 0
-                            )
-                            compoundDrawableTintList = ColorStateList.valueOf(
-                                ContextCompat.getColor(context, R.color.status_delivered)
-                            )
-                        }
-
-                    }
-
-                    GameStatus.PAYMENT_REQUESTED -> {
-                        btnAccept.visibility = GONE
-                        statusBar.setBackgroundColor(
-                            ContextCompat.getColor(itemView.context, R.color.status_confirmed)
-                        )
-                        gameStatusNote.apply {
-                            visibility = VISIBLE
-                            text = "Payment is requested."
-                            setBackgroundTintList(
-                                ColorStateList.valueOf(
-                                    ContextCompat.getColor(context, R.color.status_pending_bg)
+                                compoundDrawableTintList = ColorStateList.valueOf(
+                                    ContextCompat.getColor(context, R.color.status_delivered)
                                 )
-                            )
-                            setCompoundDrawablesWithIntrinsicBounds(
-                                R.drawable.round_access_alarm_24, 0, 0, 0
-                            )
-                            compoundDrawableTintList = ColorStateList.valueOf(
-                                ContextCompat.getColor(context, R.color.status_pending)
-                            )
+                            }
+
                         }
 
-                    }
-
-                    GameStatus.REJECTED -> {
-                        btnAccept.visibility = GONE
-                        statusBar.setBackgroundColor(
-                            ContextCompat.getColor(itemView.context, R.color.status_cancelled)
-                        )
-                        gameStatusNote.apply {
-                            visibility = VISIBLE
-                            text = "Payment is rejected."
-                            setBackgroundTintList(
-                                ColorStateList.valueOf(
-                                    ContextCompat.getColor(context, R.color.status_cancelled_bg)
+                        GameStatus.COMPLETED -> {
+                            btnAccept.visibility = GONE
+                            statusBar.setBackgroundColor(
+                                ContextCompat.getColor(itemView.context, R.color.status_confirmed)
+                            )
+                            gameStatusNote.apply {
+                                visibility = VISIBLE
+                                text = "Payment received. Game is finished."
+                                setBackgroundTintList(
+                                    ColorStateList.valueOf(
+                                        ContextCompat.getColor(context, R.color.status_delivered_bg)
+                                    )
                                 )
-                            )
-                            setCompoundDrawablesWithIntrinsicBounds(
-                                R.drawable.warning, 0, 0, 0
-                            )
-                            compoundDrawableTintList = ColorStateList.valueOf(
-                                ContextCompat.getColor(context, R.color.status_cancelled)
-                            )
-                        }
-
-                    }
-
-                    GameStatus.CHECKED_IN -> {
-                        btnAccept.apply {
-                            visibility = VISIBLE
-                            text = "Request Payout"
-                            backgroundTintList = ContextCompat.getColorStateList(
-                                itemView.context,
-                                R.color.status_delivered
-                            )
-                        }
-                        statusBar.setBackgroundColor(
-                            ContextCompat.getColor(itemView.context, R.color.status_processing)
-                        )
-                        gameStatusNote.apply {
-                            visibility = VISIBLE
-                            text = "Game checked-in."
-                            setBackgroundTintList(
-                                ColorStateList.valueOf(
-                                    ContextCompat.getColor(context, R.color.status_delivered_bg)
+                                setCompoundDrawablesWithIntrinsicBounds(
+                                    R.drawable.check_circle, 0, 0, 0
                                 )
-                            )
-                            setCompoundDrawablesWithIntrinsicBounds(
-                                R.drawable.check_circle, 0, 0, 0
-                            )
-                            compoundDrawableTintList = ColorStateList.valueOf(
-                                ContextCompat.getColor(context, R.color.status_delivered)
-                            )
+                                compoundDrawableTintList = ColorStateList.valueOf(
+                                    ContextCompat.getColor(context, R.color.status_delivered)
+                                )
+                            }
+
                         }
 
+                        GameStatus.PAYMENT_REQUESTED -> {
+                            btnAccept.visibility = GONE
+                            statusBar.setBackgroundColor(
+                                ContextCompat.getColor(itemView.context, R.color.status_confirmed)
+                            )
+                            gameStatusNote.apply {
+                                visibility = VISIBLE
+                                text = "Payment is requested."
+                                setBackgroundTintList(
+                                    ColorStateList.valueOf(
+                                        ContextCompat.getColor(context, R.color.status_pending_bg)
+                                    )
+                                )
+                                setCompoundDrawablesWithIntrinsicBounds(
+                                    R.drawable.round_access_alarm_24, 0, 0, 0
+                                )
+                                compoundDrawableTintList = ColorStateList.valueOf(
+                                    ContextCompat.getColor(context, R.color.status_pending)
+                                )
+                            }
+
+                        }
+
+                        GameStatus.REJECTED -> {
+                            btnAccept.visibility = GONE
+                            statusBar.setBackgroundColor(
+                                ContextCompat.getColor(itemView.context, R.color.status_cancelled)
+                            )
+                            gameStatusNote.apply {
+                                visibility = VISIBLE
+                                text = "Payment is rejected."
+                                setBackgroundTintList(
+                                    ColorStateList.valueOf(
+                                        ContextCompat.getColor(context, R.color.status_cancelled_bg)
+                                    )
+                                )
+                                setCompoundDrawablesWithIntrinsicBounds(
+                                    R.drawable.warning, 0, 0, 0
+                                )
+                                compoundDrawableTintList = ColorStateList.valueOf(
+                                    ContextCompat.getColor(context, R.color.status_cancelled)
+                                )
+                            }
+
+                        }
+
+                        GameStatus.CHECKED_IN -> {
+                            btnAccept.apply {
+                                visibility = VISIBLE
+                                text = "Request Payout"
+                                backgroundTintList = ContextCompat.getColorStateList(
+                                    itemView.context,
+                                    R.color.status_delivered
+                                )
+                            }
+                            statusBar.setBackgroundColor(
+                                ContextCompat.getColor(itemView.context, R.color.status_processing)
+                            )
+                            gameStatusNote.apply {
+                                visibility = VISIBLE
+                                text = "Game checked-in."
+                                setBackgroundTintList(
+                                    ColorStateList.valueOf(
+                                        ContextCompat.getColor(context, R.color.status_delivered_bg)
+                                    )
+                                )
+                                setCompoundDrawablesWithIntrinsicBounds(
+                                    R.drawable.check_circle, 0, 0, 0
+                                )
+                                compoundDrawableTintList = ColorStateList.valueOf(
+                                    ContextCompat.getColor(context, R.color.status_delivered)
+                                )
+                            }
+                        }
                     }
+
+                    // Set click listeners
+                    root.setOnClickListener { onGameClick(game) }
+                    btnAccept.setOnClickListener {
+                        when (btnAccept.text) {
+                            "Accept" -> onAcceptClick(game)
+                            "Check in" -> onCheckInClick(game)
+                            "Request Payout" -> onRequestPayout(game)
+                        }
+                    }
+                    btnLocation.setOnClickListener { onLocationClicked(game.latitude, game.longitude) }
                 }
-
-                // Set click listeners
-                root.setOnClickListener { onGameClick(game) }
-                btnAccept.setOnClickListener {
-                    when (btnAccept.text) {
-                        "Accept" -> onAcceptClick(game)
-                        "Check in" -> onCheckInClick(game)
-                        "Request Payout" -> onRequestPayout(game)
-                    }
-                }
-                btnLocation.setOnClickListener { onLocationClicked(game.latitude, game.longitude) }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }

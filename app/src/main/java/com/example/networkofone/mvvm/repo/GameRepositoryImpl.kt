@@ -3,6 +3,8 @@ package com.example.networkofone.mvvm.repo
 import android.util.Log
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
+import com.example.networkofone.mvvm.models.Notification
+import com.example.networkofone.mvvm.models.NotificationTypeLocal
 import com.example.networkofone.mvvm.models.PaymentRequestData
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -20,7 +22,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import kotlin.math.log
 
 class GameRepositoryImpl() {
     private val database: FirebaseDatabase =
@@ -28,6 +29,7 @@ class GameRepositoryImpl() {
     private val gamesRef = database.getReference("games")
     private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
+    private val notificationRepository = NotificationRepository()
     // Original function to get all games
     fun getAllGames(): Flow<List<GameData>> = callbackFlow {
         val listener = object : ValueEventListener {
@@ -188,7 +190,7 @@ class GameRepositoryImpl() {
         Result.failure(e)
     }
 
-    suspend fun updateGame(gameId: String, status: GameStatus): Result<Unit> = try {
+    suspend fun updateGame(game: GameData, status: GameStatus): Result<Unit> = try {
         // Create a map of the fields to update
 
         val updates = if (status == GameStatus.ACCEPTED) {
@@ -204,7 +206,52 @@ class GameRepositoryImpl() {
                 "checkInTime" to System.currentTimeMillis()
             )
         }
-        gamesRef.child(gameId).updateChildren(updates).await()
+        gamesRef.child(game.id).updateChildren(updates).await()
+        notificationRepository.createNotification(
+            Notification(
+                userId = game.createdBySchoolId,
+                userName = game.schedularName,
+                gameId = game.id,
+                gameName = game.title,
+                refereeId = game.acceptedByRefereeId.toString(),
+                title = "Game Updated",
+                message = "The status of the game has been changed from ${game.status} to $status",
+                type = NotificationTypeLocal.PENDING,
+            )
+        )
+        Result.success(Unit)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+    suspend fun updateGame(payout: PaymentRequestData, status: GameStatus): Result<Unit> = try {
+        // Create a map of the fields to update
+
+        val updates = if (status == GameStatus.ACCEPTED) {
+            mapOf<String, Any>(
+                "status" to status,
+                "acceptedByRefereeId" to userId,
+                "acceptedAt" to System.currentTimeMillis()
+            )
+        } else {
+            mapOf<String, Any>(
+                "status" to status,
+                "checkInStatus" to true,
+                "checkInTime" to System.currentTimeMillis()
+            )
+        }
+        gamesRef.child(payout.gameId).updateChildren(updates).await()
+        notificationRepository.createNotification(
+            Notification(
+                userId = payout.schedularId,
+                userName = payout.schedularName,
+                gameId = payout.gameId,
+                gameName = payout.gameName,
+                refereeId = payout.refereeId,
+                title = "Game Updated",
+                message = "The status of the game has been changed to $status",
+                type = NotificationTypeLocal.PENDING,
+            )
+        )
         Result.success(Unit)
     } catch (e: Exception) {
         Result.failure(e)
@@ -237,6 +284,19 @@ class GameRepositoryImpl() {
             val id = paymentRequestRef.push().key ?: return@withContext Result.failure(Exception("ID generation failed"))
             paymentRequestRef.child(id).setValue(paymentRequestData.copy(id = id)).await()
 
+            notificationRepository.createNotification(
+                Notification(
+                    userId = paymentRequestData.schedularId,
+                    userName = paymentRequestData.schedularName,
+                    gameId = paymentRequestData.gameId,
+                    gameName = paymentRequestData.gameName,
+                    refereeId = paymentRequestData.refereeId,
+                    refereeName = paymentRequestData.refereeName,
+                    title = "Payout Requested",
+                    message = "Payment has been requested by the ${paymentRequestData.refereeName} for the game ${paymentRequestData.gameName}",
+                    type = NotificationTypeLocal.PAYMENT_REQUESTED,
+                )
+            )
             Result.success(id)
         } catch (e: Exception) {
             Result.failure(e)
