@@ -174,10 +174,6 @@ class NotificationActivity : AppCompatActivity() {
         viewModel.createNotification(notification)
     }
 
-    // Method to get unread notification count (returns current value)
-    fun getUnreadNotificationCount(): Int {
-        return viewModel.unreadCount.value ?: 0
-    }
 
     override fun onDestroy() {
         super.onDestroy()

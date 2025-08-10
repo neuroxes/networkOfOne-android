@@ -1,20 +1,14 @@
 package com.example.networkofone.home
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.ContentValues
-import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
 import androidx.core.content.edit
 import androidx.core.widget.NestedScrollView
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
@@ -27,6 +21,7 @@ import com.example.networkofone.databinding.DialogLogoutBinding
 import com.example.networkofone.databinding.FragmentHomeBinding
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
+import com.example.networkofone.mvvm.models.NotificationTypeLocal
 import com.example.networkofone.mvvm.models.UserModel
 import com.example.networkofone.mvvm.repo.GameRepositoryImpl
 import com.example.networkofone.mvvm.repo.NotificationRepository
@@ -298,18 +293,24 @@ class HomeFragmentScheduler(
     }
 
     private fun setupUnreadCountListener() {
-        notificationRepository.getUnreadNotificationCountRealtime(userModel!!.userType) { listNotifications ->
+        notificationRepository.getUnreadNotificationCountRealtime(userModel!!.userType) { notificationsList ->
             context.runOnUiThread {
-                updateNotificationBadge(listNotifications.size)
-                listNotifications.forEach { it ->
-                    showSystemNotification(
-                        channelId = "default_channel",
-                        channelName = "General Notifications",
+                updateNotificationBadge(notificationsList.size)
+                notificationsList.forEach { it ->
+                    NotificationUtil.showSystemNotification(
+                        context = context,
                         notificationId = 1,
                         title = it.title,
                         message = it.message,
-                        smallIconResId = R.drawable.bell,
-                        largeIconResId = R.drawable.logo_transparent
+                        largeIconResId = when (it.type) {
+                            NotificationTypeLocal.ACCEPTED -> R.drawable.check_circle
+                            NotificationTypeLocal.PENDING -> R.drawable.pending
+                            NotificationTypeLocal.PAYMENT_REQUESTED -> R.drawable.sack_dollar_notification
+                            NotificationTypeLocal.REJECTED -> R.drawable.cross_white
+                            NotificationTypeLocal.CHECKED_IN -> R.drawable.terms_check
+                            NotificationTypeLocal.COMPLETED -> R.drawable.check_circle
+                            null -> null
+                        }
                     )
                 }
             }
@@ -325,61 +326,6 @@ class HomeFragmentScheduler(
         } else {
             badge.visibility = View.GONE
         }
-    }
-
-
-    fun showSystemNotification(
-        channelId: String,
-        channelName: String,
-        notificationId: Int,
-        title: String,
-        message: String,
-        smallIconResId: Int,
-        largeIconResId: Int? = null,
-        autoCancel: Boolean = true,
-    ) {
-        val notificationManager =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        // Create notification channel (required for Android 8.0+)
-        val channel = NotificationChannel(
-            channelId,
-            channelName,
-            NotificationManager.IMPORTANCE_DEFAULT
-        ).apply {
-            description = "App Notifications"
-        }
-        notificationManager.createNotificationChannel(channel)
-
-        // Create intent for MainActivity
-        val intent = Intent(context, NotificationActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-
-        // Create pending intent
-        val pendingIntent = PendingIntent.getActivity(
-            context,
-            0,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        // Build notification
-        val builder = NotificationCompat.Builder(context, channelId)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setSmallIcon(smallIconResId)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(autoCancel) // Dismiss when tapped
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
-        // Set large icon if provided
-        largeIconResId?.let {
-            builder.setLargeIcon(BitmapFactory.decodeResource(context.resources, it))
-        }
-
-        // Show notification
-        notificationManager.notify(notificationId, builder.build())
     }
 
     companion object {

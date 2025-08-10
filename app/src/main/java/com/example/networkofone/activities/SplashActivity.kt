@@ -6,6 +6,7 @@ import android.os.CountDownTimer
 import android.view.animation.OvershootInterpolator
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.example.networkofone.MainActivityScheduler
 import com.example.networkofone.R
 import com.example.networkofone.mvvm.models.UserType
@@ -29,9 +30,9 @@ class SplashActivity : AppCompatActivity() {
         timerStarted = savedInstanceState?.getBoolean("TIMER_STARTED", false) == true
 
         img.animate().alpha(1f).translationY(0F).setDuration(1500)
-            .setInterpolator(OvershootInterpolator()).start()
-        tvAppName.animate().alpha(1f).translationY(0F).setDuration(1000)
-            .setInterpolator(OvershootInterpolator()).setStartDelay(1000).start()
+            .setInterpolator(FastOutSlowInInterpolator()).start()
+        tvAppName.animate().alpha(1f).translationY(0F).setDuration(1500)
+            .setInterpolator(FastOutSlowInInterpolator()).setStartDelay(200).start()
 
         if (!timerStarted) {
             startCountDown()

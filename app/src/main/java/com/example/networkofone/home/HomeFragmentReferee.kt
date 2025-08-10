@@ -26,6 +26,7 @@ import com.example.networkofone.databinding.FragmentHomeRefereeBinding
 import com.example.networkofone.databinding.LayoutProvidePaymentDetailBinding
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
+import com.example.networkofone.mvvm.models.NotificationTypeLocal
 import com.example.networkofone.mvvm.models.PaymentMethod
 import com.example.networkofone.mvvm.models.PaymentRequestData
 import com.example.networkofone.mvvm.models.UserModel
@@ -447,9 +448,26 @@ class HomeFragmentReferee(
 
 
     private fun setupUnreadCountListener() {
-        notificationRepository.getUnreadNotificationCountRealtime(userModel!!.userType) { count ->
+        notificationRepository.getUnreadNotificationCountRealtime(userModel!!.userType) { notificationsList ->
             context.runOnUiThread {
-                updateNotificationBadge(count)
+                updateNotificationBadge(notificationsList.size)
+                notificationsList.forEach { it ->
+                    NotificationUtil.showSystemNotification(
+                        context = context,
+                        notificationId = 1,
+                        title = it.title,
+                        message = it.message,
+                        largeIconResId = when (it.type) {
+                            NotificationTypeLocal.ACCEPTED -> R.drawable.check_circle
+                            NotificationTypeLocal.PENDING -> R.drawable.pending
+                            NotificationTypeLocal.PAYMENT_REQUESTED -> R.drawable.sack_dollar_notification
+                            NotificationTypeLocal.REJECTED -> R.drawable.cross_white
+                            NotificationTypeLocal.CHECKED_IN -> R.drawable.terms_check
+                            NotificationTypeLocal.COMPLETED -> R.drawable.check_circle
+                            null -> null
+                        }
+                    )
+                }
             }
         }
     }

@@ -23,8 +23,8 @@ class NotificationActViewModel() : ViewModel() {
     private val _notificationState = MutableLiveData<NotificationState>()
     val notificationState: LiveData<NotificationState> get() = _notificationState
 
-    private val _unreadCount = MutableLiveData<Int>()
-    val unreadCount: LiveData<Int> get() = _unreadCount
+    private val _unreadCount = MutableLiveData<List<Notification>>()
+    val unreadCount: LiveData<List<Notification>> get() = _unreadCount
 
     private val _markAsReadState = MutableLiveData<Boolean>()
     val markAsReadState: LiveData<Boolean> get() = _markAsReadState

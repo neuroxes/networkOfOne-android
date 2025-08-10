@@ -54,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:background="@drawable/outlined_filled_round_bg"
-                android:backgroundTint="@color/status_processing_bg"
+                android:backgroundTint="@color/status_pending_bg"
                 android:orientation="horizontal"
                 android:padding="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -76,7 +76,7 @@
                     android:layout_weight="1"
                     android:text="$2,000"
                     android:textAlignment="viewEnd"
-                    android:textColor="@color/status_processing" />
+                    android:textColor="@color/status_pending" />
 
 
             </LinearLayout>
