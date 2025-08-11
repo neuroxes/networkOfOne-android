@@ -3,10 +3,12 @@ package com.example.networkofone.authentication
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.networkofone.R
@@ -31,7 +33,6 @@ class Signup : Fragment() {
     ): View {
         binding = FragmentSignupBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this)[SignupViewModel::class.java]
-
         setupObservers()
         setupWatchers()
         binding.btnSignup.setOnClickListener { handleSignup() }

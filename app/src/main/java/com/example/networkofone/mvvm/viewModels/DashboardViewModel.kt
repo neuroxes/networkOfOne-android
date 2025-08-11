@@ -32,21 +32,33 @@ class DashboardViewModel(
         val gamesCompleted = games.count { it.status == GameStatus.COMPLETED }
         val gamesCancelled = games.count { it.status == GameStatus.REJECTED }
 
+        Log.e(TAG, "payments -> $payments: ")
         // Payout analytics
-        val completedPayments = payments.filter { it.status == PaymentStatus.PAID }
-        val totalPayoutsCount = completedPayments.size
+        val approvedPayments = payments.filter { it.status == PaymentStatus.APPROVED }
+        val pendingPayments = payments.filter { it.status == PaymentStatus.PENDING }
+        val rejectedPayments = payments.filter { it.status == PaymentStatus.REJECTED }
+        val paidPayments = payments.filter { it.status == PaymentStatus.PAID }
+        val totalPayoutsCount = payments.size
 
         val pendingPaymentsCount = payments.count {
-            it.status == PaymentStatus.PENDING || it.status == PaymentStatus.APPROVED
+            it.status == PaymentStatus.PENDING //|| it.status == PaymentStatus.APPROVED
         }
 
         // Parse "amount" safely (string in your model)
-        val totalValue = completedPayments.sumOf {
+        val totalValue = payments.sumOf { it.amount.toDoubleOrNull() ?: 0.0  }
+
+        /*
+        * approvedPayments.sumOf {
             Log.e("Dashboard VM", it.amount)
             it.amount.toDoubleOrNull() ?: 0.0
-        }
+        } + pendingPayments.sumOf {
+            Log.e("Pending VM amounts", it.amount)
+            it.amount.toDoubleOrNull() ?: 0.0
+        }*/
         val avgAmount =
-            if (completedPayments.isNotEmpty()) totalValue / completedPayments.size else 0.0
+            if (approvedPayments.isNotEmpty()) totalValue / (payments.size) else 0.0
+
+        Log.e("TAG", "Total Value: $totalValue - $avgAmount")
 
         DashboardUiState(
             isLoading = false,
@@ -61,7 +73,7 @@ class DashboardViewModel(
 
             payoutTotalValue = totalValue,
             payoutPendingCount = pendingPaymentsCount,
-            payoutCompletedCount = completedPayments.size,
+            payoutCompletedCount = approvedPayments.size,
             payoutAverageAmount = avgAmount,
 
             // simple heuristics
@@ -73,6 +85,10 @@ class DashboardViewModel(
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = DashboardUiState(isLoading = true)
     )
+
+    companion object{
+        const val TAG = "Dashboard VM"
+    }
 }
 
 

@@ -66,6 +66,17 @@ class PayoutFragmentScheduler(
         binding.root.animate().translationY(0f).alpha(1f).setDuration(500)
             .setInterpolator(FastOutSlowInInterpolator()).start()
 
+        binding.ivInfo.setOnClickListener {
+            AlertDialog.Builder(context)
+                .setTitle("Payouts Information")
+                .setMessage("This section displays pending payout requests. You can:\n" +
+                        "- View details of each payout request.\n" +
+                        "- Search for specific payouts.\n" +
+                        "- Approve or reject pending payouts.\n" +
+                        "- Click on a payout to see more details about the associated game.")
+                .setPositiveButton("OK", null)
+                .show()
+        }
         setupViewModel()
         setupRecyclerView()
         setupSearchView()
@@ -131,7 +142,8 @@ class PayoutFragmentScheduler(
                     binding.cardData.visibility = View.VISIBLE
                     binding.layResult.visibility = View.GONE
                     Log.e(TAG, "observeUiState: payouts -> ${state.payouts}")
-                    payoutsAdapter.submitList(state.payouts)
+                    binding.t1.append(" ($state.payouts.size.toString())")
+                    payoutsAdapter.submitList(state.payouts.sortedByDescending { it.requestedAt })
                 }
 
                 is PayoutsUiState.Error -> {

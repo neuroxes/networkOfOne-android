@@ -8,7 +8,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
         android:background="?colorOnBackground"
         tools:context=".activities.AuthenticationActivity">
@@ -52,7 +52,7 @@
             android:id="@+id/tab"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="25dp"
             android:background="@drawable/round_12dp_bg"
             android:backgroundTint="?cardBackgroundColor"
             android:padding="5dp"
@@ -99,29 +99,30 @@
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewpager"
             android:layout_width="0dp"
-            android:layout_height="470dp"
+            android:layout_height="0dp"
             android:overScrollMode="never"
             app:layout_constraintBottom_toTopOf="@id/t3"
             app:layout_constraintEnd_toEndOf="@id/t1"
             app:layout_constraintStart_toStartOf="@id/t1"
             app:layout_constraintTop_toBottomOf="@id/tab"
             app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintWidth_max="450dp" />
+            app:layout_constraintWidth_max="450dp"
+            app:layout_constraintHeight_min="495dp"/>
 
 
         <TextView
             android:id="@+id/t3"
-            style="@style/textBody.Small"
+            style="@style/textBody"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginVertical="4dp"
             android:text="Don't have an account?"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnAuth"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/viewpager"
-            app:layout_constraintVertical_bias="1" />
+            app:layout_constraintVertical_bias="0" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAuth"
@@ -129,7 +130,7 @@
             android:layout_width="58dp"
             android:onClick="switchTab"
             android:text="Sign Up"
-            android:textSize="12sp"
+            android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="@id/t3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/t3"

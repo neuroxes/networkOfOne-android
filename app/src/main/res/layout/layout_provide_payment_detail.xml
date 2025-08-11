@@ -142,7 +142,7 @@
                 android:id="@+id/t4"
                 style="@style/textHeading.Small"
                 android:layout_marginTop="16dp"
-                android:text="Bitcoin Address"
+                android:text="XRPL Address"
                 app:layout_constraintStart_toStartOf="@id/lay1"
                 app:layout_constraintTop_toBottomOf="@id/paymentMethodRadioGroup" />
 
@@ -163,18 +163,103 @@
                     android:inputType="textPersonName" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <LinearLayout
+                android:id="@+id/lay2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="4dp"
+                android:visibility="visible"
+                android:background="@drawable/outlined_filled_round_bg"
+                android:backgroundTint="@color/status_processing_bg"
+                android:orientation="vertical"
+                android:padding="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etLayPrice">
+
+                <TextView
+                    style="@style/textHeading.medium"
+                    android:drawableStart="@drawable/round_currency_bitcoin_24"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="Use testing xrpl address" />
+
+                <TextView
+                    android:id="@+id/add1"
+                    style="@style/textBody"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?selectableItemBackground"
+                    android:paddingVertical="4dp"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="12dp"
+                    android:layout_weight="1"
+                    android:drawableEnd="@drawable/baseline_content_paste_24"
+                    android:text="rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"
+                    />
+
+                <TextView
+                    android:id="@+id/add2"
+                    style="@style/textBody"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="12dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?selectableItemBackground"
+                    android:paddingVertical="4dp"
+                    android:drawableEnd="@drawable/baseline_content_paste_24"
+                    android:text="rJrW36L2kQAjL3XbJvPAmB1jLNYj8j6aC2"
+                     />
+
+                <TextView
+                    android:id="@+id/add3"
+                    style="@style/textBody"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?selectableItemBackground"
+                    android:paddingVertical="4dp"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="12dp"
+                    android:layout_weight="1"
+                    android:drawableEnd="@drawable/baseline_content_paste_24"
+                    android:text="ra1R4N9Q4g3GqX9W6iZ22dPCYtWjqZgP3K"
+                     />
+
+                <TextView
+                    android:id="@+id/add4"
+                    style="@style/textBody"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?selectableItemBackground"
+                    android:paddingVertical="4dp"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="12dp"
+                    android:layout_weight="1"
+                    android:drawableEnd="@drawable/baseline_content_paste_24"
+                    android:text="rUf1H1N2R2jK2iG2tV4k6w8X9Y0Z1A3B5C"
+                    />
+
+
+
+
+
+            </LinearLayout>
+
+
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCancel"
                 style="@style/btn_lwm.outlined"
                 android:layout_width="0dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="12dp"
                 android:layout_weight="1"
                 android:text="Cancel"
                 app:layout_constraintEnd_toStartOf="@id/btnSave"
                 app:layout_constraintStart_toStartOf="@id/lay1"
-                app:layout_constraintTop_toBottomOf="@id/etLayPrice" />
+                app:layout_constraintTop_toBottomOf="@id/lay2" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSave"

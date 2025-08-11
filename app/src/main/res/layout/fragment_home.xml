@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:animateLayoutChanges="true"
         android:paddingTop="15dp"
-        tools:context=".home.HomeFragmentScheduler">
+        tools:context=".home.SchedulerHomeFragment">
 
 
         <TextView
@@ -41,22 +41,25 @@
             app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintWidth_default="wrap" />
 
+
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivLogout"
             style="@style/selectableIcon"
-            android:layout_marginEnd="4dp"
-            android:src="@drawable/round_logout_24"
-            app:layout_constraintBottom_toBottomOf="@id/picHome"
-            app:layout_constraintEnd_toStartOf="@id/notification"
-            app:layout_constraintTop_toTopOf="@id/picHome" />
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/notification"
-            style="@style/selectableIcon"
             android:layout_marginEnd="16dp"
-            android:src="@drawable/bell"
+            android:src="@drawable/round_logout_24"
             app:layout_constraintBottom_toBottomOf="@id/picHome"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/picHome" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/notification"
+            style="@style/selectableIcon"
+            android:layout_marginEnd="4dp"
+            android:src="@drawable/bell"
+            app:layout_constraintBottom_toBottomOf="@id/picHome"
+            app:layout_constraintEnd_toStartOf="@id/ivLogout"
+            app:layout_constraintTop_toTopOf="@id/picHome" />
+
 
         <TextView
             android:id="@+id/noOfNotifications"
@@ -105,15 +108,15 @@
             android:layout_marginTop="16dp"
             android:background="?backgroundColor"
             app:layout_constraintTop_toBottomOf="@+id/tv_user_name"
-            app:tabMode="auto"
+            app:tabMode="fixed"
             app:tabRippleColor="@android:color/transparent"
             app:tabSelectedTextColor="?colorPrimary"
             app:tabTextAppearance="@style/TabTextAppearance">
 
-            <com.google.android.material.tabs.TabItem
+            <!--<com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="All" />
+                android:text="All" />-->
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
@@ -124,13 +127,12 @@
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
                 android:text="Active" />
-
+<!--
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="On-Going" />
+                android:text="On-Going" />-->
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"

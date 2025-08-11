@@ -51,6 +51,9 @@ class RefereeGamesAdapter(
                     // Set status bar color and note based on game status
                     when (game.status) {
                         GameStatus.PENDING -> {
+                            gameIcon.imageTintList = ColorStateList.valueOf(
+                                ContextCompat.getColor(itemView.context, R.color.status_pending)
+                            )
                             btnAccept.apply {
                                 visibility = VISIBLE
                                 text = "Accept"
@@ -64,6 +67,9 @@ class RefereeGamesAdapter(
                         }
 
                         GameStatus.ACCEPTED -> {
+                            gameIcon.imageTintList = ColorStateList.valueOf(
+                                ContextCompat.getColor(itemView.context, R.color.status_processing)
+                            )
                             btnAccept.apply {
                                 visibility = VISIBLE
                                 text = "Check in"
@@ -92,6 +98,9 @@ class RefereeGamesAdapter(
                         }
 
                         GameStatus.COMPLETED -> {
+                            gameIcon.imageTintList = ColorStateList.valueOf(
+                                ContextCompat.getColor(itemView.context, R.color.status_confirmed)
+                            )
                             btnAccept.visibility = GONE
                             statusBar.setBackgroundColor(
                                 ContextCompat.getColor(itemView.context, R.color.status_confirmed)
@@ -115,6 +124,9 @@ class RefereeGamesAdapter(
                         }
 
                         GameStatus.PAYMENT_REQUESTED -> {
+                            gameIcon.imageTintList = ColorStateList.valueOf(
+                                ContextCompat.getColor(itemView.context, R.color.status_confirmed)
+                            )
                             btnAccept.visibility = GONE
                             statusBar.setBackgroundColor(
                                 ContextCompat.getColor(itemView.context, R.color.status_confirmed)
@@ -138,6 +150,9 @@ class RefereeGamesAdapter(
                         }
 
                         GameStatus.REJECTED -> {
+                            gameIcon.imageTintList = ColorStateList.valueOf(
+                                ContextCompat.getColor(itemView.context, R.color.status_cancelled)
+                            )
                             btnAccept.visibility = GONE
                             statusBar.setBackgroundColor(
                                 ContextCompat.getColor(itemView.context, R.color.status_cancelled)
@@ -161,6 +176,9 @@ class RefereeGamesAdapter(
                         }
 
                         GameStatus.CHECKED_IN -> {
+                            gameIcon.imageTintList = ColorStateList.valueOf(
+                                ContextCompat.getColor(itemView.context, R.color.status_processing)
+                            )
                             btnAccept.apply {
                                 visibility = VISIBLE
                                 text = "Request Payout"

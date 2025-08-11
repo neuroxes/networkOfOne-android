@@ -125,7 +125,7 @@ class PayoutsRepository {
                     refereeId = payout.refereeId,
                     refereeName = payout.refereeName,
                     title = "Payout Accepted",
-                    message = "Congratulations, Payout has been accepted.",
+                    message = "Payout for game \"${payout.gameName}\" involving referee \"${payout.refereeName}\" for the amount of $${payout.amount} has been accepted by scheduler \"${payout.schedularName}\".",
                     type = NotificationTypeLocal.ACCEPTED,
                 )
             )
@@ -165,10 +165,11 @@ class PayoutsRepository {
                     refereeId = payout.refereeId,
                     refereeName = payout.refereeName,
                     title = "Payout Rejected",
-                    message = "Unfortunately, Payout has been rejected.",
+                    message = "Unfortunately, Payout for game \"${payout.gameName}\" involving referee \"${payout.refereeName}\" for the amount of $${payout.amount} has been rejected by scheduler \"${payout.schedularName}\".",
                     type = NotificationTypeLocal.REJECTED,
                 )
             )
+
             true
         } catch (e: Exception) {
             e.printStackTrace()

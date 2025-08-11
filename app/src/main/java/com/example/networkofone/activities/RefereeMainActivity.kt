@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.networkofone.R
 import com.example.networkofone.databinding.ActivityMainRefreeBinding
 import com.example.networkofone.fcm.FCMTokenManager
-import com.example.networkofone.home.HomeFragmentReferee
+import com.example.networkofone.home.RefereeHomeFragment
 import com.example.networkofone.home.PayoutFragmentScheduler
 import com.example.networkofone.mvvm.models.UserType
 import com.example.networkofone.utils.LocationHelper
@@ -24,7 +24,7 @@ class RefereeMainActivity : AppCompatActivity(), LocationHelper.LocationResultLi
     private lateinit var fragDashboard: AppFragment
     private lateinit var fragMore: AppFragment
     private lateinit var locationHelper: LocationHelper
-    private lateinit var homeFragmentReferee: HomeFragmentReferee
+    private lateinit var refereeHomeFragment: RefereeHomeFragment
     private lateinit var payoutFragmentScheduler: PayoutFragmentScheduler
     private var lat = 0.0
     private var long = 0.0
@@ -36,12 +36,12 @@ class RefereeMainActivity : AppCompatActivity(), LocationHelper.LocationResultLi
         binding = ActivityMainRefreeBinding.inflate(layoutInflater)
         setContentView(binding.root)
         fragDashboard = findViewById(R.id.fragDashboard)
-        homeFragmentReferee = HomeFragmentReferee(this) { lat, long ->
+        refereeHomeFragment = RefereeHomeFragment(this) { lat, long ->
             this.lat = lat
             this.long = long
             getMyCurrentLocation()
         }
-        fragDashboard.onAppFragmentLoader = homeFragmentReferee
+        fragDashboard.onAppFragmentLoader = refereeHomeFragment
 
         payoutFragmentScheduler = PayoutFragmentScheduler(this)
         fragMore = findViewById(R.id.fragMore)
@@ -65,7 +65,7 @@ class RefereeMainActivity : AppCompatActivity(), LocationHelper.LocationResultLi
         binding.swipeRefreshLayout.setOnRefreshListener {
             when (binding.btmNav.selectedItemId) {
                 R.id.dashboard -> {
-                    homeFragmentReferee.refreshData()
+                    refereeHomeFragment.refreshData()
                 }
 
                 R.id.more_tab -> {
@@ -118,7 +118,7 @@ class RefereeMainActivity : AppCompatActivity(), LocationHelper.LocationResultLi
             lat, long
         )
         Log.e(TAG, "onLocationReceived: $distanceInMeters")
-        homeFragmentReferee.onCheckInAttempt(distanceInMeters)
+        refereeHomeFragment.onCheckInAttempt(distanceInMeters)
 
     }
 
@@ -184,6 +184,16 @@ class RefereeMainActivity : AppCompatActivity(), LocationHelper.LocationResultLi
             result = "Unable to get address"
         }
         return result
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String?>,
+        grantResults: IntArray,
+        deviceId: Int
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
+        refereeHomeFragment.onRequestPermissionsResult(requestCode,permissions,grantResults)
     }
 
     companion object {

@@ -63,14 +63,14 @@ class HomeViewModel(
 
     private fun applyFilter(tabPosition: Int) {
         val filtered = when (tabPosition) {
-            0 -> allGames // All
-            1 -> { // Recent - games from last 7 days
+            0 -> allGames.filter { it.status == GameStatus.PENDING} // All
+            /*1 -> { // Recent - games from last 7 days
                 val sevenDaysAgo = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000)
                 allGames.filter { it.createdAt >= sevenDaysAgo }
-            }
-            2 -> allGames.filter { it.status == GameStatus.ACCEPTED } // Active
-            3 -> allGames.filter { it.status == GameStatus.CHECKED_IN } // Completed
-            4 -> allGames.filter { it.status == GameStatus.COMPLETED } // Payout Pending
+            }*/
+            1 -> allGames.filter { it.status == GameStatus.ACCEPTED || it.status == GameStatus.CHECKED_IN} // Active
+            /*3 -> allGames.filter { it.status == GameStatus.CHECKED_IN } // Completed*/
+            2 -> allGames.filter { it.status == GameStatus.COMPLETED } // Payout Pending
             else -> allGames
         }
         _filteredGames.value = filtered

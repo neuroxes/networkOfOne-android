@@ -1,5 +1,6 @@
 package com.example.networkofone.adapters
 
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -12,6 +13,7 @@ import com.example.networkofone.R
 import com.example.networkofone.databinding.ItemPayoutsBinding
 import com.example.networkofone.mvvm.models.PaymentRequestData
 import com.example.networkofone.mvvm.models.PaymentStatus
+import com.example.networkofone.utils.NumberFormatterUtil
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -43,7 +45,11 @@ class PayoutsAdapter(
                     ivReject.visibility = GONE
                 }
                 tvGameName.text = paymentRequestData.gameName
-                tvGameLocation.text = paymentRequestData.amount
+                tvPrice.text = Html.fromHtml(
+                    "$${NumberFormatterUtil.format(paymentRequestData.amount)} \u25cf ${paymentRequestData.paymentMethod}",
+                    Html.FROM_HTML_MODE_LEGACY
+                )
+                tvRequestedAt.text = "Created at: ${paymentRequestData.paidAt}"
 
                 // Handle accept button click
                 ivCancel.setOnClickListener {

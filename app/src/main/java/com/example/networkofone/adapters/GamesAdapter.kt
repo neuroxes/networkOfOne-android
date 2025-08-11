@@ -3,6 +3,7 @@ package com.example.networkofone.adapters
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -45,6 +46,10 @@ class GamesAdapter(
                 // Set status bar color and note based on game status
                 when (game.status) {
                     GameStatus.PENDING -> {
+                        gameIcon.imageTintList = ColorStateList.valueOf(
+                            ContextCompat.getColor(itemView.context, R.color.status_pending)
+                        )
+                        moreOptions.visibility = View.VISIBLE
                         statusBar.setBackgroundColor(
                             ContextCompat.getColor(itemView.context, R.color.status_pending)
                         )
@@ -65,6 +70,11 @@ class GamesAdapter(
                     }
 
                     GameStatus.PAYMENT_REQUESTED -> {
+
+                        /*gameIcon.imageTintList = ColorStateList.valueOf(
+                            ContextCompat.getColor(itemView.context, R.color.status_pending)
+                        )*/
+                        moreOptions.visibility = View.INVISIBLE
                         statusBar.setBackgroundColor(
                             ContextCompat.getColor(itemView.context, R.color.status_pending)
                         )
@@ -85,11 +95,15 @@ class GamesAdapter(
                     }
 
                     GameStatus.ACCEPTED -> {
+                        gameIcon.imageTintList = ColorStateList.valueOf(
+                            ContextCompat.getColor(itemView.context, R.color.status_processing)
+                        )
+                        moreOptions.visibility = View.INVISIBLE
                         statusBar.setBackgroundColor(
                             ContextCompat.getColor(itemView.context, R.color.status_processing)
                         )
                         gameStatusNote.apply {
-                            text = "Game is accepted by referee"
+                            text = "Game is accepted by ${game.refereeName}"
                             setBackgroundTintList(
                                 ColorStateList.valueOf(
                                     ContextCompat.getColor(context, R.color.status_processing_bg)
@@ -102,6 +116,10 @@ class GamesAdapter(
                     }
 
                     GameStatus.COMPLETED -> {
+                        gameIcon.imageTintList = ColorStateList.valueOf(
+                            ContextCompat.getColor(itemView.context, R.color.status_confirmed)
+                        )
+                        moreOptions.visibility = View.INVISIBLE
                         statusBar.setBackgroundColor(
                             ContextCompat.getColor(itemView.context, R.color.status_confirmed)
                         )
@@ -122,6 +140,10 @@ class GamesAdapter(
                     }
 
                     GameStatus.REJECTED -> {
+                        gameIcon.imageTintList = ColorStateList.valueOf(
+                            ContextCompat.getColor(itemView.context, R.color.status_cancelled)
+                        )
+                        moreOptions.visibility = View.INVISIBLE
                         statusBar.setBackgroundColor(
                             ContextCompat.getColor(itemView.context, R.color.status_cancelled)
                         )
@@ -142,6 +164,10 @@ class GamesAdapter(
                     }
 
                     GameStatus.CHECKED_IN -> {
+                        gameIcon.imageTintList = ColorStateList.valueOf(
+                            ContextCompat.getColor(itemView.context, R.color.status_processing)
+                        )
+                        moreOptions.visibility = View.INVISIBLE
                         statusBar.setBackgroundColor(
                             ContextCompat.getColor(itemView.context, R.color.status_processing)
                         )

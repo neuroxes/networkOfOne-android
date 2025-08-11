@@ -1,5 +1,6 @@
 package com.example.networkofone
 
+import android.annotation.SuppressLint
 import android.location.Geocoder
 import android.os.Bundle
 import android.os.Handler
@@ -7,15 +8,20 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.MotionEvent
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.example.networkofone.customClasses.AddressResolver
+import com.example.networkofone.customClasses.AddressResult
+import com.example.networkofone.customClasses.LocationPickerBottomSheetDialog
 import com.example.networkofone.databinding.ActivityMainBinding
 import com.example.networkofone.databinding.DialogCreateGameBinding
 import com.example.networkofone.fcm.FCMTokenManager
-import com.example.networkofone.home.HomeFragmentScheduler
 import com.example.networkofone.home.PayoutFragmentScheduler
+import com.example.networkofone.home.SchedulerHomeFragment
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
 import com.example.networkofone.mvvm.models.UserType
@@ -35,6 +41,7 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.google.firebase.auth.FirebaseAuth
 import com.incity.incity_stores.AppFragment
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -42,16 +49,18 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResultListener {
+class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResultListener {
     private lateinit var binding: ActivityMainBinding
     private lateinit var fragDashboard: AppFragment
     private lateinit var fragMore: AppFragment
     private lateinit var loader: LoadingDialog
     private lateinit var locationHelper: LocationHelper
     private lateinit var etLocation: EditText
+    private lateinit var etLati: EditText
+    private lateinit var etLongi: EditText
 
     private lateinit var viewModel: MainActivityViewModel
-    private lateinit var homeFragmentScheduler: HomeFragmentScheduler
+    private lateinit var schedulerHomeFragment: SchedulerHomeFragment
     private lateinit var payoutFragmentScheduler: PayoutFragmentScheduler
     private var selectedDate: String = ""
     private var selectedTime: String = ""
@@ -70,11 +79,11 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
         setContentView(binding.root)
         loader = LoadingDialog(this)
         fragDashboard = findViewById(R.id.fragDashboard)
-        homeFragmentScheduler = HomeFragmentScheduler(this) { gameData ->
+        schedulerHomeFragment = SchedulerHomeFragment(this) { gameData ->
             isEditing = true
             showCreateGameDialog(gameData)
         }
-        fragDashboard.onAppFragmentLoader = homeFragmentScheduler
+        fragDashboard.onAppFragmentLoader = schedulerHomeFragment
 
         payoutFragmentScheduler = PayoutFragmentScheduler(this)
         fragMore = findViewById(R.id.fragMore)
@@ -114,7 +123,7 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
         binding.swipeRefreshLayout.setOnRefreshListener {
             when (binding.btmNav.selectedItemId) {
                 R.id.dashboard -> {
-                    homeFragmentScheduler.refreshData()
+                    schedulerHomeFragment.refreshData()
                 }
 
                 R.id.more_tab -> {
@@ -143,16 +152,17 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
         viewModel.saveGameResult.observe(this) { result ->
             result.fold(onSuccess = { gameId ->
                 if (isEditing) NewToastUtil.showSuccess(
-                    this@MainActivityScheduler,
-                    "Game updated successfully!"
+                    this@SchedulerMainActivity, "Game updated successfully!"
                 )
-                else NewToastUtil.showSuccess(this@MainActivityScheduler, "Game created successfully!")
+                else NewToastUtil.showSuccess(
+                    this@SchedulerMainActivity, "Game created successfully!"
+                )
                 loader.endLoadingAnimation()
 
             }, onFailure = { exception ->
                 {
                     NewToastUtil.showError(
-                        this@MainActivityScheduler, "Failed to create game: ${exception.message}"
+                        this@SchedulerMainActivity, "Failed to create game: ${exception.message}"
 
                     )
                     loader.endLoadingAnimation()
@@ -161,10 +171,11 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun showCreateGameDialog(gameDataForEditing: GameData? = null) {
         try {
             val (dialog, dialogBinding) = DialogUtil.createBottomDialogWithBinding(
-                this@MainActivityScheduler, DialogCreateGameBinding::inflate
+                this@SchedulerMainActivity, DialogCreateGameBinding::inflate
             )
             dialog.show()
 
@@ -174,6 +185,8 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
                     btnSave.text = "Update"
                     etGameName.setText(it.title)
                     etLocation.setText(it.location)
+                    etLati.setText(it.latitude.toString())
+                    etLongi.setText(it.longitude.toString())
                     etDate.text = it.date
                     etTime.text = it.time
                     etPrice.setText(it.feeAmount)
@@ -184,12 +197,32 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
 
                 // Setup date and time pickers
                 setupDateTimePickers()
-
+                etDescription.setOnTouchListener { v, event ->
+                    if (v.hasFocus()) {
+                        v.parent.requestDisallowInterceptTouchEvent(true)
+                        if ((event.action and MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
+                            v.parent.requestDisallowInterceptTouchEvent(false)
+                        }
+                    }
+                    false
+                }
                 btnCancel.setOnClickListener { dialog.dismiss() }
                 ivBack.setOnClickListener { dialog.dismiss() }
                 btnCurrentLoc.setOnClickListener {
-                    this@MainActivityScheduler.etLocation = dialogBinding.etLocation
+                    this@SchedulerMainActivity.etLocation = dialogBinding.etLocation
+                    this@SchedulerMainActivity.etLati = dialogBinding.etLati
+                    this@SchedulerMainActivity.etLongi = dialogBinding.etLongi
                     getMyCurrentLocation()
+
+                }
+                btnFromMap.setOnClickListener {
+                    val locationPicker = LocationPickerBottomSheetDialog.newInstance { result ->
+
+                        etLocation.setText(result.address)
+                        etLati.setText(result.latitude.toString())
+                        etLongi.setText(result.longitude.toString())
+                    }
+                    locationPicker.show(supportFragmentManager, "LocationPicker")
                 }
 
                 btnSave.setOnClickListener {
@@ -220,9 +253,12 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
     }
 
 
+
     private fun DialogCreateGameBinding.setupTextWatchers() {
         etGameName.addTextWatcher(layGame)
         etLocation.addTextWatcher(layLocation)
+        etLati.addTextWatcher(layLati)
+        etLongi.addTextWatcher(layLongi)
         etPrice.addTextWatcher(etLayPrice)
     }
 
@@ -329,6 +365,16 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
                 return false
             }
 
+            if (etLati.text.toString().trim().isEmpty()) {
+                layLocation.error = "Required"
+                return false
+            }
+
+            if (etLongi.text.toString().trim().isEmpty()) {
+                layLocation.error = "Required"
+                return false
+            }
+
             // Validate date
             if (etDate.text.toString().trim().isEmpty()) {
                 etDate.error = "Date is required"
@@ -357,14 +403,14 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
         return GameData(
             title = etGameName.text.toString().trim(),
             location = etLocation.text.toString().trim(),
-            latitude = this@MainActivityScheduler.latitude,
-            longitude = this@MainActivityScheduler.longitude,
+            latitude = this@SchedulerMainActivity.latitude,
+            longitude = this@SchedulerMainActivity.longitude,
             date = etDate.text.toString().trim(),
             time = etTime.text.toString().trim(),
             feeAmount = etPrice.text.toString().trim(),
             specialNote = etDescription.text.toString().trim(),
             createdBySchoolId = userId,
-            schedularName = SharedPrefManager(this@MainActivityScheduler).getUser()?.name ?: "null",
+            schedularName = SharedPrefManager(this@SchedulerMainActivity).getUser()?.name ?: "null",
             status = GameStatus.PENDING
         )
     }
@@ -420,7 +466,7 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
     }
 
     override fun onLocationError(error: String) {
-        NewToastUtil.showError(this@MainActivityScheduler, "Error: $error")
+        NewToastUtil.showError(this@SchedulerMainActivity, "Error: $error")
         Log.e("Location", "Error: $error")
     }
 
@@ -430,14 +476,22 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
 
     private fun updateLocationUI(latitude: Double, longitude: Double) {
         try {
-            val loc = getAddressFromLocation(latitude, longitude)
+            val addressResolver = AddressResolver(this@SchedulerMainActivity)
+
+            lifecycleScope.launch {
+                val address = addressResolver.getAddress(latitude, longitude)
+                etLocation.setText(address)
+            }
             this.latitude = latitude
             this.longitude = longitude
-            etLocation.setText(loc)
+            etLati.setText(latitude.toString())
+            etLongi.setText(longitude.toString())
+
         } catch (e: Exception) {
             Log.e("TAG", "updateLocationUI: ${e.message}")
         }
     }
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -487,7 +541,17 @@ class MainActivityScheduler : AppCompatActivity(), LocationHelper.LocationResult
         return result
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String?>,
+        grantResults: IntArray,
+        deviceId: Int,
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
+        schedulerHomeFragment.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
     companion object {
-        private const val TAG = "MainActivityScheduler"
+        private const val TAG = "SchedulerMainActivity"
     }
 }

@@ -197,6 +197,7 @@ class GameRepositoryImpl() {
             mapOf<String, Any>(
                 "status" to status,
                 "acceptedByRefereeId" to userId,
+                "refereeName" to game.refereeName!!,
                 "acceptedAt" to System.currentTimeMillis()
             )
         } else {
@@ -215,7 +216,7 @@ class GameRepositoryImpl() {
                 gameName = game.title,
                 refereeId = game.acceptedByRefereeId.toString(),
                 title = "Game Updated",
-                message = "The status of the game has been changed from ${game.status} to $status",
+                message = "The status of game \"${game.title}\" has changed from \"${game.status}\" to \"$status\".",
                 type = NotificationTypeLocal.PENDING,
             )
         )
@@ -242,13 +243,16 @@ class GameRepositoryImpl() {
         gamesRef.child(payout.gameId).updateChildren(updates).await()
         notificationRepository.createNotification(
             Notification(
-                userId = payout.schedularId,
-                userName = payout.schedularName,
+                // The user to whom this notification is being sent.
+                userId = payout.schedularId, // This is the ID of the game scheduler/creator.
+                userName = payout.schedularName, // The name of the game scheduler/creator.
                 gameId = payout.gameId,
                 gameName = payout.gameName,
-                refereeId = payout.refereeId,
+                refereeId = payout.refereeId, // The ID of the referee involved in this game update.
                 title = "Game Updated",
-                message = "The status of the game has been changed to $status",
+                // A descriptive message for the notification.
+                message = "The status of game \"${payout.gameName}\" has been updated to \"$status\".",
+                // The type of notification, in this case, it's related to a pending action or status update.
                 type = NotificationTypeLocal.PENDING,
             )
         )
@@ -293,8 +297,8 @@ class GameRepositoryImpl() {
                     refereeId = paymentRequestData.refereeId,
                     refereeName = paymentRequestData.refereeName,
                     title = "Payout Requested",
-                    message = "Payment has been requested by the ${paymentRequestData.refereeName} for the game ${paymentRequestData.gameName}",
-                    type = NotificationTypeLocal.PAYMENT_REQUESTED,
+                    message = "Dear user, referee \"${paymentRequestData.refereeName}\" has requested payment of $${paymentRequestData.amount} for game \"${paymentRequestData.gameName}\".",
+                    type = NotificationTypeLocal.PAYMENT_REQUESTED
                 )
             )
             Result.success(id)

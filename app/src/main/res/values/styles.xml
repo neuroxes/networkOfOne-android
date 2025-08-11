@@ -482,10 +482,19 @@
         <item name="android:background">?backgroundColor</item>
         <item name="cardCornerRadius">@dimen/buttonRadius</item>
         <item name="cardElevation">1dp</item>
-        <item name="cardBackgroundColor">?colorTertiary</item>
+        <item name="cardBackgroundColor">?colorOnTertiary</item>
         <item name="cardUseCompatPadding">true</item>
         <item name="strokeColor">?colorButtonNormal</item>
         <item name="strokeWidth">1dp</item>
+    </style>
+
+
+    <style name="BottomSheetDialogTheme" parent="Theme.Material3.DayNight.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
+    </style>
+
+    <style name="BottomSheetStyle" parent="Widget.Material3.BottomSheet">
+        <item name="backgroundTint">@android:color/white</item>
     </style>
 
 

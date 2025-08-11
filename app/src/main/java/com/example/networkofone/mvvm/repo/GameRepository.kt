@@ -40,7 +40,7 @@ class GameRepository {
                     gameName = gameWithId.title,
                     refereeId = gameWithId.acceptedByRefereeId.toString(),
                     title = "Game Posted",
-                    message = "The game has been posted successfully.",
+                    message = "Great news! The game \"${gameData.title}\" has been successfully posted and is now available.",
                     type = NotificationTypeLocal.PENDING,
                 )
             )
@@ -62,15 +62,17 @@ class GameRepository {
 
             // Update the existing entry (overwrites only the specified fields if using updateChildren)
             gamesRef.child(gameData.id).setValue(gameData).await()
+            // Send notification to the user (school or referee) about the game update.
+            // The notification type is COMPLETED, indicating a successful update.
             notificationRepository.createNotification(
                 Notification(
                     userId = gameData.createdBySchoolId,
                     userName = gameData.schedularName,
                     gameId = gameData.id,
                     gameName = gameData.title,
-                    refereeId = gameData.acceptedByRefereeId.toString(),
-                    title = "Game Updated",
-                    message = "The detail has been updated successfully.",
+                    refereeId = gameData.acceptedByRefereeId.toString(), // The ID of the referee who accepted the game, if applicable.
+                    title = "Game Details Updated", // A concise title for the notification.
+                    message = "Dear user, the details for the game \"${gameData.title}\" (ID: ${gameData.id}) have been successfully updated. Please review the changes.", // A more descriptive message for the user.
                     type = NotificationTypeLocal.COMPLETED,
                 )
             )

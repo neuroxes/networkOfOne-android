@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:paddingTop="15dp"
-    tools:context=".home.HomeFragmentScheduler">
+    tools:context=".home.SchedulerHomeFragment">
 
 
     <TextView

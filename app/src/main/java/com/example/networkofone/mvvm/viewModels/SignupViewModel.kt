@@ -57,7 +57,7 @@ class SignupViewModel() : ViewModel() {
                             user.sendEmailVerification()
                                 .addOnCompleteListener { emailTask ->
                                     if (emailTask.isSuccessful) {
-                                        callback(AuthenticationResponses.Success("Please verify your email and login."))
+                                        callback(AuthenticationResponses.Success("Please verify your email and login. Check your inbox or spams"))
                                     } else {
                                         callback(AuthenticationResponses.Error("Failed to send verification email."))
                                     }

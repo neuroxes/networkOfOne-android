@@ -20,6 +20,7 @@ data class GameData(
     val createdAt: Long = System.currentTimeMillis(),
     var status: GameStatus = GameStatus.PENDING,
     var acceptedByRefereeId: String? = null,
+    var refereeName: String? = null,
     var acceptedAt: Long? = null,
     var checkInStatus: Boolean = false,
     var checkInTime: Long? = null,
@@ -82,7 +83,6 @@ enum class UserType {
 }
 
 
-
 data class Notification(
     val notificationId: String = "",
     val userId: String = "",
@@ -141,7 +141,21 @@ fun Double.asCurrency(locale: Locale = Locale.US, currencyCode: String? = "USD")
         try {
             val cur = java.util.Currency.getInstance(currencyCode)
             formatter.currency = cur
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
     return formatter.format(this)
 }
+
+/*
+[PaymentRequestData(id=-OXCkQ7eZRiSw0QW2XKo, gameId=-OXCiwxqORy7qayF6VYb, gameName=, refereeId=f9edrjQpbhgSAKRK8jVhRvccBh13, refereeName=Referee, schedularId=N1ziEyAV3uXVGIa98maOoeWhvT33, schedularName=Ali Hassan School, amount=2009, paymentMethod=VENMO, status=REJECTED, requestedAt=1754724974508, paidAt=null, transactionId=null)
+ PaymentRequestData(id=-OXCzWFHoi_b6LyBDOEI, gameId=-OXCj0_AxBgsgqZkc-OP, gameName=Game 3, refereeId=f9edrjQpbhgSAKRK8jVhRvccBh13, refereeName=Referee, schedularId=N1ziEyAV3uXVGIa98maOoeWhvT33, schedularName=Ali Hassan School, amount=6000, paymentMethod=BANK_TRANSFER, status=APPROVED, requestedAt=1754728931738, paidAt=1754729257966, transactionId=null),
+PaymentRequestData(id=-OXD09lES9Wb_SFFfXRh, gameId=-OXCiwxqORy7qayF6VYb, gameName=Game 2, refereeId=f9edrjQpbhgSAKRK8jVhRvccBh13, refereeName=Referee, schedularId=N1ziEyAV3uXVGIa98maOoeWhvT33, schedularName=Ali Hassan School, amount=2009, paymentMethod=PAYPAL, status=REJECTED, requestedAt=1754729363937, paidAt=null, transactionId=null),
+PaymentRequestData(id=-OXDBlSkYt8cC-sTYxFD, gameId=-OXChl9Cnxzkge2MjD8x, gameName=Ali game, refereeId=f9edrjQpbhgSAKRK8jVhRvccBh13, refereeName=Referee, schedularId=N1ziEyAV3uXVGIa98maOoeWhvT33, schedularName=Ali Hassan School, amount=300, paymentMethod=PAYPAL, status=APPROVED, requestedAt=1754732406039, paidAt=1754732390691, transactionId=null),
+PaymentRequestData(id=-OXDF1QPzZxF7iKzVBIJ, gameId=-OXDE9Bet2w2iiq7r7RM, gameName=Game 2, refereeId=f9edrjQpbhgSAKRK8jVhRvccBh13, refereeName=Referee, schedularId=olABliMMeAP8lMTtQjNvJzGXZXX2, schedularName=My Accoun Referee, amount=300, paymentMethod=PAYPAL, status=APPROVED, requestedAt=1754733262018, paidAt=1754733249541, transactionId=null),
+PaymentRequestData(id=-OXDGWCYfW2-tmm9elkJ, gameId=-OXDDsEppgLECSqqjAaK, gameName=Game 1, refereeId=f9edrjQpbhgSAKRK8jVhRvccBh13, refereeName=Referee, schedularId=olABliMMeAP8lMTtQjNvJzGXZXX2, schedularName=My Accoun Referee, amount=1000, paymentMethod=PAYPAL, status=REJECTED, requestedAt=1754733650169, paidAt=null, transactionId=null),
+PaymentRequestData(id=-OXIgA6n1SXQB19kVh41, gameId=-OXHmWMbWoZPfL4wRVX2, gameName=Notifications Game, refereeId=f9edrjQpbhgSAKRK8jVhRvccBh13, refereeName=Referee, schedularId=olABliMMeAP8lMTtQjNvJzGXZXX2, schedularName=My Accoun Referee, amount=600.63, paymentMethod=PAYPAL, status=APPROVED, requestedAt=1754824523660, paidAt=1754833161733, transactionId=null),
+PaymentRequestData(id=-OXKVYZZeVwlqPsmy03W, gameId=-OXKIt4Igq6IPGhXxch5, gameName=Saad's Game 1, refereeId=EYR9ihmfjJYcCei1sLxlOr7R0W43, refereeName=Usman Refree, schedularId=1ReMBZu5qOgaYHJZmcZypuf71rJ3, schedularName=Saad Khalil, amount=113, paymentMethod=XRPL, status=APPROVED, requestedAt=1754854995178, paidAt=1754855674620, transactionId=null),
+PaymentRequestData(id=-OXK_EAE1ZFQjVKw1Uro, gameId=-OXKIt4Igq6IPGhXxch5, gameName=Saad's Game 1 Update, refereeId=EYR9ihmfjJYcCei1sLxlOr7R0W43, refereeName=Usman Refree, schedularId=1ReMBZu5qOgaYHJZmcZypuf71rJ3, schedularName=Saad Khalil, amount=113, paymentMethod=XRPL, status=APPROVED, requestedAt=1754856222503, paidAt=1754856312234, transactionId=null),
+PaymentRequestData(id=-OXKbuLFbgpXHzeR5qpy, gameId=-OXKa_wxrd45ebmZ7te_, gameName=456, refereeId=EYR9ihmfjJYcCei1sLxlOr7R0W43, refereeName=Usman Refree, schedularId=1ReMBZu5qOgaYHJZmcZypuf71rJ3, schedularName=Saad Khalil, amount=999, paymentMethod=XRPL, status=APPROVED, requestedAt=1754856923586, paidAt=1754857162407, transactionId=null)]:
+14:54:14.941 TAG               E*/

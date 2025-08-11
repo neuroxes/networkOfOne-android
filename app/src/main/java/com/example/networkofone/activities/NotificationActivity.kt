@@ -1,5 +1,6 @@
 package com.example.networkofone.activities
 
+import android.app.NotificationManager;
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -30,12 +31,16 @@ class NotificationActivity : AppCompatActivity() {
         binding = ActivityNotificationsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         userType = SharedPrefManager(this@NotificationActivity).getUser()?.userType
+        // Clear all system notifications created by this app
         binding.ivBack.setOnClickListener { finish() }
 
         val notificationsAvailable = intent.getBooleanExtra("newNotificationsAvailable", false)
         userType = intent.getSerializableExtra("userType") as? UserType
 
         setupObservers()
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancelAll()
 
         // Fetch notifications and unread count
         //userType?.let { viewModel.fetchNotifications(it) }

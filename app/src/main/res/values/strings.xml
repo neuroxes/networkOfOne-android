@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">Network Of One</string>
 
-    <string name="login_msg1">Go ahead and provide your credentials</string>
-    <string name="login_msg2">Sign-In and never lose your progress</string>
-    <string name="signup_msg1">Go ahead and set up your account</string>
-    <string name="signup_msg2">Signup and enjoy the best learning experience</string>
+    <string name="login_msg1">Welcome back! Enter your credentials.</string>
+    <string name="login_msg2">Sign in to access your account.</string>
+    <string name="signup_msg1">Create an account to begin.</string>
+    <string name="signup_msg2">Join us and explore new possibilities.</string>
     <string name="sign_in">Sign In</string>
     <string name="storeLocation">User Name</string>
     <string name="special_note_optional"><b>Special Note</b> <small>(optional)</small></string>

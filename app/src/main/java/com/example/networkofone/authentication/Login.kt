@@ -16,7 +16,7 @@ import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
-import com.example.networkofone.MainActivityScheduler
+import com.example.networkofone.SchedulerMainActivity
 import com.example.networkofone.activities.AdminMainActivity
 import com.example.networkofone.activities.RefereeMainActivity
 import com.example.networkofone.databinding.DialogForgotPasswordBinding
@@ -165,7 +165,7 @@ class Login : Fragment() {
             when (result) {
                 is AuthResult.Success -> {
                     showToast(
-                        "Password reset email sent. Check your email inbox", ToastType.SUCCESS
+                        "Password reset email sent. Check your email inbox or spam", ToastType.SUCCESS
                     )
                     bottomSheetDialog.dismiss()
                 }
@@ -247,10 +247,10 @@ class Login : Fragment() {
 
     private fun navigateToNextScreen(userType: UserType) {
         val targetActivity = when (userType) {
-            UserType.SCHOOL -> MainActivityScheduler::class.java
+            UserType.SCHOOL -> SchedulerMainActivity::class.java
             UserType.REFEREE -> RefereeMainActivity::class.java
             UserType.ADMIN -> AdminMainActivity::class.java
-            else ->  MainActivityScheduler::class.java
+            else ->  SchedulerMainActivity::class.java
         }
         ActivityNavigatorUtil.startActivity(requireActivity(), targetActivity, clearStack = true)
         requireActivity().finish()

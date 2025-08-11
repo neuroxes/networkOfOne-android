@@ -12,13 +12,13 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_margin="16dp"
-        android:background="@color/brandTrans"
+        android:background="?cardBackgroundColor"
         android:src="@drawable/sack_dollar"
-        app:tint="?colorPrimary"
         app:contentPadding="12dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full" />
+        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+        />
 
     <TextView
         android:id="@+id/tvGameName"
@@ -33,15 +33,39 @@
 
 
     <TextView
-        android:id="@+id/tvGameLocation"
-        style="@style/textBody.Small"
+        android:id="@+id/tvPrice"
+        style="@style/textBody"
         android:layout_width="0dp"
         android:layout_marginTop="2dp"
         android:paddingVertical="4dp"
-        android:text="$292"
+        android:text="$292 \u25cf BANK"
         app:layout_constraintEnd_toEndOf="@id/tvGameName"
         app:layout_constraintStart_toStartOf="@id/tvGameName"
         app:layout_constraintTop_toBottomOf="@id/tvGameName" />
+
+    <TextView
+        android:id="@+id/tvRequestedAt"
+        style="@style/textHeading.NormalStyle"
+        android:layout_width="0dp"
+        android:layout_marginTop="2dp"
+        android:visibility="gone"
+        android:paddingVertical="4dp"
+        android:drawableStart="@drawable/ic_clock"
+        android:gravity="center_vertical"
+        android:text="Created at: timestamp"
+        app:layout_constraintEnd_toEndOf="@id/ivCancel"
+        app:layout_constraintStart_toStartOf="@id/tvGameName"
+        app:layout_constraintTop_toBottomOf="@id/tvPrice" />
+    <!--
+        <TextView
+            android:id="@+id/tvUpdatedAt"
+            style="@style/textHeading.NormalStyle"
+            android:layout_width="0dp"
+            android:text="Approved at: timestamp"
+            app:layout_constraintBottom_toBottomOf="@id/tvRequestedAt"
+            app:layout_constraintEnd_toEndOf="@id/ivCancel"
+            app:layout_constraintStart_toEndOf="@id/tvRequestedAt"
+            app:layout_constraintTop_toTopOf="@id/tvRequestedAt" />-->
 
 
     <com.google.android.material.imageview.ShapeableImageView
@@ -54,7 +78,7 @@
         android:padding="1dp"
         android:src="@drawable/cross"
         app:contentPadding="6dp"
-        app:layout_constraintBottom_toBottomOf="@id/tvGameLocation"
+        app:layout_constraintBottom_toBottomOf="@id/tvPrice"
         app:layout_constraintEnd_toStartOf="@id/ivCancel"
         app:layout_constraintStart_toEndOf="@id/tvGameName"
         app:layout_constraintTop_toTopOf="@id/tvGameName"
@@ -72,7 +96,7 @@
         android:src="@drawable/round_check_24"
         android:tint="?colorPrimary"
         app:contentPadding="6dp"
-        app:layout_constraintBottom_toBottomOf="@id/tvGameLocation"
+        app:layout_constraintBottom_toBottomOf="@id/tvPrice"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvGameName"
         app:strokeColor="?colorButtonNormal"
@@ -93,7 +117,7 @@
         android:textSize="12sp"
         android:textStyle="bold"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/tvGameLocation"
+        app:layout_constraintBottom_toBottomOf="@id/tvPrice"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvGameName" />
 

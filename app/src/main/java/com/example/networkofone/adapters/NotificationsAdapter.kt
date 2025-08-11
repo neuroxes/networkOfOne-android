@@ -2,7 +2,12 @@ package com.example.networkofone.adapters
 
 import android.content.Context
 import android.graphics.Color
+import android.text.Html
 import android.view.LayoutInflater
+import android.view.View
+import android.view.View.GONE
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -33,8 +38,12 @@ class NotificationsAdapter(
         val item = notifications[position]
         with(holder.binding) {
             tvTitle.text = item.title
-            tvMessage.text = "${item.userName} ${item.message}"
+            tvMessage.text = Html.fromHtml("<b>${item.userName}</b> -> ${item.message}",Html.FROM_HTML_MODE_LEGACY)
             tvTime.text = getFormattedTime(item.createdAt)
+            /*if (item.gameName.isEmpty()) layGameName.gone()
+            if (item.refereeName.isEmpty()) layRefereeName.gone()
+            tvGameName.text = item.gameName
+            tvRefereeName.text = item.refereeName*/
             NotificationIconFormatter.styleNotificationIcon(context, icon, item.type!!)
 
             parent.setBackgroundColor(
@@ -73,6 +82,16 @@ class NotificationsAdapter(
     }
 
     override fun getItemCount(): Int = notifications.size
+
+    fun View.visible(){
+        this.visibility = VISIBLE
+    }
+    fun View.gone(){
+        this.visibility = GONE
+    }
+    fun View.inVisible(){
+        this.visibility = INVISIBLE
+    }
 
     class NotificationViewHolder(val binding: ItemNotificationsBinding) :
         RecyclerView.ViewHolder(binding.root)

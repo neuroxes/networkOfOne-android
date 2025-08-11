@@ -3,6 +3,8 @@ package com.example.networkofone.home
 import android.content.ContentValues
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -15,6 +17,7 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.ViewModelProvider
 import com.example.networkofone.R
 import com.example.networkofone.activities.AuthenticationActivity
+import com.example.networkofone.activities.GameDetailActivity
 import com.example.networkofone.activities.NotificationActivity
 import com.example.networkofone.adapters.GamesAdapter
 import com.example.networkofone.databinding.DialogLogoutBinding
@@ -30,14 +33,18 @@ import com.example.networkofone.mvvm.viewModels.HomeViewModel
 import com.example.networkofone.mvvm.viewModels.HomeViewModelFactory
 import com.example.networkofone.utils.ActivityNavigatorUtil
 import com.example.networkofone.utils.DialogUtil
+import com.example.networkofone.utils.GameSorter
+import com.example.networkofone.utils.NotificationUtil
 import com.example.networkofone.utils.SharedPrefManager
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.google.gson.Gson
 import com.incity.incity_stores.AppFragmentLoader
 import java.util.Calendar
+import kotlin.random.Random
 
-class HomeFragmentScheduler(
+class SchedulerHomeFragment(
     private val context: AppCompatActivity, private val onGameEditing: (GameData) -> Unit,
 ) : AppFragmentLoader(R.layout.fragment_root_nested_scroll_view) {
     private lateinit var binding: FragmentHomeBinding
@@ -46,6 +53,7 @@ class HomeFragmentScheduler(
     private var userModel: UserModel? = null
     private lateinit var gamesAdapter: GamesAdapter
     private val notificationRepository = NotificationRepository()
+    private val NOTIFICATION_PERMISSION_REQUEST_CODE = 1001
 
 
     override fun onCreate() {
@@ -83,6 +91,7 @@ class HomeFragmentScheduler(
         observeViewModel()
         onClicks()
         setupUnreadCountListener()
+        checkAndRequestNotificationPermission()
     }
 
     private fun onClicks() {
@@ -171,8 +180,10 @@ class HomeFragmentScheduler(
 
     private fun setupRecyclerView() {
         gamesAdapter = GamesAdapter(onGameClick = { game ->
-            // Handle game item click
-            // Navigate to game details or edit screen
+            val intent = Intent(context, GameDetailActivity::class.java)
+            val gameJson = Gson().toJson(game)
+            intent.putExtra("game_data", gameJson)
+            context.startActivity(intent)
         }, onMoreOptionsClick = { game ->
             showGameOptionsDialog(game)
         })
@@ -234,7 +245,7 @@ class HomeFragmentScheduler(
         }
 
         viewModel.filteredGames.observe(context) { games ->
-            gamesAdapter.submitList(games)
+            gamesAdapter.submitList(GameSorter.sortGamesByDateTime(games))
 
             // Update empty state for filtered results
             if (games.isEmpty() && viewModel.uiState.value is GameUiState.Success) {
@@ -296,13 +307,13 @@ class HomeFragmentScheduler(
         notificationRepository.getUnreadNotificationCountRealtime(userModel!!.userType) { notificationsList ->
             context.runOnUiThread {
                 updateNotificationBadge(notificationsList.size)
-                notificationsList.forEach { it ->
+                notificationsList.forEach { notification ->
                     NotificationUtil.showSystemNotification(
                         context = context,
-                        notificationId = 1,
-                        title = it.title,
-                        message = it.message,
-                        largeIconResId = when (it.type) {
+                        notificationId = Random.nextInt(), // Use index or a unique ID from the notification object
+                        title = notification.title,
+                        message = notification.message,
+                        largeIconResId = when (notification.type) {
                             NotificationTypeLocal.ACCEPTED -> R.drawable.check_circle
                             NotificationTypeLocal.PENDING -> R.drawable.pending
                             NotificationTypeLocal.PAYMENT_REQUESTED -> R.drawable.sack_dollar_notification
@@ -325,6 +336,51 @@ class HomeFragmentScheduler(
             badge.text = if (count > 99) "99+" else count.toString()
         } else {
             badge.visibility = View.GONE
+        }
+    }
+
+    fun checkAndRequestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (!NotificationUtil.areNotificationsEnabled(context)) {
+                if (NotificationUtil.shouldShowRequestPermissionRationale(context)) {
+                    // Show explanation why you need the permission
+                    showPermissionRationaleDialog()
+                } else {
+                    // Directly request the permission
+                    NotificationUtil.requestNotificationPermission(
+                        context, NOTIFICATION_PERMISSION_REQUEST_CODE
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showPermissionRationaleDialog() {
+        AlertDialog.Builder(context).setTitle("Notification Permission Needed")
+            .setMessage("This app needs notification permission to alert you about important updates.")
+            .setPositiveButton("OK") { _, _ ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    NotificationUtil.requestNotificationPermission(
+                        context, NOTIFICATION_PERMISSION_REQUEST_CODE
+                    )
+                }
+            }.setNegativeButton("Cancel", null).show()
+    }
+
+    // Handle permission result
+    fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String?>,
+        grantResults: IntArray,
+    ) {
+        when (requestCode) {
+            NOTIFICATION_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission granted, you can now show notifications
+                } else {
+                    // Permission denied
+                }
+            }
         }
     }
 

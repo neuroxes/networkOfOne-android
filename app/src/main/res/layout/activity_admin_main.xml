@@ -10,7 +10,7 @@
         android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="8dp">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_live"
@@ -61,7 +61,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginEnd="8dp"
                     android:background="@drawable/bg_tile_blue"
                     android:minHeight="96dp"
                     android:padding="14dp"
@@ -86,7 +86,7 @@
 
                     <TextView
                         android:id="@+id/value_games"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="0"
                         android:textColor="#2080FF"
@@ -100,7 +100,6 @@
                     android:id="@+id/tile_payouts"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:background="@drawable/bg_tile_green"
                     android:minHeight="96dp"
                     android:padding="14dp"
@@ -170,7 +169,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginEnd="8dp"
                     android:background="@drawable/bg_tile_yellow"
                     android:minHeight="92dp"
                     android:padding="14dp"
@@ -206,7 +205,6 @@
                     android:id="@+id/tile_accepted"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:layout_marginTop="16dp"
                     android:background="@drawable/bg_tile_soft_blue"
                     android:minHeight="92dp"
@@ -244,7 +242,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginEnd="8dp"
                     android:background="@drawable/bg_tile_green"
                     android:minHeight="92dp"
                     android:padding="14dp"
@@ -279,7 +277,6 @@
                     android:id="@+id/tile_cancelled"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:layout_marginTop="12dp"
                     android:background="@drawable/bg_tile_red"
                     android:minHeight="92dp"
@@ -343,7 +340,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginEnd="8dp"
                     android:background="@drawable/bg_tile_purple"
                     android:minHeight="92dp"
                     android:padding="14dp"
@@ -364,14 +361,21 @@
 
                     <TextView
                         android:id="@+id/value_total_value"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:autoSizeMaxTextSize="24sp"
+                        android:autoSizeMinTextSize="12sp"
+                        android:autoSizeTextType="uniform"
+                        android:maxLines="2"
                         android:text="0"
                         android:textColor="#7E2BD8"
                         android:textSize="24sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/value_total_value"
+                        app:layout_constraintVertical_bias="0" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -379,7 +383,6 @@
                     android:id="@+id/tile_pending_payout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:layout_marginTop="16dp"
                     android:background="@drawable/bg_tile_yellow"
                     android:minHeight="92dp"
@@ -417,7 +420,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginEnd="8dp"
                     android:background="@drawable/bg_tile_green"
                     android:minHeight="92dp"
                     android:padding="14dp"
@@ -453,7 +456,6 @@
                     android:id="@+id/tile_avg_amount"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:layout_marginTop="12dp"
                     android:background="@drawable/bg_tile_soft_blue"
                     android:minHeight="92dp"
@@ -475,14 +477,21 @@
 
                     <TextView
                         android:id="@+id/value_avg_amount"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:autoSizeMaxTextSize="24sp"
+                        android:autoSizeMinTextSize="12sp"
+                        android:autoSizeTextType="uniform"
+                        android:maxLines="2"
                         android:text="0"
                         android:textColor="#2B6FE8"
                         android:textSize="24sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/label_avg_amount"
+                        app:layout_constraintVertical_bias="0" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>

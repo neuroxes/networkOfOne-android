@@ -4,10 +4,14 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -37,8 +41,10 @@ import com.example.networkofone.mvvm.viewModels.HomeViewModelReferee
 import com.example.networkofone.mvvm.viewModels.HomeViewModelRefereeFactory
 import com.example.networkofone.utils.ActivityNavigatorUtil
 import com.example.networkofone.utils.DialogUtil
+import com.example.networkofone.utils.GameSorter
 import com.example.networkofone.utils.LoadingDialog
 import com.example.networkofone.utils.NewToastUtil
+import com.example.networkofone.utils.NotificationUtil
 import com.example.networkofone.utils.NumberFormatterUtil
 import com.example.networkofone.utils.SharedPrefManager
 import com.firebase.ui.auth.AuthUI
@@ -47,8 +53,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.incity.incity_stores.AppFragmentLoader
 import java.util.Calendar
+import kotlin.random.Random
 
-class HomeFragmentReferee(
+class RefereeHomeFragment(
     private val context: AppCompatActivity,
     private val verifyLocationForCheckIn: (Double, Double) -> Unit,
 ) : AppFragmentLoader(R.layout.fragment_root_nested_scroll_view) {
@@ -59,6 +66,7 @@ class HomeFragmentReferee(
     private lateinit var gamesAdapter: RefereeGamesAdapter
 
     private lateinit var loader: LoadingDialog
+    private val NOTIFICATION_PERMISSION_REQUEST_CODE = 1001
 
     private val notificationRepository = NotificationRepository()
 
@@ -80,6 +88,7 @@ class HomeFragmentReferee(
         userModel = SharedPrefManager(context).getUser()
         loader = LoadingDialog(context)
         settingUpBinding()
+        checkAndRequestNotificationPermission()
     }
 
     private fun settingUpBinding() {
@@ -134,6 +143,7 @@ class HomeFragmentReferee(
             intent.putExtra("game_data", gameJson)
             context.startActivity(intent)
         }, onAcceptClick = { game ->
+            game.refereeName = userModel?.name
             viewModel.updateGame(game, GameStatus.ACCEPTED)
         }, onCheckInClick = { game ->
             viewModel.checkInGame = game
@@ -161,30 +171,44 @@ class HomeFragmentReferee(
             btnCancel.setOnClickListener { dialog.dismiss() }
             paymentMethodRadioGroup.setOnCheckedChangeListener { group, checkedId ->
                 when (checkedId) {
-                    R.id.rBtn1 -> setPaymentMethod(
-                        "Bitcoin Address",
-                        "Enter your Bitcoin wallet address",
-                        R.drawable.round_currency_bitcoin_24
-                    )
+                    R.id.rBtn1 -> {
+                        lay2.visibility = VISIBLE
+                        setPaymentMethod(
+                            "XRPL Address",
+                            "Enter your XRPL wallet address",
+                            R.drawable.round_currency_bitcoin_24
+                        )
+                    }
 
-                    R.id.rBtn2 -> // Bank transfer selected
+                    R.id.rBtn2 -> {
+                        lay2.visibility = GONE
                         setPaymentMethod(
                             "Bank Account Details",
                             "Enter your bank account number",
                             R.drawable.bank
                         )
+                    }
 
-                    R.id.rBtn3 -> // Credit card selected
+                    R.id.rBtn3 -> {
+                        lay2.visibility = GONE
                         setPaymentMethod(
                             "Card Details", "Enter your credit card number", R.drawable.cvv_card
                         )
+                    }
 
-                    R.id.rBtn4 -> // Other payment selected
+                    R.id.rBtn4 -> {
+                        lay2.visibility = GONE
                         setPaymentMethod(
                             "Payment Details", "Enter your payment details", R.drawable.sack_dollar
                         )
+                    }
                 }
             }
+            add1.setOnClickListener { etAccountDetail.setText(add1.text) }
+            add2.setOnClickListener { etAccountDetail.setText(add2.text) }
+            add3.setOnClickListener { etAccountDetail.setText(add3.text) }
+            add4.setOnClickListener { etAccountDetail.setText(add4.text) }
+
 
             btnSave.setOnClickListener {
                 if (isDataValid()) {
@@ -289,7 +313,8 @@ class HomeFragmentReferee(
         }
 
         viewModel.filteredGames.observe(context) { games ->
-            gamesAdapter.submitList(games)
+            gamesAdapter.submitList(GameSorter.sortGamesByDateTime(games))
+
 
             // Update empty state for filtered results
             if (games.isEmpty() && viewModel.uiState.value is GameUiState.Success) {
@@ -454,7 +479,7 @@ class HomeFragmentReferee(
                 notificationsList.forEach { it ->
                     NotificationUtil.showSystemNotification(
                         context = context,
-                        notificationId = 1,
+                        notificationId = Random.nextInt(),
                         title = it.title,
                         message = it.message,
                         largeIconResId = when (it.type) {
@@ -467,6 +492,52 @@ class HomeFragmentReferee(
                             null -> null
                         }
                     )
+                }
+            }
+        }
+    }
+
+
+    fun checkAndRequestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (!NotificationUtil.areNotificationsEnabled(context)) {
+                if (NotificationUtil.shouldShowRequestPermissionRationale(context)) {
+                    // Show explanation why you need the permission
+                    showPermissionRationaleDialog()
+                } else {
+                    // Directly request the permission
+                    NotificationUtil.requestNotificationPermission(
+                        context, NOTIFICATION_PERMISSION_REQUEST_CODE
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showPermissionRationaleDialog() {
+        AlertDialog.Builder(context).setTitle("Notification Permission Needed")
+            .setMessage("This app needs notification permission to alert you about important updates.")
+            .setPositiveButton("OK") { _, _ ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    NotificationUtil.requestNotificationPermission(
+                        context, NOTIFICATION_PERMISSION_REQUEST_CODE
+                    )
+                }
+            }.setNegativeButton("Cancel", null).show()
+    }
+
+    // Handle permission result
+    fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String?>,
+        grantResults: IntArray,
+    ) {
+        when (requestCode) {
+            NOTIFICATION_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission granted, you can now show notifications
+                } else {
+                    // Permission denied
                 }
             }
         }

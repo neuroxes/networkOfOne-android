@@ -3,11 +3,10 @@ package com.example.networkofone.activities
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.view.animation.OvershootInterpolator
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
-import com.example.networkofone.MainActivityScheduler
+import com.example.networkofone.SchedulerMainActivity
 import com.example.networkofone.R
 import com.example.networkofone.mvvm.models.UserType
 import com.example.networkofone.utils.ActivityNavigatorUtil
@@ -31,7 +30,7 @@ class SplashActivity : AppCompatActivity() {
 
         img.animate().alpha(1f).translationY(0F).setDuration(1500)
             .setInterpolator(FastOutSlowInInterpolator()).start()
-        tvAppName.animate().alpha(1f).translationY(0F).setDuration(1500)
+        tvAppName.animate().alpha(1f).translationY(-10F).setDuration(1500)
             .setInterpolator(FastOutSlowInInterpolator()).setStartDelay(200).start()
 
         if (!timerStarted) {
@@ -54,7 +53,7 @@ class SplashActivity : AppCompatActivity() {
                                 UserType.SCHOOL -> {
                                     ActivityNavigatorUtil.startActivity(
                                         this@SplashActivity,
-                                        MainActivityScheduler::class.java
+                                        SchedulerMainActivity::class.java
                                     )
                                 }
 
@@ -71,6 +70,7 @@ class SplashActivity : AppCompatActivity() {
                                         AdminMainActivity::class.java
                                     )
                                 }
+
                                 UserType.UNKNOWN -> {}
                             }
                         }
