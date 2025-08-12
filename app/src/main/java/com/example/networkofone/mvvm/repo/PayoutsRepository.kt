@@ -98,6 +98,54 @@ class PayoutsRepository {
         }
     }
 
+    suspend fun getPayoutById(payoutId: String): PaymentRequestData? = withContext(Dispatchers.IO) {
+        try {
+            val snapshot = payoutsRef.child(payoutId).get().await()
+            snapshot.getValue(PaymentRequestData::class.java)?.also {
+                Log.d("PayRepo", "Found payout with ID: $payoutId")
+            } ?: run {
+                Log.e("PayRepo", "No payout found with ID: $payoutId")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("PayRepo", "getPayoutById: ${e.message}")
+            null
+        }
+    }
+
+    suspend fun getPayoutBySchedulerId(schedulerId: String): PaymentRequestData? = withContext(Dispatchers.IO) {
+        try {
+            val query = payoutsRef.orderByChild("schedularId").equalTo(schedulerId).limitToFirst(1)
+            val snapshot = query.get().await()
+
+            snapshot.children.firstOrNull()?.getValue(PaymentRequestData::class.java)?.also {
+                Log.d("PayRepo", "Found payout for schedulerId: $schedulerId")
+            } ?: run {
+                Log.e("PayRepo", "No payout found for schedulerId: $schedulerId")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("PayRepo", "getPayoutBySchedulerId: ${e.message}")
+            null
+        }
+    }
+
+    suspend fun getPayoutByRefereeId(refereeId: String): PaymentRequestData? = withContext(Dispatchers.IO) {
+        try {
+            val query = payoutsRef.orderByChild("refereeId").equalTo(refereeId).limitToFirst(1)
+            val snapshot = query.get().await()
+
+            snapshot.children.firstOrNull()?.getValue(PaymentRequestData::class.java)?.also {
+                Log.d("PayRepo", "Found payout for refereeId: $refereeId")
+            } ?: run {
+                Log.e("PayRepo", "No payout found for refereeId: $refereeId")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("PayRepo", "getPayoutByRefereeId: ${e.message}")
+            null
+        }
+    }
     suspend fun acceptPayout(payout: PaymentRequestData): Boolean {
         val updates = mapOf(
             "status" to PaymentStatus.APPROVED, "paidAt" to System.currentTimeMillis()

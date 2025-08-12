@@ -193,19 +193,32 @@ class GameRepositoryImpl() {
     suspend fun updateGame(game: GameData, status: GameStatus): Result<Unit> = try {
         // Create a map of the fields to update
 
-        val updates = if (status == GameStatus.ACCEPTED) {
-            mapOf<String, Any>(
-                "status" to status,
-                "acceptedByRefereeId" to userId,
-                "refereeName" to game.refereeName!!,
-                "acceptedAt" to System.currentTimeMillis()
-            )
-        } else {
-            mapOf<String, Any>(
-                "status" to status,
-                "checkInStatus" to true,
-                "checkInTime" to System.currentTimeMillis()
-            )
+        val updates = when (status) {
+            GameStatus.ACCEPTED -> {
+                mapOf<String, Any>(
+                    "status" to status,
+                    "acceptedByRefereeId" to userId,
+                    "refereeName" to game.refereeName!!,
+                    "acceptedAt" to System.currentTimeMillis()
+                )
+            }
+            GameStatus.PENDING -> {
+                mapOf<String, Any?>(
+                    "status" to status,
+                    "acceptedByRefereeId" to null,
+                    "refereeName" to null,
+                    "acceptedAt" to null,
+                    "checkInStatus" to false,
+                    "checkInTime" to null
+                )
+            }
+            else -> {
+                mapOf<String, Any>(
+                    "status" to status,
+                    "checkInStatus" to true,
+                    "checkInTime" to System.currentTimeMillis()
+                )
+            }
         }
         gamesRef.child(game.id).updateChildren(updates).await()
         notificationRepository.createNotification(

@@ -444,7 +444,7 @@ class RefereeHomeFragment(
                 notificationsList.forEach { it ->
                     NotificationUtil.showSystemNotification(
                         context = context,
-                        notificationId = Random.nextInt(),
+                        notificationId = it.createdAt.toInt(),
                         title = it.title,
                         message = it.message,
                         largeIconResId = when (it.type) {

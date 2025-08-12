@@ -40,7 +40,7 @@ data class PaymentRequestData(
     val schedularName: String = "",
     val amount: String = "",
     val paymentMethod: PaymentMethod = PaymentMethod.NONE,
-    val status: PaymentStatus = PaymentStatus.PENDING,
+    var status: PaymentStatus = PaymentStatus.PENDING,
     val requestedAt: Long = System.currentTimeMillis(),
     val paidAt: Long? = null,
     val transactionId: String? = null,

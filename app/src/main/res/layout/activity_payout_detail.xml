@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.GameDetailActivity">
+    tools:context=".activities.PayoutDetailActivity">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/ivBack"
@@ -16,7 +16,7 @@
     <TextView
         style="@style/textHeading.medium"
         android:layout_marginStart="12dp"
-        android:text="Game Detail"
+        android:text="Payout Detail"
         app:layout_constraintBottom_toBottomOf="@id/ivBack"
         app:layout_constraintStart_toEndOf="@id/ivBack"
         app:layout_constraintTop_toTopOf="@id/ivBack" />
@@ -436,66 +436,66 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/teamInfoCard" />
 
-            <!-- View Updates Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAccept"
-                style="@style/btn_lwm.outlined"
-                android:layout_width="0dp"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="20dp"
-                android:text="Accept"
-                android:visibility="visible"
-                app:icon="@drawable/check_circle"
-                app:iconGravity="textStart"
-                app:iconPadding="12dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/teamInfoCard"
-                tools:visibility="gone" />
+            <!--             View Updates Button
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAccept"
+                            style="@style/btn_lwm.outlined"
+                            android:layout_width="0dp"
+                            android:layout_marginHorizontal="16dp"
+                            android:layout_marginTop="20dp"
+                            android:text="Accept"
+                            android:visibility="visible"
+                            app:icon="@drawable/check_circle"
+                            app:iconGravity="textStart"
+                            app:iconPadding="12dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/teamInfoCard"
+                            tools:visibility="gone" />
 
-            <!-- Action Buttons -->
+                         Action Buttons
 
-            <!-- Return Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnReturn"
-                style="@style/btn_lwm.outlined"
-                android:layout_width="0dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="8dp"
-                android:autoSizeMaxTextSize="16dp"
-                android:autoSizeTextType="uniform"
-                android:enabled="false"
-                android:lines="1"
-                android:paddingHorizontal="14dp"
-                android:text="Return Game"
-                android:visibility="visible"
-                app:icon="@drawable/round_keyboard_return_24"
-                app:layout_constraintEnd_toStartOf="@id/btnReqPay"
-                app:layout_constraintStart_toStartOf="@id/btnAccept"
-                app:layout_constraintTop_toBottomOf="@id/btnAccept"
-                tools:visibility="gone" />
+                         Return Button
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnReturn"
+                            style="@style/btn_lwm.outlined"
+                            android:layout_width="0dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginEnd="8dp"
+                            android:autoSizeMaxTextSize="16dp"
+                            android:autoSizeTextType="uniform"
+                            android:enabled="false"
+                            android:lines="1"
+                            android:paddingHorizontal="14dp"
+                            android:text="Return Game"
+                            android:visibility="visible"
+                            app:icon="@drawable/round_keyboard_return_24"
+                            app:layout_constraintEnd_toStartOf="@id/btnReqPay"
+                            app:layout_constraintStart_toStartOf="@id/btnAccept"
+                            app:layout_constraintTop_toBottomOf="@id/btnAccept"
+                            tools:visibility="gone" />
 
-            <!-- Check In Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnReqPay"
-                style="@style/btn_lwm_enable_disable"
-                android:layout_width="0dp"
-                android:layout_marginStart="8dp"
-                android:autoSizeMaxTextSize="16dp"
-                android:autoSizeTextType="uniform"
-                android:enabled="false"
-                android:lines="1"
-                android:paddingHorizontal="14dp"
-                android:text="Request Payout"
-                android:visibility="visible"
-                app:icon="@drawable/sack_dollar"
-                app:layout_constraintBottom_toBottomOf="@id/btnReturn"
-                app:layout_constraintEnd_toEndOf="@id/btnAccept"
-                app:layout_constraintStart_toEndOf="@id/btnReturn"
-                app:layout_constraintTop_toTopOf="@id/btnReturn"
-                tools:visibility="gone" />
-<!--
-            &lt;!&ndash; Return Button &ndash;&gt;
+                         Check In Button
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnReqPay"
+                            style="@style/btn_lwm_enable_disable"
+                            android:layout_width="0dp"
+                            android:layout_marginStart="8dp"
+                            android:autoSizeMaxTextSize="16dp"
+                            android:autoSizeTextType="uniform"
+                            android:enabled="false"
+                            android:lines="1"
+                            android:paddingHorizontal="14dp"
+                            android:text="Request Payout"
+                            android:visibility="visible"
+                            app:icon="@drawable/sack_dollar"
+                            app:layout_constraintBottom_toBottomOf="@id/btnReturn"
+                            app:layout_constraintEnd_toEndOf="@id/btnAccept"
+                            app:layout_constraintStart_toEndOf="@id/btnReturn"
+                            app:layout_constraintTop_toTopOf="@id/btnReturn"
+                            tools:visibility="gone" />
+
+                         Return Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRejectPayout"
                 style="@style/btn_lwm.outlined"
@@ -514,7 +514,7 @@
                 app:layout_constraintStart_toStartOf="@id/teamInfoCard"
                 app:layout_constraintTop_toBottomOf="@id/teamInfoCard" />
 
-            &lt;!&ndash; Check In Button &ndash;&gt;
+            <!-- Check In Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAcceptPayout"
                 style="@style/btn_lwm_enable_disable"
@@ -531,7 +531,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/btnRejectPayout"
                 app:layout_constraintEnd_toEndOf="@id/teamInfoCard"
                 app:layout_constraintStart_toEndOf="@id/btnRejectPayout"
-                app:layout_constraintTop_toTopOf="@id/btnRejectPayout" />-->
+                app:layout_constraintTop_toTopOf="@id/btnRejectPayout" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -308,9 +308,10 @@ class SchedulerHomeFragment(
             context.runOnUiThread {
                 updateNotificationBadge(notificationsList.size)
                 notificationsList.forEach { notification ->
+                    Log.e(TAG, "setupUnreadCountListener: ${notification.createdAt.toInt()}")
                     NotificationUtil.showSystemNotification(
                         context = context,
-                        notificationId = Random.nextInt(), // Use index or a unique ID from the notification object
+                        notificationId = notification.createdAt.toInt(), // Use index or a unique ID from the notification object
                         title = notification.title,
                         message = notification.message,
                         largeIconResId = when (notification.type) {

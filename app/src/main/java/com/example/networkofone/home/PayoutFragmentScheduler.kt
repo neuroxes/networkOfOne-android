@@ -10,27 +10,30 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.widget.NestedScrollView
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.networkofone.R
-import com.example.networkofone.activities.GameDetailActivity
+import com.example.networkofone.activities.PayoutDetailActivity
 import com.example.networkofone.adapters.PayoutsAdapter
 import com.example.networkofone.databinding.LayoutPayoutFragmentBinding
 import com.example.networkofone.mvvm.models.PaymentRequestData
+import com.example.networkofone.mvvm.models.PaymentStatus
 import com.example.networkofone.mvvm.models.UserModel
+import com.example.networkofone.mvvm.models.asCurrency
 import com.example.networkofone.mvvm.viewModels.PayoutsUiState
 import com.example.networkofone.mvvm.viewModels.PayoutsViewModel
 import com.example.networkofone.utils.LoadingDialog
 import com.example.networkofone.utils.SharedPrefManager
+import com.google.gson.Gson
 import com.incity.incity_stores.AppFragmentLoader
 
 class PayoutFragmentScheduler(
     private val context: AppCompatActivity,
-) : AppFragmentLoader(R.layout.fragment_root_constraint_layout) {
+) : AppFragmentLoader(R.layout.fragment_root_nested_scroll_view) {
     private lateinit var binding: LayoutPayoutFragmentBinding
-    private lateinit var base: ConstraintLayout
+    private lateinit var base: NestedScrollView
     private var userModel: UserModel? = null
     private lateinit var viewModel: PayoutsViewModel
     private lateinit var payoutsAdapter: PayoutsAdapter
@@ -58,7 +61,7 @@ class PayoutFragmentScheduler(
     }
 
     private fun settingUpBinding() {
-        base = find(R.id.root)
+        base = find(R.id.base)
         base.removeAllViews()
         binding = LayoutPayoutFragmentBinding.inflate(context.layoutInflater, base)
         binding.root.alpha = 0f
@@ -67,15 +70,9 @@ class PayoutFragmentScheduler(
             .setInterpolator(FastOutSlowInInterpolator()).start()
 
         binding.ivInfo.setOnClickListener {
-            AlertDialog.Builder(context)
-                .setTitle("Payouts Information")
-                .setMessage("This section displays pending payout requests. You can:\n" +
-                        "- View details of each payout request.\n" +
-                        "- Search for specific payouts.\n" +
-                        "- Approve or reject pending payouts.\n" +
-                        "- Click on a payout to see more details about the associated game.")
-                .setPositiveButton("OK", null)
-                .show()
+            AlertDialog.Builder(context).setTitle("Payouts Information").setMessage(
+                "This section displays pending payout requests. You can:\n" + "- View details of each payout request.\n" + "- Search for specific payouts.\n" + "- Approve or reject pending payouts.\n" + "- Click on a payout to see more details about the associated game."
+            ).setPositiveButton("OK", null).show()
         }
         setupViewModel()
         setupRecyclerView()
@@ -95,8 +92,9 @@ class PayoutFragmentScheduler(
         }, onRejectClick = { it ->
             showRejectConfirmationDialog(it)
         }, onClick = { it ->
+            val payoutJson = Gson().toJson(it)
             val intent =
-                Intent(context, GameDetailActivity::class.java).putExtra("gameId", it.gameId)
+                Intent(context, PayoutDetailActivity::class.java).putExtra("payoutData", payoutJson)
             context.startActivity(intent)
         })
 
@@ -143,6 +141,7 @@ class PayoutFragmentScheduler(
                     binding.layResult.visibility = View.GONE
                     Log.e(TAG, "observeUiState: payouts -> ${state.payouts}")
                     binding.t1.text = ("Payouts (${state.payouts.size})")
+                    setupStatisticsData(state.payouts)
                     payoutsAdapter.submitList(state.payouts.sortedByDescending { it.requestedAt })
                 }
 
@@ -156,6 +155,32 @@ class PayoutFragmentScheduler(
                 }
             }
         }
+    }
+
+    private fun setupStatisticsData(payouts: List<PaymentRequestData>) {
+        var totalAmount = 0.0
+        var totalPending = 0
+        var totalAccepted = 0
+        var totalRejected = 0
+        var totalPaid = 0
+        for (payout in payouts) {
+            totalAmount += payout.amount.toDouble()
+            when (payout.status) {
+                PaymentStatus.PENDING -> totalPending++
+                PaymentStatus.APPROVED -> totalAccepted++
+                PaymentStatus.REJECTED -> totalRejected++
+                PaymentStatus.PAID -> totalPaid++
+            }
+        }
+        binding.apply {
+            valueTotalValue.text = totalAmount.asCurrency()
+            valuePendingPayout.text = totalPending.toString()
+            valueCompletedPayout.text = totalAccepted.toString()
+            valueCancelled.text = totalRejected.toString()
+            valueCompleted.text = totalPaid.toString()
+            valueAvgAmount.text = (totalAmount / payouts.size).asCurrency()
+        }
+
     }
 
     private fun showRejectConfirmationDialog(payout: PaymentRequestData) {
