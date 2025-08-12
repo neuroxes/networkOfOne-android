@@ -85,6 +85,7 @@ class GameDetailActivity : AppCompatActivity(), LocationHelper.LocationResultLis
             viewModel.updateResult.observe(this) {
                 loader.endLoadingAnimation()
                 if (it.isSuccess) {
+                    viewModel.getData(viewModel.gameData.id)
                     NewToastUtil.showSuccess(this, "Status updated!")
                 } else {
                     NewToastUtil.showError(this, "Something went wrong")
@@ -121,9 +122,6 @@ class GameDetailActivity : AppCompatActivity(), LocationHelper.LocationResultLis
             // Check In button
             btnAccept.setOnClickListener {
                 if (btnAccept.text == "Accept") {
-                    viewModel.gameData.refereeName = userData?.name
-                    viewModel.gameData.acceptedByRefereeId = userData?.id
-                    viewModel.gameData.acceptedAt = System.currentTimeMillis()
                     updateGameStatus(GameStatus.ACCEPTED)
                 } else {
                     updateGameStatus(GameStatus.CHECKED_IN)
@@ -436,23 +434,7 @@ class GameDetailActivity : AppCompatActivity(), LocationHelper.LocationResultLis
 
     private fun updateGameStatus(status: GameStatus) {
         loader.startLoadingAnimation()
-        when (status) {
-            GameStatus.PENDING, GameStatus.ACCEPTED, GameStatus.PAYMENT_REQUESTED -> {
-                viewModel.gameData.status = status
-            }
-
-            GameStatus.CHECKED_IN -> {
-                viewModel.gameData.checkInStatus = true
-                viewModel.gameData.checkInTime = System.currentTimeMillis()
-                viewModel.gameData.status = status
-            }
-
-            else -> {}
-        }
-        updateStatusCard()
-        updateActionButtons()
-        viewModel.updateGame(viewModel.gameData, status)
-        bindGameData()
+        viewModel.updateGame(status)
 
         /*if (viewModel.gameData.status == GameStatus.ACCEPTED && !viewModel.gameData.checkInStatus) {
             // Update the viewModel.gameData data

@@ -294,6 +294,7 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
             dialog.dismiss()
         }
         dialogBinding.apply {
+            ivBack.setOnClickListener{ dialog.dismiss()}
             recyclerView.adapter = searchLocationAdapter
             Places.initialize(applicationContext, getString(R.string.MAP_API_KEY))
             placesClient = Places.createClient(this@SchedulerMainActivity)

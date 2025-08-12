@@ -18,11 +18,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.example.networkofone.R
 import com.example.networkofone.databinding.ActivityPayoutDetailBinding
+import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
 import com.example.networkofone.mvvm.models.PaymentRequestData
 import com.example.networkofone.mvvm.models.PaymentStatus
 import com.example.networkofone.mvvm.models.UserModel
 import com.example.networkofone.mvvm.models.UserType
+import com.example.networkofone.mvvm.models.asCurrency
+import com.example.networkofone.mvvm.viewModels.PayoutDetailUiState
 import com.example.networkofone.mvvm.viewModels.PayoutDetailViewModel
 import com.example.networkofone.utils.LoadingDialog
 import com.example.networkofone.utils.NewToastUtil
@@ -35,288 +38,167 @@ import java.util.Locale
 
 class PayoutDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPayoutDetailBinding
-    private var userData: UserModel? = null
-    private lateinit var loader: LoadingDialog
     private val viewModel: PayoutDetailViewModel by viewModels()
-
+    private lateinit var loader: LoadingDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPayoutDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        loader = LoadingDialog(this)
-        userData = SharedPrefManager(this).getUser()
 
-        getIntentData()
-        observeViewModel()
-        onClicks()
-    }
-
-    private fun getIntentData() {
-        try {
-            val payoutDataJson = intent.getStringExtra("payoutData")
-            if (payoutDataJson != null) {
-                viewModel.payoutData =
-                    Gson().fromJson(payoutDataJson, PaymentRequestData::class.java)
-                viewModel.getGameData(viewModel.payoutData.gameId)
-                setupViews()
-            } else {
-                val payoutId = intent.getStringExtra("payoutId")
-                loader.startLoadingAnimation()
-                if (userData?.userType == UserType.SCHOOL) viewModel.isSchool = true
-                payoutId?.let { viewModel.getData(it); }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-
-    private fun observeViewModel() {
-        try {
-            viewModel.payoutsLiveData.observe(this) {
-                viewModel.payoutData = it ?: PaymentRequestData()
-                viewModel.getGameData(viewModel.payoutData.gameId)
-                loader.endLoadingAnimation()
-                setupViews()
-            }
-
-            viewModel.updateResult.observe(this) {
-                loader.endLoadingAnimation()
-                if (it) {
-                    NewToastUtil.showSuccess(this, "Status updated!")
-                } else {
-                    NewToastUtil.showError(this, "Something went wrong")
-                }
-            }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            loader.endLoadingAnimation()
-        }
-
-    }
-
-    private fun onClicks() {
-        binding.apply {
-            ivBack.setOnClickListener { finish() }
-
-            btnRejectPayout.setOnClickListener {
-
-            }
-            btnAcceptPayout.setOnClickListener {
-                showConfirmationDialog()
-            }
-
-            // Directions button
-            directionsIcon.setOnClickListener {
-                openDirections()
-            }
-
-        }
-    }
-
-    private fun showRejectConfirmationDialog(payout: PaymentRequestData) {
-        AlertDialog.Builder(this).setTitle("Reject Payout")
-            .setMessage("Are you sure you want to reject this payout?")
-            .setPositiveButton("Reject") { _, _ ->
-                loader.startLoadingAnimation()
-                viewModel.payoutData.status = PaymentStatus.REJECTED
-                viewModel.gameData?.status = GameStatus.REJECTED
-                viewModel.rejectPayout(viewModel.payoutData)
-            }.setNegativeButton("Cancel", null).show()
-    }
-
-    private fun showConfirmationDialog() {
-        AlertDialog.Builder(this).setTitle("Approve Payout")
-            .setMessage("Are you sure you want to approve this payout?")
-            .setPositiveButton("Approve") { _, _ ->
-                loader.startLoadingAnimation()
-                viewModel.payoutData.status = PaymentStatus.APPROVED
-                viewModel.gameData?.status = GameStatus.ACCEPTED
-                viewModel.acceptPayout(viewModel.payoutData)
-            }.setNegativeButton("Cancel", null).show()
+        setupViews()
+        setupObservers()
+        handleIntent()
     }
 
     private fun setupViews() {
-        Handler(Looper.getMainLooper()).postDelayed({
-            binding.nestedScrollView.visible()
-            updateStatusCard()
-            bindPayoutDataToViews()
-            setViewVisibility()
-        }, 1000)
-
+        loader = LoadingDialog(this)
+        binding.ivBack.setOnClickListener { finish() }
+        binding.btnRejectPayout.setOnClickListener { showRejectConfirmationDialog() }
+        binding.btnAcceptPayout.setOnClickListener { showConfirmationDialog() }
+        binding.directionsIcon.setOnClickListener { openDirections() }
     }
 
-    private fun setViewVisibility() {
-        binding.apply {
-            when (userData?.userType) {
-                UserType.SCHOOL -> {
-                    btnAcceptPayout.visible()
-                    btnRejectPayout.visible()
+    private fun setupObservers() {
+        viewModel.uiState.observe(this) { state ->
+            when (state) {
+                is PayoutDetailUiState.Loading -> loader.startLoadingAnimation()
+                is PayoutDetailUiState.Success -> {
+                    loader.endLoadingAnimation()
+                    updateUi(state.gameData, state.paymentData)
                 }
-
-                UserType.REFEREE -> {
-                    btnAcceptPayout.gone()
-                    btnRejectPayout.gone()
+                is PayoutDetailUiState.Error -> {
+                    loader.endLoadingAnimation()
+                    showError(state.message)
                 }
-
-                else -> {}
+                is PayoutDetailUiState.OperationSuccess -> {
+                    loader.endLoadingAnimation()
+                    showSuccess(state.message)
+                    // Refresh data after successful operation
+                    state.paymentId.let { viewModel.loadPayoutData(it, isSchool = state.isSchool) }
+                }
             }
-
         }
-        Log.e(TAG, "setViewVisibility: ${userData?.userType}")
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun bindPayoutDataToViews() {
-        // Basic viewModel.payoutData info
-        binding.apply {
-            gameTitle.text = viewModel.payoutData.gameName
-            specialNote.text = viewModel.gameData?.specialNote
-            feeAmountText.text = "$${NumberFormatterUtil.format(viewModel.payoutData.amount)}"
-            locationText.text = viewModel.gameData?.location
-
-            // Date and time
-            dateText.text = formatDate(viewModel.gameData?.date ?: "")
-            timeText.text = viewModel.gameData?.time
-
-            // Team information
-            createdByText.text = viewModel.payoutData.schedularName
-            if (viewModel.payoutData.refereeName.isEmpty()) {
-                refereeCard.gone()
+    private fun handleIntent() {
+        intent.getStringExtra("payoutData")?.let { json ->
+            viewModel.setPayoutDataFromJson(json)
+        } ?: run {
+            intent.getStringExtra("payoutId")?.let { id ->
+                val isSchool = SharedPrefManager(this).getUser()?.userType == UserType.SCHOOL
+                viewModel.loadPayoutData(id, isSchool)
             }
-            refereeText.text = viewModel.payoutData.refereeName
+        }
+    }
+
+    private fun updateUi(gameData: GameData, paymentData: PaymentRequestData) {
+        binding.apply {
+            nestedScrollView.visible()
+
+            // Game information
+            gameTitle.text = gameData.title
+            specialNote.text = gameData.specialNote
+            feeAmountText.text = (gameData.feeAmount.toDoubleOrNull()?.asCurrency())
+            locationText.text = gameData.location
+            dateText.text = formatDate(gameData.date)
+            timeText.text = gameData.time
+            createdByText.text = paymentData.schedularName
+
+            // Referee information
+            if (gameData.refereeName.isNullOrEmpty()) {
+                refereeCard.gone()
+            } else {
+                refereeCard.visible()
+                refereeText.text = gameData.refereeName
+            }
 
             // Timestamps
-            createdAtText.text = formatTimestamp(viewModel.payoutData.requestedAt)
+            createdAtText.text = formatTimestamp(paymentData.requestedAt)
+            updatedAtText.text = gameData.acceptedAt?.let { formatTimestamp(it) } ?: "N/A"
 
-            viewModel.gameData?.checkInTime?.let { acceptedTime ->
-                updatedAtText.text = formatTimestamp(acceptedTime)
-            } ?: run {
-                updatedAtText.text = formatTimestamp(viewModel.gameData?.checkInTime ?: 0L)
-            }
+            // Update status UI based on both game and payment status
+            updateStatusUi(gameData.status, paymentData.status)
 
-        }
-
-    }
-
-    private fun formatTimestamp(timestamp: Long): String {
-        return try {
-            val sdf = SimpleDateFormat("MMM dd, yyyy 'at' h:mm a", Locale.getDefault())
-            val date = Date(timestamp)
-            sdf.format(date)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ""
+            // Set button visibility based on user type and current status
+            setButtonVisibility(
+                userType = SharedPrefManager(this@PayoutDetailActivity).getUser()?.userType,
+                gameStatus = gameData.status,
+                paymentStatus = paymentData.status
+            )
         }
     }
 
-    private fun updateStatusCard() {
-        binding.apply {
-            when (viewModel.gameData?.status) {
-                GameStatus.PENDING -> {
-                    btnAcceptPayout.gone()
-                    btnRejectPayout.gone()
-                    statusCard.setCardBackgroundColor(
-                        ContextCompat.getColor(
-                            this@PayoutDetailActivity, R.color.status_pending
-                        )
-                    )
-                    statusIcon.setImageResource(R.drawable.ic_clock)
-                    statusText.text = "Pending"
-                }
-
-                GameStatus.PAYMENT_REQUESTED -> {
-                    btnAcceptPayout.enable()
-                    btnRejectPayout.enable()
-                    statusCard.setCardBackgroundColor(
-                        ContextCompat.getColor(
-                            this@PayoutDetailActivity, R.color.status_pending
-                        )
-                    )
-                    statusIcon.setImageResource(R.drawable.round_access_alarm_24)
-                    statusText.text = "Payment Requested"
-                }
-
-                GameStatus.ACCEPTED -> {
-                    btnAcceptPayout.gone()
-                    btnRejectPayout.gone()
-                    statusCard.setCardBackgroundColor(
-                        ContextCompat.getColor(
-                            this@PayoutDetailActivity, R.color.status_confirmed
-                        )
-                    )
-                    statusIcon.setImageResource(R.drawable.check_circle)
-                    statusText.text = "Accepted"
-                }
-
-                GameStatus.REJECTED -> {
-                    btnAcceptPayout.gone()
-                    btnRejectPayout.gone()
-                    statusCard.setCardBackgroundColor(
-                        ContextCompat.getColor(
-                            this@PayoutDetailActivity, R.color.status_cancelled
-                        )
-                    )
-                    statusIcon.setImageResource(R.drawable.triangle_warning)
-                    statusText.text = "Rejected"
-                }
-
-                GameStatus.CHECKED_IN -> {
-                    btnAcceptPayout.gone()
-                    btnRejectPayout.gone()
-                    statusCard.setCardBackgroundColor(
-                        ContextCompat.getColor(
-                            this@PayoutDetailActivity, R.color.status_processing
-                        )
-                    )
-                    statusIcon.setImageResource(R.drawable.check_circle)
-                    statusText.text = "Checked In"
-                }
-
-                GameStatus.COMPLETED -> {
-
-                    btnAcceptPayout.gone()
-                    btnRejectPayout.gone()
-                    statusCard.setCardBackgroundColor(
-                        ContextCompat.getColor(
-                            this@PayoutDetailActivity, R.color.status_delivered
-                        )
-                    )
-                    statusIcon.setImageResource(R.drawable.check_circle)
-                    statusText.text = "Completed"
-                }
-
-                else -> {}
-            }
-
+    private fun updateStatusUi(gameStatus: GameStatus, paymentStatus: PaymentStatus) {
+        val (bgColor, iconRes, statusText) = when {
+            paymentStatus == PaymentStatus.APPROVED -> Triple(R.color.status_confirmed, R.drawable.check_circle, "Payment Approved")
+            paymentStatus == PaymentStatus.REJECTED -> Triple(R.color.status_cancelled, R.drawable.triangle_warning, "Payment Rejected")
+            gameStatus == GameStatus.PAYMENT_REQUESTED -> Triple(R.color.status_pending, R.drawable.round_access_alarm_24, "Payment Requested")
+            gameStatus == GameStatus.ACCEPTED -> Triple(R.color.status_confirmed, R.drawable.check_circle, "Game Accepted")
+            gameStatus == GameStatus.REJECTED -> Triple(R.color.status_cancelled, R.drawable.triangle_warning, "Game Rejected")
+            gameStatus == GameStatus.CHECKED_IN -> Triple(R.color.status_processing, R.drawable.check_circle, "Checked In")
+            gameStatus == GameStatus.COMPLETED -> Triple(R.color.status_delivered, R.drawable.check_circle, "Completed")
+            else -> Triple(R.color.status_pending, R.drawable.ic_clock, "Pending")
         }
+
+        binding.statusCard.setCardBackgroundColor(ContextCompat.getColor(this, bgColor))
+        binding.statusIcon.setImageResource(iconRes)
+        binding.statusText.text = statusText
+    }
+
+    private fun setButtonVisibility(userType: UserType?, gameStatus: GameStatus, paymentStatus: PaymentStatus) {
+        val shouldShowButtons = userType == UserType.SCHOOL &&
+                gameStatus == GameStatus.PAYMENT_REQUESTED &&
+                paymentStatus == PaymentStatus.PENDING
+
+        binding.btnAcceptPayout.setVisible(shouldShowButtons)
+        binding.btnRejectPayout.setVisible(shouldShowButtons)
+    }
+
+    private fun showConfirmationDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Approve Payment")
+            .setMessage("Are you sure you want to approve this payment request?")
+            .setPositiveButton("Approve") { _, _ -> viewModel.acceptPayout() }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showRejectConfirmationDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Reject Payment")
+            .setMessage("Are you sure you want to reject this payment request?")
+            .setPositiveButton("Reject") { _, _ -> viewModel.rejectPayout() }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun openDirections() {
-        if (viewModel.gameData?.latitude != 0.0 && viewModel.gameData?.longitude != 0.0) {
-            val uri =
-                "geo:${viewModel.gameData?.latitude},${viewModel.gameData?.longitude}?q=${viewModel.gameData?.latitude},${viewModel.gameData?.longitude}(${viewModel.gameData?.location})".toUri()
-            val intent = Intent(Intent.ACTION_VIEW, uri)
-            intent.setPackage("com.google.android.apps.maps")
+        viewModel.gameData?.let { game ->
+            if (game.latitude != 0.0 && game.longitude != 0.0) {
+                val uri = "geo:${game.latitude},${game.longitude}?q=${game.latitude},${game.longitude}(${game.location})".toUri()
+                val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+                    setPackage("com.google.android.apps.maps")
+                }
 
-            if (intent.resolveActivity(packageManager) != null) {
-                startActivity(intent)
+                if (intent.resolveActivity(packageManager) != null) {
+                    startActivity(intent)
+                } else {
+                    startActivity(Intent(Intent.ACTION_VIEW, "https://maps.google.com/?q=${game.latitude},${game.longitude}".toUri()))
+                }
             } else {
-                // Fallback to web browser
-                val webUri =
-                    "https://maps.google.com/?q=${viewModel.gameData?.latitude},${viewModel.gameData?.longitude}".toUri()
-                val webIntent = Intent(Intent.ACTION_VIEW, webUri)
-                startActivity(webIntent)
+                val uri = "geo:0,0?q=${Uri.encode(game.location)}".toUri()
+                startActivity(Intent(Intent.ACTION_VIEW, uri))
             }
-        } else {
-            // Fallback to search by location name
-            val uri = "geo:0,0?q=${Uri.encode(viewModel.gameData?.location)}".toUri()
-            val intent = Intent(Intent.ACTION_VIEW, uri)
-            startActivity(intent)
         }
+    }
+
+    private fun showError(message: String) {
+        NewToastUtil.showError(this, message)
+    }
+
+    private fun showSuccess(message: String) {
+        NewToastUtil.showSuccess(this, message)
     }
 
     private fun formatDate(dateString: String): String {
@@ -330,6 +212,18 @@ class PayoutDetailActivity : AppCompatActivity() {
         }
     }
 
+    private fun formatTimestamp(timestamp: Long): String {
+        return try {
+            val sdf = SimpleDateFormat("MMM dd, yyyy 'at' h:mm a", Locale.getDefault())
+            val date = Date(timestamp)
+            sdf.format(date)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ""
+        }
+    }
+
+
     private fun View.visible() {
         this.visibility = VISIBLE
     }
@@ -338,9 +232,7 @@ class PayoutDetailActivity : AppCompatActivity() {
         this.visibility = GONE
     }
 
-    private fun View.invisible() {
-        this.visibility = INVISIBLE
-    }
+
 
     private fun View.enable() {
         this.isEnabled = true
@@ -350,9 +242,18 @@ class PayoutDetailActivity : AppCompatActivity() {
         this.isEnabled = false
     }
 
-    companion object {
-        const val TAG = "PayoutDetail"
+
+    fun View.setVisible(visible: Boolean) {
+        visibility = if (visible) View.VISIBLE else View.GONE
     }
+
+
+    fun View.invisible() {
+        visibility = View.INVISIBLE
+    }
+
+    fun View.setEnabled(enabled: Boolean) {
+        isEnabled = enabled
+    }
+
 }
-
-

@@ -38,7 +38,7 @@ class NotificationsAdapter(
         val item = notifications[position]
         with(holder.binding) {
             tvTitle.text = item.title
-            tvMessage.text = Html.fromHtml("<b>${item.userName}</b> -> ${item.message}",Html.FROM_HTML_MODE_LEGACY)
+            tvMessage.text = Html.fromHtml("${item.message}",Html.FROM_HTML_MODE_LEGACY)
             tvTime.text = getFormattedTime(item.createdAt)
             /*if (item.gameName.isEmpty()) layGameName.gone()
             if (item.refereeName.isEmpty()) layRefereeName.gone()

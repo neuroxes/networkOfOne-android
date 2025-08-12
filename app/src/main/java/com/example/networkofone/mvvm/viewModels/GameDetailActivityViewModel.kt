@@ -31,8 +31,10 @@ class GameDetailActivityViewModel : ViewModel() {
     private val _updateResult = MutableLiveData<Result<Unit>>()
     val updateResult: LiveData<Result<Unit>> = _updateResult
 
-    fun updateGame(game: GameData, status: GameStatus) {
+    fun updateGame(status: GameStatus) {
         viewModelScope.launch {
+            val game = gameData.copy()
+            Log.e(TAG, "updateGame: ${gameData.status}", )
             _updateResult.value = repository.updateGame(game, status)
         }
     }
