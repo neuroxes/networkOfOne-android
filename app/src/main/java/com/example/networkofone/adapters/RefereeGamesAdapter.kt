@@ -40,6 +40,7 @@ class RefereeGamesAdapter(
         private val binding: ItemRefereeGameBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
 
+        @SuppressLint("UseCompatTextViewDrawableApis")
         fun bind(game: GameData) {
             try {
                 with(binding) {
@@ -125,11 +126,11 @@ class RefereeGamesAdapter(
 
                         GameStatus.PAYMENT_REQUESTED -> {
                             gameIcon.imageTintList = ColorStateList.valueOf(
-                                ContextCompat.getColor(itemView.context, R.color.status_confirmed)
+                                ContextCompat.getColor(itemView.context, R.color.status_pending)
                             )
                             btnAccept.visibility = GONE
                             statusBar.setBackgroundColor(
-                                ContextCompat.getColor(itemView.context, R.color.status_confirmed)
+                                ContextCompat.getColor(itemView.context, R.color.status_pending)
                             )
                             gameStatusNote.apply {
                                 visibility = VISIBLE

@@ -214,7 +214,7 @@ class GameRepositoryImpl() {
                 userName = game.schedularName,
                 gameId = game.id,
                 gameName = game.title,
-                refereeId = game.acceptedByRefereeId.toString(),
+                refereeId = userId,
                 title = "Game Updated",
                 message = "The status of game \"${game.title}\" has changed from \"${game.status}\" to \"$status\".",
                 type = NotificationTypeLocal.PENDING,
@@ -248,7 +248,7 @@ class GameRepositoryImpl() {
                 userName = payout.schedularName, // The name of the game scheduler/creator.
                 gameId = payout.gameId,
                 gameName = payout.gameName,
-                refereeId = payout.refereeId, // The ID of the referee involved in this game update.
+                refereeId = userId, // The ID of the referee involved in this game update.
                 title = "Game Updated",
                 // A descriptive message for the notification.
                 message = "The status of game \"${payout.gameName}\" has been updated to \"$status\".",

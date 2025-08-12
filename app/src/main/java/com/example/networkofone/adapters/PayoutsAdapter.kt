@@ -67,9 +67,22 @@ class PayoutsAdapter(
                 when (paymentRequestData.status) {
 
                     PaymentStatus.PENDING -> {
-                        ivCancel.visibility = View.VISIBLE
-                        ivReject.visibility = View.VISIBLE
-                        tvOrderStatus.visibility = GONE
+
+                        if (paymentRequestData.refereeId == userId) {
+                            ivCancel.visibility = GONE
+                            ivReject.visibility = GONE
+                            tvOrderStatus.apply {
+                                visibility = VISIBLE
+                                text = "Requested"
+                                setTextColor(itemView.context.getColor(R.color.status_pending))
+                                backgroundTintList =
+                                    itemView.context.getColorStateList(R.color.status_pending_bg)
+                            }
+                        } else {
+                            ivCancel.visibility = VISIBLE
+                            ivReject.visibility = VISIBLE
+                            tvOrderStatus.visibility = GONE
+                        }
                     }
 
                     PaymentStatus.APPROVED -> {

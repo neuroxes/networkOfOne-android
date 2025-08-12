@@ -142,7 +142,7 @@ class PayoutFragmentScheduler(
                     binding.cardData.visibility = View.VISIBLE
                     binding.layResult.visibility = View.GONE
                     Log.e(TAG, "observeUiState: payouts -> ${state.payouts}")
-                    binding.t1.append(" ($state.payouts.size.toString())")
+                    binding.t1.text = ("Payouts (${state.payouts.size})")
                     payoutsAdapter.submitList(state.payouts.sortedByDescending { it.requestedAt })
                 }
 

@@ -44,7 +44,7 @@ class GameRepository {
                     type = NotificationTypeLocal.PENDING,
                 )
             )
-            sendGamePostedNotification(gameWithId)
+            //sendGamePostedNotification(gameWithId)
 
             Result.success(gameId)
         } catch (e: Exception) {

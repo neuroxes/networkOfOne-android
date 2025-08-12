@@ -159,3 +159,12 @@ PaymentRequestData(id=-OXKVYZZeVwlqPsmy03W, gameId=-OXKIt4Igq6IPGhXxch5, gameNam
 PaymentRequestData(id=-OXK_EAE1ZFQjVKw1Uro, gameId=-OXKIt4Igq6IPGhXxch5, gameName=Saad's Game 1 Update, refereeId=EYR9ihmfjJYcCei1sLxlOr7R0W43, refereeName=Usman Refree, schedularId=1ReMBZu5qOgaYHJZmcZypuf71rJ3, schedularName=Saad Khalil, amount=113, paymentMethod=XRPL, status=APPROVED, requestedAt=1754856222503, paidAt=1754856312234, transactionId=null),
 PaymentRequestData(id=-OXKbuLFbgpXHzeR5qpy, gameId=-OXKa_wxrd45ebmZ7te_, gameName=456, refereeId=EYR9ihmfjJYcCei1sLxlOr7R0W43, refereeName=Usman Refree, schedularId=1ReMBZu5qOgaYHJZmcZypuf71rJ3, schedularName=Saad Khalil, amount=999, paymentMethod=XRPL, status=APPROVED, requestedAt=1754856923586, paidAt=1754857162407, transactionId=null)]:
 14:54:14.941 TAG               E*/
+
+
+data class LocationModel(
+    val address: String,
+    val name: String,
+    val placeId: String,  // We need the placeId to fetch coordinates
+    var latitude: Double? = null,
+    var longitude: Double? = null
+)

@@ -10,20 +10,23 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.MotionEvent
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.example.networkofone.adapters.LocationAdapter
 import com.example.networkofone.customClasses.AddressResolver
-import com.example.networkofone.customClasses.AddressResult
 import com.example.networkofone.customClasses.LocationPickerBottomSheetDialog
 import com.example.networkofone.databinding.ActivityMainBinding
 import com.example.networkofone.databinding.DialogCreateGameBinding
+import com.example.networkofone.databinding.DialogSearchLocationBinding
 import com.example.networkofone.fcm.FCMTokenManager
 import com.example.networkofone.home.PayoutFragmentScheduler
 import com.example.networkofone.home.SchedulerHomeFragment
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
+import com.example.networkofone.mvvm.models.LocationModel
 import com.example.networkofone.mvvm.models.UserType
 import com.example.networkofone.mvvm.repo.GameRepository
 import com.example.networkofone.mvvm.viewModels.GameViewModelFactory
@@ -33,6 +36,12 @@ import com.example.networkofone.utils.LoadingDialog
 import com.example.networkofone.utils.LocationHelper
 import com.example.networkofone.utils.NewToastUtil
 import com.example.networkofone.utils.SharedPrefManager
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -41,6 +50,7 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.google.firebase.auth.FirebaseAuth
 import com.incity.incity_stores.AppFragment
+import com.incity.incity_stores.utils.KeyboardUtils
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -55,7 +65,7 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
     private lateinit var fragMore: AppFragment
     private lateinit var loader: LoadingDialog
     private lateinit var locationHelper: LocationHelper
-    private lateinit var etLocation: EditText
+    private lateinit var tvLocation: TextView
     private lateinit var etLati: EditText
     private lateinit var etLongi: EditText
 
@@ -69,7 +79,9 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
 
     private var isEditing = false
 
-
+    private lateinit var placesClient : PlacesClient
+    private lateinit var searchLocationAdapter : LocationAdapter
+    private lateinit var locationList  : MutableList<LocationModel>
     private val fcmTokenManager = FCMTokenManager()
 
 
@@ -180,11 +192,14 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
             dialog.show()
 
             dialogBinding.apply {
+                this@SchedulerMainActivity.tvLocation = dialogBinding.tvSearchLocation
+                this@SchedulerMainActivity.etLati = dialogBinding.etLati
+                this@SchedulerMainActivity.etLongi = dialogBinding.etLongi
                 gameDataForEditing?.let {
                     tvHeading.text = "Edit Game"
                     btnSave.text = "Update"
                     etGameName.setText(it.title)
-                    etLocation.setText(it.location)
+                    tvLocation.setText(it.location)
                     etLati.setText(it.latitude.toString())
                     etLongi.setText(it.longitude.toString())
                     etDate.text = it.date
@@ -208,17 +223,15 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
                 }
                 btnCancel.setOnClickListener { dialog.dismiss() }
                 ivBack.setOnClickListener { dialog.dismiss() }
+                tvSearchLocation.setOnClickListener {
+                    showLocationSearchDialog()
+                }
                 btnCurrentLoc.setOnClickListener {
-                    this@SchedulerMainActivity.etLocation = dialogBinding.etLocation
-                    this@SchedulerMainActivity.etLati = dialogBinding.etLati
-                    this@SchedulerMainActivity.etLongi = dialogBinding.etLongi
                     getMyCurrentLocation()
-
                 }
                 btnFromMap.setOnClickListener {
                     val locationPicker = LocationPickerBottomSheetDialog.newInstance { result ->
-
-                        etLocation.setText(result.address)
+                        tvSearchLocation.text = result.address
                         etLati.setText(result.latitude.toString())
                         etLongi.setText(result.longitude.toString())
                     }
@@ -252,11 +265,88 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
         }
     }
 
+    private fun showLocationSearchDialog(){
+        val (dialog,dialogBinding) = DialogUtil.createBottomDialogWithBinding(this@SchedulerMainActivity,
+            DialogSearchLocationBinding::inflate)
+        dialog.show()
+        locationList = mutableListOf()
+        searchLocationAdapter = LocationAdapter(locationList) { location ->
+            tvLocation.text = location.address
 
+            // Fetch place details to get coordinates
+            val placeFields = listOf(Place.Field.LAT_LNG)
+            val request = FetchPlaceRequest.builder(location.placeId, placeFields).build()
 
+            placesClient.fetchPlace(request).addOnSuccessListener { response ->
+                val place = response.place
+                val latLng = place.latLng
+                if (latLng != null) {
+                    location.latitude = latLng.latitude
+                    location.longitude = latLng.longitude
+
+                    etLati.setText(location.latitude.toString())
+                    etLongi.setText(location.longitude.toString())
+                }
+            }.addOnFailureListener { exception ->
+                NewToastUtil.showError(this@SchedulerMainActivity, "Place not found: ${exception.message}")
+            }
+            KeyboardUtils.hideKeyboard(this@SchedulerMainActivity)
+            dialog.dismiss()
+        }
+        dialogBinding.apply {
+            recyclerView.adapter = searchLocationAdapter
+            Places.initialize(applicationContext, getString(R.string.MAP_API_KEY))
+            placesClient = Places.createClient(this@SchedulerMainActivity)
+            searchInput.addTextChangedListener(object : TextWatcher { override fun beforeTextChanged(
+                charSequence: CharSequence?,
+                i: Int,
+                i1: Int,
+                i2: Int,
+            ) {}
+                @SuppressLint("NotifyDataSetChanged")
+                override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {
+                    if (!s.toString().isEmpty()) {
+                        searchLocations(s.toString())
+                    } else {
+                        locationList.clear()
+                        searchLocationAdapter.notifyDataSetChanged()
+                    }
+                }
+                override fun afterTextChanged(editable: Editable?) {}
+            })
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun searchLocations(query: String?) {
+        val request = FindAutocompletePredictionsRequest.builder()
+            .setQuery(query)
+            .build()
+
+        placesClient.findAutocompletePredictions(request).addOnCompleteListener({ task ->
+            if (task.isSuccessful) {
+                val response: FindAutocompletePredictionsResponse? = task.result
+                if (response != null) {
+                    locationList.clear()
+                    for (prediction in response.autocompletePredictions) {
+                        locationList.add(
+                            LocationModel(
+                                prediction.getPrimaryText(null).toString(),
+                                prediction.getSecondaryText(null).toString(),
+                                prediction.placeId
+                            )
+                        )
+                    }
+                    searchLocationAdapter.notifyDataSetChanged()
+                }
+            } else {
+                NewToastUtil.showError(this@SchedulerMainActivity, "searchLocations: Error in fetching List of Locations\nError : ${task.exception?.message}")
+                Log.e("TAG", "searchLocations: Error in fetching List of Locations\\nError : ${task.exception?.message}")
+            }
+        })
+    }
     private fun DialogCreateGameBinding.setupTextWatchers() {
         etGameName.addTextWatcher(layGame)
-        etLocation.addTextWatcher(layLocation)
         etLati.addTextWatcher(layLati)
         etLongi.addTextWatcher(layLongi)
         etPrice.addTextWatcher(etLayPrice)
@@ -360,18 +450,19 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
             }
 
             // Validate location
-            if (etLocation.text.toString().trim().isEmpty()) {
-                layLocation.error = "Location is required"
+            if (tvSearchLocation.text.toString().trim().isEmpty()) {
+                tvSearchLocation.error = "Location is required"
                 return false
             }
+            tvSearchLocation.error = null
 
             if (etLati.text.toString().trim().isEmpty()) {
-                layLocation.error = "Required"
+                layLati.error = "Required"
                 return false
             }
 
             if (etLongi.text.toString().trim().isEmpty()) {
-                layLocation.error = "Required"
+                layLongi.error = "Required"
                 return false
             }
 
@@ -402,7 +493,7 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
 
         return GameData(
             title = etGameName.text.toString().trim(),
-            location = etLocation.text.toString().trim(),
+            location = tvLocation.text.toString().trim(),
             latitude = this@SchedulerMainActivity.latitude,
             longitude = this@SchedulerMainActivity.longitude,
             date = etDate.text.toString().trim(),
@@ -480,7 +571,7 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
 
             lifecycleScope.launch {
                 val address = addressResolver.getAddress(latitude, longitude)
-                etLocation.setText(address)
+                tvLocation.text = address
             }
             this.latitude = latitude
             this.longitude = longitude

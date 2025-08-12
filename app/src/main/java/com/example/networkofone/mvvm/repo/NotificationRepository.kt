@@ -162,13 +162,16 @@ class NotificationRepository() {
     }
 
     // Real-time unread count listener - filters by userId and isRead = false
-    fun getUnreadNotificationCountRealtime(userType: UserType, callback: (List<Notification>) -> Unit): ValueEventListener {
+    fun getUnreadNotificationCountRealtime(
+        userType: UserType,
+        callback: (List<Notification>) -> Unit,
+    ): ValueEventListener {
         // Clear previous count for each new data change
         var listener: ValueEventListener? = null
 
         listener = ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                var unreadCount = mutableListOf<Notification>() // Reset count for each update
+                val unreadCount = mutableListOf<Notification>() // Reset count for each update
 
                 for (notificationSnapshot in snapshot.children) {
                     try {
@@ -186,10 +189,11 @@ class NotificationRepository() {
                                 }
 
                                 UserType.REFEREE -> {
-                                    if (it.refereeId == userId && !it.read) {
+                                    if ((it.refereeId == userId && !it.read)) {
                                         unreadCount.add(it)
                                     }
                                 }
+
                                 else -> {}
                             }
                         }
@@ -208,6 +212,7 @@ class NotificationRepository() {
 
         return listener
     }
+
     // 5. Mark all notifications as read for current user
     suspend fun markAllNotificationsAsRead(userType: UserType): Boolean {
         return try {

@@ -68,7 +68,7 @@ class HomeViewModel(
                 val sevenDaysAgo = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000)
                 allGames.filter { it.createdAt >= sevenDaysAgo }
             }*/
-            1 -> allGames.filter { it.status == GameStatus.ACCEPTED || it.status == GameStatus.CHECKED_IN} // Active
+            1 -> allGames.filter { it.status == GameStatus.ACCEPTED || it.status == GameStatus.CHECKED_IN || it.status == GameStatus.PAYMENT_REQUESTED} // Active
             /*3 -> allGames.filter { it.status == GameStatus.CHECKED_IN } // Completed*/
             2 -> allGames.filter { it.status == GameStatus.COMPLETED } // Payout Pending
             else -> allGames

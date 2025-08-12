@@ -144,6 +144,7 @@ class RefereeHomeFragment(
             context.startActivity(intent)
         }, onAcceptClick = { game ->
             game.refereeName = userModel?.name
+            game.acceptedByRefereeId = userModel?.id
             viewModel.updateGame(game, GameStatus.ACCEPTED)
         }, onCheckInClick = { game ->
             viewModel.checkInGame = game
@@ -357,42 +358,6 @@ class RefereeHomeFragment(
         context.startActivity(mapIntent)
     }
 
-    private fun showGameOptionsDialog(game: GameData) {
-        val options = arrayOf("Edit", "Delete")
-
-        AlertDialog.Builder(context).setTitle("Game Options").setItems(options) { _, which ->
-            when (which) {
-                0 -> {
-                    // Edit game
-                    // Navigate to edit screen or show edit dialog
-
-                    //editGame(game)
-                }
-
-                1 -> {
-                    // Delete game
-                    showDeleteConfirmationDialog(game)
-                }
-            }
-        }.show()
-    }
-
-    private fun editGame(game: GameData) {
-        // Example: Update game status or other properties
-        val updatedGame = game.copy(
-            status = when (game.status) {
-                GameStatus.PENDING -> GameStatus.ACCEPTED
-                GameStatus.ACCEPTED -> GameStatus.CHECKED_IN
-                GameStatus.COMPLETED -> GameStatus.COMPLETED
-                GameStatus.REJECTED -> GameStatus.PENDING
-                GameStatus.CHECKED_IN -> GameStatus.CHECKED_IN
-                GameStatus.PAYMENT_REQUESTED -> GameStatus.COMPLETED
-            }
-        )
-        //viewModel.updateGame(updatedGame)
-    }
-
-
     private fun onClicks() {
         binding.apply {
             ivLogout.setOnClickListener { setupLogoutDialog() }
@@ -496,7 +461,6 @@ class RefereeHomeFragment(
             }
         }
     }
-
 
     fun checkAndRequestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
