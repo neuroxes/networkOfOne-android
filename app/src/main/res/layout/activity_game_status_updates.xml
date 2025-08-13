@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical"
+    tools:context=".activities.NotificationActivity">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivBack"
+        style="@style/backBtn"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/tvHeading"
+        style="@style/textHeading"
+        android:layout_marginStart="10dp"
+        android:text="Game Updates"
+        app:layout_constraintBottom_toBottomOf="@id/ivBack"
+        app:layout_constraintStart_toEndOf="@id/ivBack"
+        app:layout_constraintTop_toTopOf="@id/ivBack" />
+
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/notification"
+        style="@style/selectableIcon"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/trash_small"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/ivBack"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcvNotiDate"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="15dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivBack"
+        tools:itemCount="2"
+        tools:listitem="@layout/item_updates" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/progress_indicator"
+        style="@style/loading_anim"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivBack" />
+
+
+    <LinearLayout
+        android:id="@+id/layResult"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:animateLayoutChanges="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivBack"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/search_database"
+            app:tint="?colorSecondary" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            style="@style/textHeading.medium"
+            android:layout_marginTop="15dp"
+            android:text="No game updates found." />
+
+        <TextView
+            android:id="@+id/tvMsg"
+            style="@style/textBody"
+            android:layout_marginTop="5dp"
+            android:text="There are no game updates to show you right now."
+            android:textAlignment="center" />
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

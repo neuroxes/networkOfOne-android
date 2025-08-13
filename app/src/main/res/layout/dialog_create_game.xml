@@ -84,37 +84,54 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/lay_game" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/lay_location"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFromMap"
+                style="@style/btn_lwm.textBtn"
+                android:layout_height="35dp"
+                android:layout_marginEnd="20dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="0dp"
+                android:text="Pick from map"
+                app:icon="@drawable/up_right_from_square_1_"
+                app:iconGravity="end"
+                app:iconPadding="12dp"
+                app:iconSize="15dp"
+                app:layout_constraintBottom_toBottomOf="@id/t1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/t1" />
+
+
+            <TextView
+                android:id="@+id/tvSearchLocation"
                 style="@style/textInputLayout.NoHint"
                 android:layout_width="0dp"
+                android:layout_height="52dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
+                android:background="@drawable/outlined_filled_round_bg"
+                android:clickable="true"
+                android:drawableStart="@drawable/sharp_location_on_24"
+                android:drawablePadding="12dp"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:hint="Street # 4, New York, USA"
+                android:paddingStart="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/t1"
-                app:layout_constraintTop_toBottomOf="@id/t1">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_location"
-                    style="@style/editTextOutlined_round"
-                    android:drawableStart="@drawable/sharp_location_on_24"
-                    android:hint="Street # 4, New York, USA"
-                    android:paddingEnd="66dp"
-                    android:inputType="textPersonName" />
-            </com.google.android.material.textfield.TextInputLayout>
+                app:layout_constraintTop_toBottomOf="@id/t1" />
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3.Button.Icon"
-                android:layout_width="50dp"
-                android:layout_height="55dp"
                 android:id="@+id/btnCurrentLoc"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="5dp"
+                style="@style/Widget.Material3.Button.Icon"
+                android:layout_width="48dp"
+                android:layout_height="52dp"
+                android:layout_marginEnd="4dp"
                 android:backgroundTint="?colorPrimaryInverse"
                 app:cornerRadius="16dp"
                 app:icon="@drawable/outline_my_location_24"
-                app:layout_constraintEnd_toEndOf="@id/lay_location"
-                app:layout_constraintTop_toTopOf="@id/lay_location" />
+                app:layout_constraintEnd_toEndOf="@id/tvSearchLocation"
+                app:layout_constraintTop_toTopOf="@id/tvSearchLocation" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/midGuideline"
@@ -123,15 +140,73 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.5" />
 
+
             <!-- Row 1: City (Left) -->
             <TextView
-                android:id="@+id/cityLabel"
+                android:id="@+id/tvLatitude"
+                style="@style/textHeading.Small"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="16dp"
+                android:text="Latitude"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvSearchLocation" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layLati"
+                style="@style/textInputLayout.NoHint"
+                android:layout_width="0dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="6dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/midGuideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvLatitude"> <!-- Slightly less than 50% for margin -->
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etLati"
+                    style="@style/editTextOutlined_round"
+                    android:hint="32.3928"
+                    android:inputType="numberDecimal" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Row 1: State (Right) -->
+            <TextView
+                android:id="@+id/tvLongi"
+                style="@style/textHeading.Small"
+                android:layout_marginStart="6dp"
+                android:text="Longitude"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@id/midGuideline"
+                app:layout_constraintTop_toTopOf="@id/tvLatitude" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layLongi"
+                style="@style/textInputLayout.NoHint"
+                android:layout_width="0dp"
+                android:layout_marginEnd="20dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/tvLongi"
+                app:layout_constraintTop_toBottomOf="@id/tvLongi">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etLongi"
+                    style="@style/editTextOutlined_round"
+                    android:hint="73.9283"
+                    android:inputType="numberDecimal" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <!-- Row 1: City (Left) -->
+            <TextView
+                android:id="@+id/tvDate"
                 style="@style/textHeading.Small"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="8dp"
                 android:text="Date"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lay_location" />
+                app:layout_constraintTop_toBottomOf="@id/layLati" />
 
 
             <TextView
@@ -152,16 +227,16 @@
                 app:drawableStartCompat="@drawable/calendar"
                 app:layout_constraintEnd_toStartOf="@id/midGuideline"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cityLabel" />
+                app:layout_constraintTop_toBottomOf="@id/tvDate" />
 
             <!-- Row 1: State (Right) -->
             <TextView
-                android:id="@+id/stateLabel"
+                android:id="@+id/tvTime"
                 style="@style/textHeading.Small"
                 android:layout_marginStart="6dp"
                 android:text="Time"
                 app:layout_constraintStart_toStartOf="@id/midGuideline"
-                app:layout_constraintTop_toTopOf="@id/cityLabel" />
+                app:layout_constraintTop_toTopOf="@id/tvDate" />
 
 
             <TextView
@@ -180,8 +255,8 @@
                 android:paddingStart="14dp"
                 app:drawableStartCompat="@drawable/ic_clock"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/stateLabel"
-                app:layout_constraintTop_toBottomOf="@id/stateLabel" />
+                app:layout_constraintStart_toStartOf="@id/tvTime"
+                app:layout_constraintTop_toBottomOf="@id/tvTime" />
 
 
             <TextView
@@ -224,19 +299,24 @@
                 style="@style/textInputLayout.NoHint"
                 android:layout_width="0dp"
                 app:counterEnabled="true"
-                app:counterMaxLength="400"
-                app:layout_constraintEnd_toEndOf="@id/lay_location"
-                app:layout_constraintStart_toStartOf="@id/lay_location"
+                app:layout_constraintEnd_toEndOf="@id/tvSearchLocation"
+                app:layout_constraintStart_toStartOf="@id/tvSearchLocation"
                 app:layout_constraintTop_toBottomOf="@id/reminder">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etDescription"
                     style="@style/editTextOutlined_round"
                     android:layout_height="wrap_content"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
                     android:gravity="top|start"
                     android:hint="Provide a short note..."
                     android:inputType="textMultiLine"
-                    android:lines="4" />
+                    android:lines="4"
+                    android:overScrollMode="always"
+                    android:scrollbars="vertical"
+                    android:scrollHorizontally="false" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
 

@@ -55,6 +55,7 @@
             android:id="@+id/gameLocation"
             style="@style/textBody.Small"
             android:layout_width="0dp"
+            android:layout_marginTop="2dp"
             android:drawableStart="@drawable/location_outlined"
             android:paddingVertical="4dp"
             android:text="Street 12, California, United States"
@@ -65,6 +66,7 @@
         <TextView
             android:id="@+id/gameTime"
             style="@style/textBody.Small"
+            android:layout_marginTop="4dp"
             android:text="12/08/2025 10:40 AM"
             app:drawableStartCompat="@drawable/ic_clock_15dp"
             app:layout_constraintStart_toStartOf="@id/gameName"
@@ -74,8 +76,8 @@
             android:id="@+id/gamePrice"
             style="@style/textHeading.Small"
             android:text="$250"
-            app:layout_constraintEnd_toEndOf="@id/moreOptions"
-            app:layout_constraintTop_toBottomOf="@id/gameLocation" />
+            app:layout_constraintBottom_toBottomOf="@id/gameTime"
+            app:layout_constraintEnd_toEndOf="@id/moreOptions" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/moreOptions"
@@ -97,18 +99,38 @@
             android:id="@+id/gameStatusNote"
             style="@style/textHeading.NormalStyle.Small"
             android:layout_width="0dp"
-            android:layout_margin="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/outlined_10dp_round_simple"
             android:backgroundTint="@color/status_pending_bg"
             android:drawablePadding="8dp"
+            android:gravity="center_vertical"
             android:paddingHorizontal="16dp"
             android:paddingVertical="16dp"
             android:text="Game acceptance request is pending"
+            android:textColor="@color/textColor"
             app:drawableStartCompat="@drawable/round_access_alarm_24"
             app:drawableTint="@color/status_pending"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnUpdates"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/gameTime" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnUpdates"
+            style="@style/Widget.Material3.Button.IconButton.Outlined"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Updates"
+            app:cornerRadius="12dp"
+            android:layout_marginEnd="4dp"
+            app:icon="@drawable/bell"
+            android:padding="12dp"
+            app:iconTint="?colorSecondary"
+            app:layout_constraintBottom_toBottomOf="@id/gameStatusNote"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/gameStatusNote"
+            app:strokeColor="?colorButtonNormal" />
 
 
         <!-- <com.google.android.material.imageview.ShapeableImageView

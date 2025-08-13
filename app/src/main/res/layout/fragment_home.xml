@@ -11,24 +11,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true"
-        android:paddingVertical="15dp"
-        tools:context=".home.HomeFragment">
+        android:paddingTop="15dp"
+        tools:context=".home.SchedulerHomeFragment">
 
 
         <TextView
-            android:id="@+id/t2"
+            android:id="@+id/tv_greeting"
             style="@style/textBody.Small"
             android:layout_marginStart="16dp"
             android:drawableEnd="@drawable/hand_wave_1_"
             android:gravity="center_vertical"
             android:text="Welcome"
-            app:layout_constraintBottom_toTopOf="@id/tvLocation"
+            app:layout_constraintBottom_toTopOf="@id/tv_user_name"
             app:layout_constraintStart_toEndOf="@id/picHome"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
 
         <TextView
-            android:id="@+id/tvLocation"
+            android:id="@+id/tv_user_name"
             style="@style/textHeading"
             android:layout_width="0dp"
             android:layout_marginHorizontal="16dp"
@@ -37,31 +37,43 @@
             android:text="@string/storeLocation"
             app:layout_constraintBottom_toBottomOf="@id/picHome"
             app:layout_constraintStart_toEndOf="@id/picHome"
-            app:layout_constraintTop_toBottomOf="@id/t2"
+            app:layout_constraintTop_toBottomOf="@id/tv_greeting"
             app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintWidth_default="wrap" />
 
+
         <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/notification"
+            android:id="@+id/ivLogout"
             style="@style/selectableIcon"
             android:layout_marginEnd="16dp"
-            android:src="@drawable/bell"
+            android:src="@drawable/round_logout_24"
             app:layout_constraintBottom_toBottomOf="@id/picHome"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/picHome" />
 
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/notification"
+            style="@style/selectableIcon"
+            android:layout_marginEnd="4dp"
+            android:src="@drawable/bell"
+            app:layout_constraintBottom_toBottomOf="@id/picHome"
+            app:layout_constraintEnd_toStartOf="@id/ivLogout"
+            app:layout_constraintTop_toTopOf="@id/picHome" />
+
+
         <TextView
             android:id="@+id/noOfNotifications"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:layout_margin="5dp"
             android:background="@drawable/oval"
             android:backgroundTint="?colorPrimary"
             android:gravity="center"
             android:text="2"
             android:textColor="@color/white"
-            android:textSize="10sp"
+            android:textSize="11sp"
             android:visibility="gone"
+            tools:visibility="visible"
             app:layout_constraintEnd_toEndOf="@id/notification"
             app:layout_constraintTop_toTopOf="@id/notification" />
 
@@ -76,9 +88,9 @@
             android:scaleType="centerCrop"
             android:src="@drawable/user_bg"
             android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="@id/tvLocation"
+            app:layout_constraintBottom_toBottomOf="@id/tv_user_name"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/t2"
+            app:layout_constraintTop_toTopOf="@id/tv_greeting"
             app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
             app:tint="?colorSecondary" />
 
@@ -96,16 +108,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="?backgroundColor"
-            app:layout_constraintTop_toBottomOf="@+id/tvLocation"
-            app:tabMode="auto"
+            app:layout_constraintTop_toBottomOf="@+id/tv_user_name"
+            app:tabMode="fixed"
             app:tabRippleColor="@android:color/transparent"
             app:tabSelectedTextColor="?colorPrimary"
             app:tabTextAppearance="@style/TabTextAppearance">
 
-            <com.google.android.material.tabs.TabItem
+            <!--<com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="All" />
+                android:text="All" />-->
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
@@ -116,13 +128,12 @@
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
                 android:text="Active" />
-
+<!--
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Payout Pending" />
+                android:text="On-Going" />-->
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
@@ -144,10 +155,12 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginHorizontal="12dp"
-            android:layout_marginTop="15dp"
+            android:clipToPadding="false"
             android:orientation="vertical"
             android:overScrollMode="never"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:paddingTop="15dp"
+            app:spanCount="@integer/rcv_column"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/div"
             tools:itemCount="2"

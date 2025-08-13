@@ -9,4 +9,5 @@
     <dimen name="buttonRadiusLarge">24dp</dimen>
     <dimen name="peek_width">25dp</dimen>
     <dimen name="small_page_margin">0dp</dimen>
+    <dimen name="card_corner_radius">16dp</dimen>
 </resources>

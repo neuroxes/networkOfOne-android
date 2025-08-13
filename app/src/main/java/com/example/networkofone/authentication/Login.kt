@@ -16,15 +16,19 @@ import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
-import com.example.networkofone.MainActivity
+import com.example.networkofone.SchedulerMainActivity
+import com.example.networkofone.activities.AdminMainActivity
+import com.example.networkofone.activities.RefereeMainActivity
 import com.example.networkofone.databinding.DialogForgotPasswordBinding
 import com.example.networkofone.databinding.FragmentLoginBinding
 import com.example.networkofone.databinding.LayoutProgressDialogBinding
+import com.example.networkofone.mvvm.models.UserType
 import com.example.networkofone.mvvm.viewModels.LoginViewModel
 import com.example.networkofone.mvvm.viewModels.LoginViewModel.AuthResult
 import com.example.networkofone.utils.ActivityNavigatorUtil
 import com.example.networkofone.utils.DialogUtil
 import com.example.networkofone.utils.NewToastUtil
+import com.example.networkofone.utils.SharedPrefManager
 import com.example.networkofone.utils.ToastType
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -127,7 +131,8 @@ class Login : Fragment() {
             when (result) {
                 is AuthResult.Success -> {
                     if (binding.checkboxRemember.isChecked) keepUserLogged(1)
-                    navigateToNextScreen()
+                    viewModel.showLoadingOnButton(true)
+                    viewModel.getUser()
                 }
 
                 is AuthResult.EmailNotVerified -> {
@@ -160,7 +165,7 @@ class Login : Fragment() {
             when (result) {
                 is AuthResult.Success -> {
                     showToast(
-                        "Password reset email sent. Check your email inbox", ToastType.SUCCESS
+                        "Password reset email sent. Check your email inbox or spam", ToastType.SUCCESS
                     )
                     bottomSheetDialog.dismiss()
                 }
@@ -188,6 +193,18 @@ class Login : Fragment() {
                 }
             }
         }
+
+        viewModel.userData.observe(viewLifecycleOwner) { user ->
+            viewModel.showLoadingOnButton(false)
+            if (user != null) {
+                SharedPrefManager(requireContext()).saveUser(user)
+                navigateToNextScreen(user.userType)
+            } else {
+                NewToastUtil.showError(requireContext(), "Something went wrong!")
+            }
+
+        }
+
     }
 
     private fun validateInput(email: String, password: String): Boolean {
@@ -228,10 +245,14 @@ class Login : Fragment() {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    private fun navigateToNextScreen() {
-        ActivityNavigatorUtil.startActivity(
-            requireActivity(), MainActivity::class.java, clearStack = true
-        )
+    private fun navigateToNextScreen(userType: UserType) {
+        val targetActivity = when (userType) {
+            UserType.SCHOOL -> SchedulerMainActivity::class.java
+            UserType.REFEREE -> RefereeMainActivity::class.java
+            UserType.ADMIN -> AdminMainActivity::class.java
+            else ->  SchedulerMainActivity::class.java
+        }
+        ActivityNavigatorUtil.startActivity(requireActivity(), targetActivity, clearStack = true)
         requireActivity().finish()
     }
 
@@ -261,7 +282,7 @@ class Login : Fragment() {
         if (result.resultCode == Activity.RESULT_OK) {
             keepUserLogged(1)
             loadingDialog.dismiss()
-            navigateToNextScreen()
+            navigateToNextScreen(UserType.SCHOOL)
         } else {
             loadingDialog.dismiss()
             showToast("Request cancelled!", ToastType.ERROR)

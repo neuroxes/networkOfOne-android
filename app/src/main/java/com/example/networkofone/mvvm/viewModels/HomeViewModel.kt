@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.networkofone.mvvm.interfaces.GameRepositoryInterface
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
+import com.example.networkofone.mvvm.models.UserModel
 import com.example.networkofone.mvvm.repo.GameRepositoryImpl
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
@@ -27,13 +28,17 @@ class HomeViewModel(
 
     private var allGames: List<GameData> = emptyList()
 
+
+
     init {
         observeGames()
     }
 
-    private fun observeGames() {
+
+    fun observeGames() {
         viewModelScope.launch {
-            repository.getAllGames()
+            _uiState.value = GameUiState.Loading
+            repository.getGamesByCreatorOptimized()
                 .catch { exception ->
                     _uiState.value = GameUiState.Error(
                         exception.message ?: "An error occurred while loading games"
@@ -58,14 +63,14 @@ class HomeViewModel(
 
     private fun applyFilter(tabPosition: Int) {
         val filtered = when (tabPosition) {
-            0 -> allGames // All
-            1 -> { // Recent - games from last 7 days
+            0 -> allGames.filter { it.status == GameStatus.PENDING} // All
+            /*1 -> { // Recent - games from last 7 days
                 val sevenDaysAgo = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000)
                 allGames.filter { it.createdAt >= sevenDaysAgo }
-            }
-            2 -> allGames.filter { it.status == GameStatus.ACCEPTED } // Active
-            3 -> allGames.filter { it.status == GameStatus.PENDING } // Payout Pending
-            4 -> allGames.filter { it.status == GameStatus.COMPLETED } // Completed
+            }*/
+            1 -> allGames.filter { it.status == GameStatus.ACCEPTED || it.status == GameStatus.CHECKED_IN || it.status == GameStatus.PAYMENT_REQUESTED} // Active
+            /*3 -> allGames.filter { it.status == GameStatus.CHECKED_IN } // Completed*/
+            2 -> allGames.filter { it.status == GameStatus.COMPLETED } // Payout Pending
             else -> allGames
         }
         _filteredGames.value = filtered

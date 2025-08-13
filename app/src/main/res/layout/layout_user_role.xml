@@ -20,6 +20,7 @@
             android:padding="30dp">
 
             <TextView
+                android:id="@+id/tvTitle"
                 style="@style/textHeading.Large"
                 android:layout_gravity="center_horizontal"
                 android:text="Join as a Scheduler or Refree"
@@ -73,7 +74,7 @@
                     android:id="@+id/userEmail"
                     style="@style/textBody"
                     android:layout_width="0dp"
-                    android:text="Create and manage all your basketball games with tools and features."
+                    android:text="Create and manage all your games with tools and features."
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@id/tvTitle2"
                     app:layout_constraintTop_toBottomOf="@id/tvTitle2" />
@@ -124,6 +125,53 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@id/tvTitle22"
                     app:layout_constraintTop_toBottomOf="@id/tvTitle22" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layAdmin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/outlined_10dp_round_simple"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="15dp">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/img3"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="#22aaaaaa"
+                    android:padding="1dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/user_unlock"
+                    app:contentPadding="12dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+                    app:tint="#7C4DFF" />
+
+
+                <TextView
+                    android:id="@+id/tvTitle23"
+                    style="@style/textHeading.medium"
+                    android:layout_marginStart="15dp"
+                    android:text="As an Admin"
+                    app:layout_constraintStart_toEndOf="@id/img3"
+                    app:layout_constraintTop_toTopOf="@id/img3"
+
+                    />
+
+                <TextView
+                    android:id="@+id/userEmail23"
+                    style="@style/textBody"
+                    android:layout_width="0dp"
+                    android:text="Manage users, oversee game scheduling, and ensure platform integrity."
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/tvTitle23"
+                    app:layout_constraintTop_toBottomOf="@id/tvTitle23" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

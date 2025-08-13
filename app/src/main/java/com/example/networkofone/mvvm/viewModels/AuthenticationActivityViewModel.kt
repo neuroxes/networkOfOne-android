@@ -9,8 +9,8 @@ class AuthenticationActivityViewModel : ViewModel() {
     private val currentTab = MutableLiveData(0)
     private val authButtonText = MutableLiveData("Signup")
     private val authMessage = MutableLiveData("Don't have an account?")
-    private val message1 = MutableLiveData("Go ahead and provide your credentials")
-    private val message2 = MutableLiveData("Sign-In and never lose your progress")
+    private val message1 = MutableLiveData("Welcome back! Enter your credentials.")
+    private val message2 = MutableLiveData("Sign in to access your account.")
 
     fun getCurrentTab(): LiveData<Int> {
         return currentTab
@@ -37,13 +37,13 @@ class AuthenticationActivityViewModel : ViewModel() {
         if (position == 0) {
             authButtonText.value = "Signup"
             authMessage.value = "Don't have an account?"
-            message1.value = "Go ahead and provide your credentials"
-            message2.value = "Sign-In and never lose your progress"
+            message1.value = "Welcome back! Enter your credentials."
+            message2.value = "Sign in to access your account."
         } else {
             authButtonText.value = "Login"
             authMessage.value = "Already have an account?"
-            message1.value = "Go ahead and set up your account"
-            message2.value = "Signup and enjoy the best learning experience"
+            message1.value = "Create your account to start your journey."
+            message2.value = "Join us and explore new possibilities."
         }
     }
 }

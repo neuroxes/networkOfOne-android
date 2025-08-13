@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/selectable_bg_alt"
+    android:paddingVertical="16dp">
+
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivGameIcon"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_margin="16dp"
+        android:background="?cardBackgroundColor"
+        android:src="@drawable/sack_dollar"
+        app:contentPadding="10dp"
+        app:layout_constraintBottom_toBottomOf="@id/tvReferee"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvGameName"
+        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full" />
+
+    <TextView
+        android:id="@+id/tvGameName"
+        style="@style/textHeading.Small"
+        android:layout_width="0dp"
+        android:layout_marginHorizontal="12dp"
+        android:maxLines="2"
+        android:text="Study Lamp 220V (MultiColor) without bulb-color Family:Maroon"
+        app:layout_constraintEnd_toStartOf="@id/iv_reject"
+        app:layout_constraintStart_toEndOf="@id/ivGameIcon"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/tvReferee"
+        style="@style/textBody"
+        android:layout_width="0dp"
+        android:layout_marginTop="8dp"
+        android:drawableStart="@drawable/whistle"
+        android:drawablePadding="8dp"
+        android:text="Bilal Referee"
+        app:layout_constraintEnd_toEndOf="@id/tvGameName"
+        app:layout_constraintStart_toStartOf="@id/tvGameName"
+        app:layout_constraintTop_toBottomOf="@id/tvGameName" />
+
+    <TextView
+        android:id="@+id/tvAccountType"
+        style="@style/textBody"
+        android:layout_width="0dp"
+        android:layout_marginTop="8dp"
+        android:drawableStart="@drawable/bank_15dp"
+        android:text="Bank"
+        app:layout_constraintEnd_toEndOf="@id/tvGameName"
+        app:layout_constraintStart_toStartOf="@id/tvGameName"
+        app:layout_constraintTop_toBottomOf="@id/tvReferee" />
+
+    <TextView
+        android:id="@+id/tvPrice"
+        style="@style/textHeading.Small"
+        android:layout_width="0dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center_vertical"
+        android:paddingVertical="4dp"
+        android:text="$2,000"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvReferee" />
+    <!--
+        <TextView
+            android:id="@+id/tvUpdatedAt"
+            style="@style/textHeading.NormalStyle"
+            android:layout_width="0dp"
+            android:text="Approved at: timestamp"
+            app:layout_constraintBottom_toBottomOf="@id/tvPrice"
+            app:layout_constraintEnd_toEndOf="@id/ivCancel"
+            app:layout_constraintStart_toEndOf="@id/tvPrice"
+            app:layout_constraintTop_toTopOf="@id/tvPrice" />-->
+
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/iv_reject"
+        style="@style/selectableIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="12dp"
+        android:padding="1dp"
+        android:src="@drawable/cross"
+        app:contentPadding="6dp"
+        app:layout_constraintBottom_toBottomOf="@id/tvReferee"
+        app:layout_constraintEnd_toStartOf="@id/ivCancel"
+        app:layout_constraintStart_toEndOf="@id/tvGameName"
+        app:layout_constraintTop_toTopOf="@id/tvGameName"
+        app:strokeColor="?colorButtonNormal"
+        app:strokeWidth="1dp" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivCancel"
+        style="@style/selectableIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="12dp"
+        android:background="@color/status_pending_bg"
+        android:padding="1dp"
+        android:src="@drawable/round_check_24"
+        android:tint="?colorPrimary"
+        app:contentPadding="6dp"
+        app:layout_constraintBottom_toBottomOf="@id/tvReferee"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvGameName"
+        app:strokeColor="?colorButtonNormal"
+        app:strokeWidth="1dp" />
+
+
+    <TextView
+        android:id="@+id/tv_order_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/full_round_bg_white"
+        android:backgroundTint="@color/status_confirmed_bg"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="Confirmed"
+        android:textColor="@color/status_confirmed"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/tvReferee"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvGameName" />
+
+    <!-- <com.google.android.material.imageview.ShapeableImageView
+         android:id="@+id/btnMore"
+         style="@style/selectableIcon"
+         android:layout_width="30dp"
+         android:layout_height="30dp"
+         android:layout_marginTop="0dp"
+         android:src="@drawable/round_more_vert_24"
+         app:contentPadding="6dp"
+         app:layout_constraintBottom_toBottomOf="@id/txtRate"
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintStart_toEndOf="@id/txtRate"
+         app:layout_constraintTop_toTopOf="@id/tvProductName"
+         app:strokeWidth="1dp" />
+ -->
+    <!-- <com.google.android.material.imageview.ShapeableImageView
+         android:id="@+id/fav"
+         style="@style/selectableIcon"
+         android:layout_marginEnd="15dp"
+         android:background="#55000000"
+         android:src="@drawable/heart"
+         app:contentPadding="10dp"
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintTop_toTopOf="parent"
+         app:tint="@color/white" />-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>

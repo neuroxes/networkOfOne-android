@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".home.PayoutFragment"
+    tools:parentTag="androidx.core.widget.NestedScrollView">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        >
+
+        <TextView
+            android:id="@+id/tvTitle"
+            style="@style/textHeading.Large"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Payouts"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivInfo"
+            style="@style/selectableIcon"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="15dp"
+            android:src="@drawable/round_info_outline_24_20dp"
+            android:visibility="visible"
+            app:contentPadding="6dp"
+            app:layout_constraintBottom_toBottomOf="@id/tvTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvTitle" />
+
+        <!--
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_payout"
+                style="@style/cardStyle_Admin"
+                android:layout_marginTop="16dp"
+                android:layout_marginHorizontal="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvTitle">-->
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/card_payout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            tools:visibility="visible">
+            <!--
+                        <TextView
+                            android:id="@+id/title_payout"
+                            style="@style/textHeading.Large"
+                            android:layout_width="0dp"
+                            android:drawableStart="@drawable/sack_dollar"
+                            android:drawablePadding="10dp"
+                            android:text="Payout Analytics"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />-->
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/tile_total_value"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_tile_purple"
+                android:minHeight="92dp"
+                android:padding="14dp"
+                app:layout_constraintEnd_toStartOf="@id/tile_pending_payout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/label_total_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Total Value"
+                    android:textColor="#6B5A78"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/value_total_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:autoSizeMaxTextSize="24sp"
+                    android:autoSizeMinTextSize="12sp"
+                    android:autoSizeTextType="uniform"
+                    android:maxLines="2"
+                    android:text="0"
+                    android:textColor="#7E2BD8"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/value_total_value"
+                    app:layout_constraintVertical_bias="1" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/tile_pending_payout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_tile_yellow"
+                android:minHeight="92dp"
+                android:padding="14dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tile_total_value"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/label_pending_payout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Pending"
+                    android:textColor="#6E6A52"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/value_pending_payout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="#F39C12"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/tile_completed_payout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_tile_green"
+                android:minHeight="92dp"
+                android:padding="14dp"
+                app:layout_constraintEnd_toStartOf="@id/tile_avg_amount"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tile_total_value">
+
+                <TextView
+                    android:id="@+id/label_completed_payout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Accepted"
+                    android:textColor="#3A6B4F"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/value_completed_payout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="#1F9D45"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/tile_avg_amount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_tile_soft_blue"
+                android:minHeight="92dp"
+                android:padding="14dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tile_completed_payout"
+                app:layout_constraintTop_toBottomOf="@id/tile_pending_payout">
+
+                <TextView
+                    android:id="@+id/label_avg_amount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Avg. Amount"
+                    android:textColor="#3A5970"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/value_avg_amount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:autoSizeMaxTextSize="24sp"
+                    android:autoSizeMinTextSize="12sp"
+                    android:autoSizeTextType="uniform"
+                    android:maxLines="2"
+                    android:text="0"
+                    android:textColor="#2B6FE8"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/label_avg_amount"
+                    app:layout_constraintVertical_bias="1" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/tile_completed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_tile_purple"
+                android:minHeight="92dp"
+                android:padding="14dp"
+                app:layout_constraintEnd_toStartOf="@id/tile_cancelled"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tile_completed_payout">
+
+                <TextView
+                    android:id="@+id/label_completed"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Completed"
+                    android:textColor="#6B5A78"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/value_completed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="#7E2BD8"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/tile_cancelled"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_tile_red"
+                android:minHeight="92dp"
+                android:padding="14dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tile_completed"
+                app:layout_constraintTop_toBottomOf="@id/tile_avg_amount">
+
+                <TextView
+                    android:id="@+id/label_cancelled"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Cancelled"
+                    android:textColor="#8B4949"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/value_cancelled"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="#E53935"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <!--</com.google.android.material.card.MaterialCardView>-->
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/laySerNm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="?backgroundColor"
+            app:boxBackgroundColor="?backgroundColor"
+            app:endIconMode="clear_text"
+            android:paddingHorizontal="20dp"
+            app:hintEnabled="false"
+            android:paddingBottom="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/card_payout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSearch"
+                style="@style/editTextOutlined.BackgroundColored"
+                android:drawableStart="@drawable/round_search_24"
+                android:hint="Search here..."
+                android:imeOptions="actionSearch"
+                android:inputType="textPersonName"
+                android:textColor="?colorSecondary" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <TextView
+            android:id="@+id/t1"
+            style="@style/textBody"
+            android:layout_marginStart="20dp"
+            android:text="Requested Payouts"
+            android:elevation="-100dp"
+            android:textAllCaps="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/laySerNm" />
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardData"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="15dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            app:cardBackgroundColor="?backgroundColor"
+            app:cardCornerRadius="20dp"
+            android:elevation="-100dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_default="wrap"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/t1"
+            app:layout_constraintVertical_bias="0"
+            app:strokeWidth="0dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvTemplate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:overScrollMode="never"
+                android:elevation="-100dp"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="2"
+                tools:listitem="@layout/item_payouts" /> <!-- Replace with your list item layout -->
+
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/progressBar"
+            style="@style/loading_anim"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/layResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:animateLayoutChanges="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/t1"
+            tools:visibility="gone">
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/search_database"
+                app:tint="?colorSecondary" />
+
+            <TextView
+                style="@style/textHeading.medium"
+                android:layout_marginTop="15dp"
+                android:text="No Payouts Yet" />
+
+            <TextView
+                android:id="@+id/tvMsg"
+                style="@style/textBody"
+                android:layout_marginTop="5dp"
+                android:text="You haven't requested any payouts yet. All your requested payouts will appear here."
+                android:textAlignment="center" />
+
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</merge>

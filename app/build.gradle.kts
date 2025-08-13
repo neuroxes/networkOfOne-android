@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.room.common)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    implementation(libs.firebase.messaging)
     kapt(libs.room.compiler)
 
     //implementation("com.github.dhaval2404:imagepicker:2.1")
@@ -116,6 +117,9 @@ dependencies {
 
     //Dots Indicator
     implementation("com.tbuonomo:dotsindicator:4.3")
+
+    // Google Maps
+    implementation("com.google.android.gms:play-services-maps:19.2.0")
 
 
     implementation(libs.androidx.core.ktx)

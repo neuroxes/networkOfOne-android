@@ -279,7 +279,7 @@
     <style name="radioBtn">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <!--        <item name="android:background">@drawable/radio_btn_outlined_bg</item>-->
+        <item name="android:background">@drawable/radio_btn_outlined_bg</item>
         <item name="android:layout_marginTop">15dp</item>
         <item name="android:paddingTop">17dp</item>
         <item name="android:paddingStart">3dp</item>
@@ -319,6 +319,9 @@
         <item name="android:drawablePadding">15dp</item>
         <item name="android:textColorHint">#aaaaaa</item>
         <item name="android:background">@drawable/outlined_10dp_round_with_states_effect</item>
+    </style>
+    <style name="editTextOutlined.BackgroundColored" parent="editTextOutlined">
+        <item name="android:background">@drawable/outlined_10dp_round_with_states_effect_with_bg_color</item>
     </style>
 
 
@@ -473,6 +476,28 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">?colorButtonNormal</item>
         <item name="android:layout_marginHorizontal">8dp</item>
+    </style>
+
+    <style name="cardStyle_Admin">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:background">?backgroundColor</item>
+        <item name="cardCornerRadius">@dimen/buttonRadius</item>
+        <item name="cardElevation">1dp</item>
+        <item name="cardBackgroundColor">?colorOnTertiary</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="strokeColor">?colorButtonNormal</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+
+    <style name="BottomSheetDialogTheme" parent="Theme.Material3.DayNight.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
+    </style>
+
+    <style name="BottomSheetStyle" parent="Widget.Material3.BottomSheet">
+        <item name="backgroundTint">@android:color/white</item>
     </style>
 
 

@@ -3,10 +3,12 @@ package com.example.networkofone.authentication
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.networkofone.R
@@ -31,7 +33,6 @@ class Signup : Fragment() {
     ): View {
         binding = FragmentSignupBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this)[SignupViewModel::class.java]
-
         setupObservers()
         setupWatchers()
         binding.btnSignup.setOnClickListener { handleSignup() }
@@ -62,21 +63,39 @@ class Signup : Fragment() {
                 )
                 dialog.show()
                 dialogBinding.apply {
+                    if (email=="fawad.hanif24@gmail.com"){
+                        tvTitle.append(" or Admin")
+                        layAdmin.visibility = View.VISIBLE
+                    }
                     layClient.setOnClickListener {
                         layClient.setBackgroundResource(R.drawable.outlined_10dp_round_simple_selected)
+                        layProf.setBackgroundResource(R.drawable.outlined_10dp_round_simple)
+                        layAdmin.setBackgroundResource(R.drawable.outlined_10dp_round_simple)
                         img1.strokeWidth = 1f
                         img2.strokeWidth = 0f
-                        layProf.setBackgroundResource(R.drawable.outlined_10dp_round_simple)
+                        img3.strokeWidth = 0f
                         btnContinue.setEnabled(true)
                         viewModel.userType = UserType.SCHOOL
                     }
                     layProf.setOnClickListener {
                         layProf.setBackgroundResource(R.drawable.outlined_10dp_round_simple_selected)
                         layClient.setBackgroundResource(R.drawable.outlined_10dp_round_simple)
+                        layAdmin.setBackgroundResource(R.drawable.outlined_10dp_round_simple)
                         img1.strokeWidth = 0f
+                        img3.strokeWidth = 0f
                         img2.strokeWidth = 1f
                         btnContinue.setEnabled(true)
                         viewModel.userType = UserType.REFEREE
+                    }
+                    layAdmin.setOnClickListener {
+                        layAdmin.setBackgroundResource(R.drawable.outlined_10dp_round_simple_selected)
+                        layClient.setBackgroundResource(R.drawable.outlined_10dp_round_simple)
+                        layProf.setBackgroundResource(R.drawable.outlined_10dp_round_simple)
+                        img1.strokeWidth = 0f
+                        img2.strokeWidth = 0f
+                        img3.strokeWidth = 1f
+                        btnContinue.setEnabled(true)
+                        viewModel.userType = UserType.ADMIN
                     }
                     btnContinue.setOnClickListener {
                         dialog.dismiss()

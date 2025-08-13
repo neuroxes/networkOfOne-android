@@ -1,16 +1,16 @@
 package com.example.networkofone.activities
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.OvershootInterpolator
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.networkofone.MainActivity
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import com.example.networkofone.SchedulerMainActivity
 import com.example.networkofone.R
+import com.example.networkofone.mvvm.models.UserType
 import com.example.networkofone.utils.ActivityNavigatorUtil
+import com.example.networkofone.utils.SharedPrefManager
 import com.google.android.material.imageview.ShapeableImageView
 
 @SuppressLint("CustomSplashScreen")
@@ -28,10 +28,10 @@ class SplashActivity : AppCompatActivity() {
         // Restore timer state
         timerStarted = savedInstanceState?.getBoolean("TIMER_STARTED", false) == true
 
-        img.animate().scaleX(1f).scaleY(1f).translationY(0F).setDuration(1500)
-            .setInterpolator(AccelerateDecelerateInterpolator()).start()
-        tvAppName.animate().alpha(1f).translationY(0F).setDuration(1000)
-            .setInterpolator(OvershootInterpolator()).setStartDelay(1500).start()
+        img.animate().alpha(1f).translationY(0F).setDuration(1500)
+            .setInterpolator(FastOutSlowInInterpolator()).start()
+        tvAppName.animate().alpha(1f).translationY(-10F).setDuration(1500)
+            .setInterpolator(FastOutSlowInInterpolator()).setStartDelay(200).start()
 
         if (!timerStarted) {
             startCountDown()
@@ -46,10 +46,39 @@ class SplashActivity : AppCompatActivity() {
             override fun onFinish() {
                 val status = userOnBoardingStatus()
                 when (status) {
-                    1 -> ActivityNavigatorUtil.startActivity(this@SplashActivity, MainActivity::class.java, findViewById(
-                        R.id.animator
-                    ))
-                    else -> ActivityNavigatorUtil.startActivity(this@SplashActivity, AuthenticationActivity::class.java)
+                    1 -> {
+                        val userType = getUserType()
+                        userType?.let {
+                            when (it) {
+                                UserType.SCHOOL -> {
+                                    ActivityNavigatorUtil.startActivity(
+                                        this@SplashActivity,
+                                        SchedulerMainActivity::class.java
+                                    )
+                                }
+
+                                UserType.REFEREE -> {
+                                    ActivityNavigatorUtil.startActivity(
+                                        this@SplashActivity,
+                                        RefereeMainActivity::class.java
+                                    )
+                                }
+
+                                UserType.ADMIN -> {
+                                    ActivityNavigatorUtil.startActivity(
+                                        this@SplashActivity,
+                                        AdminMainActivity::class.java
+                                    )
+                                }
+
+                                UserType.UNKNOWN -> {}
+                            }
+                        }
+                    }
+
+                    else -> ActivityNavigatorUtil.startActivity(
+                        this@SplashActivity, AuthenticationActivity::class.java
+                    )
                 }
                 finish()
             }
@@ -67,6 +96,10 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun userOnBoardingStatus(): Int {
-        return getSharedPreferences("Logged", Context.MODE_PRIVATE).getInt("isLogged", 0)
+        return getSharedPreferences("Logged", MODE_PRIVATE).getInt("isLogged", 0)
+    }
+
+    private fun getUserType(): UserType? {
+        return SharedPrefManager(this).getUser()?.userType
     }
 }

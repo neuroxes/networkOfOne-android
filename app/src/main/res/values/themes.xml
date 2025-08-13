@@ -51,4 +51,10 @@
         <item name="android:navigationBarColor">?colorTertiary</item>
     </style>
 
+    <style name="Theme.Splash" parent="Base.Theme.NETWORKOFONE">
+        <item name="android:navigationBarColor">#080b2c</item>
+        <item name="android:statusBarColor">#080b2c</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
 </resources>

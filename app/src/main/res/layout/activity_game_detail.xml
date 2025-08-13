@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.GameDetailActivity">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivBack"
+        style="@style/backBtn"
+        android:layout_marginStart="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        style="@style/textHeading.medium"
+        android:layout_marginStart="12dp"
+        android:text="Game Detail"
+        app:layout_constraintBottom_toBottomOf="@id/ivBack"
+        app:layout_constraintStart_toEndOf="@id/ivBack"
+        app:layout_constraintTop_toTopOf="@id/ivBack" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:overScrollMode="never"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_default="spread"
+        app:layout_constraintTop_toBottomOf="@id/ivBack"
+        tools:visibility="visible">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="16dp">
+
+            <!-- Status Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/statusCard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="2dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:cardBackgroundColor="@color/status_confirmed">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/statusIcon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/check_circle"
+                            app:tint="@color/white" />
+
+                        <TextView
+                            android:id="@+id/statusText"
+                            style="@style/textHeading.medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Accepted"
+                            android:textColor="@android:color/white" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/textBody.Small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:alpha="0.8"
+                            android:text="Fee Amount"
+                            android:textColor="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/feeAmountText"
+                            style="@style/textHeading.Large"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="$2,880"
+                            android:textColor="@android:color/white" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Main Content Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/mainContentCard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/statusCard">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <!-- Game Title -->
+                    <TextView
+                        android:id="@+id/gameTitle"
+                        style="@style/textHeading.Large"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Championship Match"
+                        android:textColor="?android:textColor" />
+
+                    <!-- Special Note -->
+                    <TextView
+                        android:id="@+id/specialNote"
+                        style="@style/textBody"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Important championship game - please arrive 30 minutes early for equipment check and briefing."
+                        android:textColor="?android:textColorSecondary" />
+
+                    <!-- Date Time Section -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/round_12dp_bg"
+                        android:backgroundTint="?cardBackgroundColor"
+                        android:orientation="horizontal"
+                        android:padding="16dp">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginEnd="12dp"
+                            android:background="@color/status_processing"
+                            android:src="@drawable/calendar"
+                            android:tint="@android:color/white"
+                            app:contentPadding="8dp"
+                            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Small" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/dateText"
+                                style="@style/textHeading.medium"
+                                android:text="Thursday, Aug 14" />
+
+                            <TextView
+                                android:id="@+id/timeText"
+                                style="@style/textBody"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center_vertical"
+                                android:text="6:00 PM"
+                                android:textColor="?android:textColorSecondary"
+                                app:drawableStartCompat="@drawable/ic_clock" />
+
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- Location Section -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/round_12dp_bg"
+                        android:backgroundTint="?cardBackgroundColor"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="16dp">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginEnd="12dp"
+                            android:background="@color/status_confirmed"
+                            android:src="@drawable/sharp_location_on_24"
+                            android:tint="@android:color/white"
+                            app:contentPadding="8dp"
+                            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Small" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                style="@style/textBody.Small"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="LOCATION"
+                                android:textAllCaps="true"
+                                android:textColor="?android:textColorSecondary" />
+
+                            <TextView
+                                android:id="@+id/locationText"
+                                style="@style/textHeading.medium"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Central Sports Arena"
+                                android:textColor="?android:textColor" />
+
+                        </LinearLayout>
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/directionsIcon"
+                            style="@style/selectableIcon"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginTop="0dp"
+                            android:src="@drawable/up_right_from_square_1_" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/teamInfoCard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/mainContentCard">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="16dp">
+
+                    <TextView
+                        android:id="@+id/teamInfoHeader"
+                        style="@style/textHeading.Large"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="24dp"
+                        android:drawablePadding="8dp"
+                        android:text="Additional Information"
+                        app:drawableTint="?colorSecondary"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <LinearLayout
+                        android:id="@+id/teamInfoContainer"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/teamInfoHeader">
+
+                        <!-- Created By Card -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/round_12dp_bg"
+                            android:backgroundTint="?cardBackgroundColor"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+
+                            <TextView
+                                style="@style/textBody"
+                                android:text="Created By"
+                                app:drawableStartCompat="@drawable/user_15dp" />
+
+
+                            <TextView
+                                android:id="@+id/createdByText"
+                                style="@style/textHeading.Small"
+                                android:layout_marginTop="6dp"
+                                android:lines="1"
+                                android:text="Ali Aslam" />
+
+                        </LinearLayout>
+
+                        <!-- Referee Card -->
+                        <LinearLayout
+                            android:id="@+id/refereeCard"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/round_12dp_bg"
+                            android:backgroundTint="?cardBackgroundColor"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                style="@style/textBody"
+                                android:gravity="center_vertical"
+                                android:text="Referee"
+                                app:drawableStartCompat="@drawable/whistle" />
+
+
+                            <TextView
+                                android:id="@+id/refereeText"
+                                style="@style/textHeading.Small"
+                                android:layout_marginTop="6dp"
+                                android:lines="1"
+                                android:text="Master Ali" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/timestampsContainer"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/teamInfoContainer">
+
+                        <!-- Created Timestamp -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/round_12dp_bg"
+                            android:backgroundTint="?cardBackgroundColor"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                style="@style/textBody.Small"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:drawableStart="@drawable/ic_clock_15dp"
+                                android:text="Created at"
+                                android:textColor="?android:textColorSecondary" />
+
+                            <TextView
+                                android:id="@+id/createdAtText"
+                                style="@style/textHeading.VerySmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Aug 7, 2025 at 7:45 AM"
+                                android:textColor="?android:textColor" />
+
+                        </LinearLayout>
+
+                        <!-- Updated Timestamp -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/round_12dp_bg"
+                            android:backgroundTint="?cardBackgroundColor"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                style="@style/textBody.Small"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:drawableStart="@drawable/time_past"
+                                android:text="Updated"
+                                android:textColor="?android:textColorSecondary" />
+
+                            <TextView
+                                android:id="@+id/updatedAtText"
+                                style="@style/textHeading.VerySmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Aug 7, 2025 at 11:14 AM"
+                                android:textColor="?android:textColor" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/teamInfoCard" />
+
+            <!-- View Updates Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAccept"
+                style="@style/btn_lwm.outlined"
+                android:layout_width="0dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="@color/button_bg_outlined"
+                android:text="Accept"
+                android:visibility="visible"
+                app:icon="@drawable/check_circle"
+                app:iconGravity="textStart"
+                app:iconPadding="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/teamInfoCard" />
+
+            <!-- Action Buttons -->
+
+            <!-- Return Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnReturn"
+                style="@style/btn_lwm.outlined"
+                android:layout_width="0dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:autoSizeMaxTextSize="16dp"
+                android:autoSizeTextType="uniform"
+                android:backgroundTint="@color/button_bg_outlined"
+                android:enabled="false"
+                android:lines="1"
+                android:paddingHorizontal="14dp"
+                android:text="Return Game"
+                android:visibility="visible"
+                app:icon="@drawable/round_keyboard_return_24"
+                app:layout_constraintEnd_toStartOf="@id/btnReqPay"
+                app:layout_constraintStart_toStartOf="@id/btnAccept"
+
+                app:layout_constraintTop_toBottomOf="@id/btnAccept" />
+
+            <!-- Check In Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnReqPay"
+                style="@style/btn_lwm_enable_disable"
+                android:layout_width="0dp"
+                android:layout_marginStart="8dp"
+                android:autoSizeMaxTextSize="16dp"
+                android:autoSizeTextType="uniform"
+                android:backgroundTint="@color/button_bg"
+                android:enabled="false"
+                android:lines="1"
+
+                android:paddingHorizontal="14dp"
+                android:text="Request Payout"
+                android:visibility="visible"
+                app:icon="@drawable/sack_dollar"
+                app:layout_constraintBottom_toBottomOf="@id/btnReturn"
+                app:layout_constraintEnd_toEndOf="@id/btnAccept"
+                app:layout_constraintStart_toEndOf="@id/btnReturn"
+
+                app:layout_constraintTop_toTopOf="@id/btnReturn" />
+            <!--
+                        &lt;!&ndash; Return Button &ndash;&gt;
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnRejectPayout"
+                            style="@style/btn_lwm.outlined"
+                            android:layout_width="0dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginEnd="8dp"
+                            android:autoSizeMaxTextSize="16dp"
+                            android:autoSizeTextType="uniform"
+                            android:enabled="false"
+                            android:lines="1"
+                            android:paddingHorizontal="14dp"
+                            android:text="Reject Payout"
+                            android:visibility="visible"
+                            app:icon="@drawable/round_keyboard_return_24"
+                            app:layout_constraintEnd_toStartOf="@id/btnAcceptPayout"
+                            app:layout_constraintStart_toStartOf="@id/teamInfoCard"
+                            app:layout_constraintTop_toBottomOf="@id/teamInfoCard" />
+
+                        &lt;!&ndash; Check In Button &ndash;&gt;
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAcceptPayout"
+                            style="@style/btn_lwm_enable_disable"
+                            android:layout_width="0dp"
+                            android:layout_marginStart="8dp"
+                            android:autoSizeMaxTextSize="16dp"
+                            android:autoSizeTextType="uniform"
+                            android:enabled="false"
+                            android:lines="1"
+                            android:paddingHorizontal="14dp"
+                            android:text="Accept Payout"
+                            android:visibility="visible"
+                            app:icon="@drawable/sack_dollar"
+                            app:layout_constraintBottom_toBottomOf="@id/btnRejectPayout"
+                            app:layout_constraintEnd_toEndOf="@id/teamInfoCard"
+                            app:layout_constraintStart_toEndOf="@id/btnRejectPayout"
+                            app:layout_constraintTop_toTopOf="@id/btnRejectPayout" />-->
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+    <View
+        android:id="@+id/animator"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:transitionName="animator"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

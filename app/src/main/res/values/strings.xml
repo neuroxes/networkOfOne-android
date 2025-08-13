@@ -1,11 +1,18 @@
 <resources>
     <string name="app_name">Network Of One</string>
 
-    <string name="login_msg1">Go ahead and provide your credentials</string>
-    <string name="login_msg2">Sign-In and never lose your progress</string>
-    <string name="signup_msg1">Go ahead and set up your account</string>
-    <string name="signup_msg2">Signup and enjoy the best learning experience</string>
+    <string name="login_msg1">Welcome back! Enter your credentials.</string>
+    <string name="login_msg2">Sign in to access your account.</string>
+    <string name="signup_msg1">Create an account to begin.</string>
+    <string name="signup_msg2">Join us and explore new possibilities.</string>
     <string name="sign_in">Sign In</string>
     <string name="storeLocation">User Name</string>
     <string name="special_note_optional"><b>Special Note</b> <small>(optional)</small></string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="pay1">XRPL\n<small>XRP Ledger</small></string>
+    <string name="pay2">Bank\n<small>Transactions</small></string>
+    <string name="pay3">Paypal\n<small>Transaction</small></string>
+    <string name="pay4">Vimeo\n<small>Transaction</small></string>
+    <string name="MAP_API_KEY">AIzaSyCHXMmlfIfL2w_rqOgDF2yPvCTDDEhfas8</string>
 </resources>
