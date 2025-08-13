@@ -116,8 +116,7 @@ class NotificationActivity : AppCompatActivity() {
         binding.apply {
             chipGroup.setOnCheckedStateChangeListener { group, checkedId ->
                 val filteredList = when (checkedId.firstOrNull()) {
-                    chipAll.id -> notificationList
-                    chipReview.id -> notificationList.filter {
+                    chipAll.id -> notificationList/*chipReview.id -> notificationList.filter {
                         it.type == NotificationTypeLocal.REJECTED
                     }
 
@@ -127,15 +126,11 @@ class NotificationActivity : AppCompatActivity() {
 
                     chipPayout.id -> notificationList.filter {
                         it.type == NotificationTypeLocal.PAYMENT_REQUESTED
-                    }
+                    }*/
 
-                    chipPending.id -> notificationList.filter {
-                        it.type == NotificationTypeLocal.PENDING
-                    }
+                    chipGame.id -> notificationList
 
-                    chipActive.id -> notificationList.filter {
-                        it.type == NotificationTypeLocal.ACCEPTED
-                    }
+                    chipGeneral.id -> emptyList()
 
                     else -> notificationList
                 }

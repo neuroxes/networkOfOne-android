@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.networkofone.R
 import com.example.networkofone.databinding.ItemPayoutsBinding
+import com.example.networkofone.mvvm.models.PaymentMethod
 import com.example.networkofone.mvvm.models.PaymentRequestData
 import com.example.networkofone.mvvm.models.PaymentStatus
 import com.example.networkofone.utils.NumberFormatterUtil
@@ -45,11 +46,41 @@ class PayoutsAdapter(
                     ivReject.visibility = GONE
                 }
                 tvGameName.text = paymentRequestData.gameName
-                tvPrice.text = Html.fromHtml(
-                    "$${NumberFormatterUtil.format(paymentRequestData.amount)} \u25cf ${paymentRequestData.paymentMethod}",
-                    Html.FROM_HTML_MODE_LEGACY
-                )
-                tvRequestedAt.text = "Created at: ${paymentRequestData.paidAt}"
+                tvReferee.text = paymentRequestData.refereeName
+                when (paymentRequestData.paymentMethod) {
+                    PaymentMethod.PAYPAL -> {
+                        tvAccountType.text = "PayPal"
+                        tvAccountType.setCompoundDrawablesWithIntrinsicBounds(
+                            R.drawable.cvv_card_15dp, 0, 0, 0
+                        )
+                    }
+                    PaymentMethod.VENMO -> {
+                        tvAccountType.text = "Venmo"
+                        tvAccountType.setCompoundDrawablesWithIntrinsicBounds(
+                            R.drawable.sack_dollar_15dp, 0, 0, 0
+                        )
+                    }
+
+                    PaymentMethod.XRPL -> {
+                        tvAccountType.text = "XRPL"
+                        tvAccountType.setCompoundDrawablesWithIntrinsicBounds(
+                            R.drawable.round_currency_bitcoin_15dp, 0, 0, 0
+                        )
+                    }
+                    PaymentMethod.BANK_TRANSFER -> {
+                        tvAccountType.text = "Bank"
+                        tvAccountType.setCompoundDrawablesWithIntrinsicBounds(
+                            R.drawable.bank_15dp, 0, 0, 0
+                        )
+                    }
+                    PaymentMethod.NONE -> {
+                        tvAccountType.text = ""
+                        tvAccountType.setCompoundDrawablesWithIntrinsicBounds(
+                            0, 0, 0, 0
+                        )
+                    }
+                }
+                tvPrice.text = "$${NumberFormatterUtil.format(paymentRequestData.amount)}"
 
                 // Handle accept button click
                 ivCancel.setOnClickListener {

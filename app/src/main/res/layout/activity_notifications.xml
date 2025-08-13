@@ -41,8 +41,8 @@
         android:id="@+id/horiScroll"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:clipToPadding="false"
         android:layout_marginTop="8dp"
+        android:clipToPadding="false"
         android:paddingHorizontal="15dp"
         android:scrollbars="none"
         app:layout_constraintEnd_toEndOf="parent"
@@ -65,19 +65,19 @@
                 android:text="All" />
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/chipActive"
+                android:id="@+id/chipGeneral"
                 style="@style/chipStyle"
-                android:text="Active" />
+                android:text="General" />
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/chipPending"
+                android:id="@+id/chipGame"
                 style="@style/chipStyle"
-                android:text="Pending" />
+                android:text="Game" />
 
-            <com.google.android.material.chip.Chip
+            <!--<com.google.android.material.chip.Chip
                 android:id="@+id/chipPayout"
                 style="@style/chipStyle"
-                android:text="Payouts" />
+                android:text="Payouts" />-->
 
 
             <!--
@@ -103,15 +103,15 @@
                             style="@style/chipStyle"
                             android:text="Payments" />-->
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipReview"
-                style="@style/chipStyle"
-                android:text="Reviews" />
+            <!-- <com.google.android.material.chip.Chip
+                 android:id="@+id/chipReview"
+                 style="@style/chipStyle"
+                 android:text="Reviews" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipReminders"
-                style="@style/chipStyle"
-                android:text="Reminders" />
+             <com.google.android.material.chip.Chip
+                 android:id="@+id/chipReminders"
+                 style="@style/chipStyle"
+                 android:text="Reminders" />-->
 
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
@@ -125,13 +125,13 @@
         android:orientation="vertical"
         android:paddingHorizontal="15dp"
         android:visibility="gone"
-        tools:visibility="visible"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/horiScroll"
         tools:itemCount="1"
-        tools:listitem="@layout/item_date_notification" />
+        tools:listitem="@layout/item_date_notification"
+        tools:visibility="visible" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/progress_indicator"

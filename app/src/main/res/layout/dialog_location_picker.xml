@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -12,14 +13,13 @@
         android:padding="16dp">
 
         <TextView
+            style="@style/textHeading.Large"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/textHeading.Large"
             android:layout_marginBottom="8dp"
             android:gravity="center"
-            android:textColor="@color/textColorSecondary"
             android:text="Choose Location"
-            />
+            android:textColor="@color/textColorSecondary" />
 
         <View
             android:layout_width="40dp"
@@ -30,10 +30,13 @@
     </LinearLayout>
 
     <!-- Map Container -->
-    <FrameLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="?backgroundColor"
+        app:cardCornerRadius="@dimen/buttonRadius">
 
         <fragment
             android:id="@+id/map"
@@ -41,7 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- Buttons -->
     <LinearLayout
@@ -56,17 +59,17 @@
             style="@style/btn_lwm.outlined"
             android:layout_width="0dp"
             android:layout_marginEnd="8dp"
-            android:textColor="@color/textColorSecondary"
             android:layout_weight="1"
-            android:text="Cancel" />
+            android:text="Cancel"
+            android:textColor="@color/textColorSecondary" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_done"
             style="@style/btn_lwm"
             android:layout_width="0dp"
-            android:textColor="@color/white"
             android:layout_weight="1"
-            android:text="Done" />
+            android:text="Done"
+            android:textColor="@color/white" />
 
     </LinearLayout>
 
