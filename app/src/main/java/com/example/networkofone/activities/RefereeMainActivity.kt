@@ -11,7 +11,7 @@ import com.example.networkofone.R
 import com.example.networkofone.databinding.ActivityMainRefreeBinding
 import com.example.networkofone.fcm.FCMTokenManager
 import com.example.networkofone.home.RefereeHomeFragment
-import com.example.networkofone.home.PayoutFragmentScheduler
+import com.example.networkofone.home.PayoutFragment
 import com.example.networkofone.mvvm.models.UserType
 import com.example.networkofone.utils.LocationHelper
 import com.example.networkofone.utils.NewToastUtil
@@ -25,7 +25,7 @@ class RefereeMainActivity : AppCompatActivity(), LocationHelper.LocationResultLi
     private lateinit var fragMore: AppFragment
     private lateinit var locationHelper: LocationHelper
     private lateinit var refereeHomeFragment: RefereeHomeFragment
-    private lateinit var payoutFragmentScheduler: PayoutFragmentScheduler
+    private lateinit var payoutFragment: PayoutFragment
     private var lat = 0.0
     private var long = 0.0
 
@@ -43,9 +43,9 @@ class RefereeMainActivity : AppCompatActivity(), LocationHelper.LocationResultLi
         }
         fragDashboard.onAppFragmentLoader = refereeHomeFragment
 
-        payoutFragmentScheduler = PayoutFragmentScheduler(this)
+        payoutFragment = PayoutFragment(this)
         fragMore = findViewById(R.id.fragMore)
-        fragMore.onAppFragmentLoader = payoutFragmentScheduler
+        fragMore.onAppFragmentLoader = payoutFragment
 
         locationHelper = LocationHelper()
         locationHelper.initialize(this, this)
@@ -69,7 +69,7 @@ class RefereeMainActivity : AppCompatActivity(), LocationHelper.LocationResultLi
                 }
 
                 R.id.more_tab -> {
-                    payoutFragmentScheduler.refreshData()
+                    payoutFragment.refreshData()
                 }
             }
 

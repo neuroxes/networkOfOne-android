@@ -32,7 +32,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="16dp"
-            android:background="@color/brandTrans"
+            android:background="?cardBackgroundColor"
             android:src="@drawable/console_controller"
             app:contentPadding="12dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -46,9 +46,25 @@
             android:layout_marginHorizontal="12dp"
             android:maxLines="2"
             android:text="Study Lamp 220V (MultiColor) without bulb-color Family:Maroon"
-            app:layout_constraintEnd_toEndOf="@id/btnAccept"
+            app:layout_constraintEnd_toStartOf="@id/btnUpdates"
             app:layout_constraintStart_toEndOf="@id/gameIcon"
             app:layout_constraintTop_toTopOf="@id/gameIcon" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnUpdates"
+            style="@style/Widget.Material3.Button.IconButton.Outlined"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:contentDescription="Updates"
+            android:padding="12dp"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/bell"
+            app:iconTint="?colorSecondary"
+            app:layout_constraintBottom_toBottomOf="@id/gameLocation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/gameName"
+            app:strokeColor="?colorButtonNormal" />
 
 
         <TextView
@@ -107,7 +123,7 @@
             android:autoSizeTextType="uniform"
             android:lines="1"
             android:paddingHorizontal="14dp"
-            android:text="Request Payout skjf"
+            android:text="Request Payout"
             app:icon="@drawable/check_circle"
             app:layout_constraintBottom_toBottomOf="@id/btnLocation"
             app:layout_constraintEnd_toEndOf="parent"

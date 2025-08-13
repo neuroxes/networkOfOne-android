@@ -4,11 +4,11 @@
     android:id="@+id/parent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="16dp"
+    android:layout_marginTop="12dp"
     android:background="?selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    android:paddingVertical="8dp">
+    android:paddingTop="8dp">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/icon"
@@ -46,6 +46,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/icon"
         app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
+    <View
+        android:id="@+id/div"
+        style="@style/horizontal_divider"
+        android:layout_width="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/icon"
+        app:layout_constraintTop_toBottomOf="@id/tvMessage" />
 
     <TextView
         android:id="@+id/tvTime"

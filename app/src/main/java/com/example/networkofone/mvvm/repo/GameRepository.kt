@@ -1,14 +1,20 @@
 package com.example.networkofone.mvvm.repo
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
 import com.example.networkofone.mvvm.models.Notification
 import com.example.networkofone.mvvm.models.NotificationData
 import com.example.networkofone.mvvm.models.NotificationType
 import com.example.networkofone.mvvm.models.NotificationTypeLocal
+import com.example.networkofone.mvvm.models.PaymentRequestData
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -19,6 +25,8 @@ class GameRepository {
         Firebase.database("https://networkofone-3b9c4-default-rtdb.asia-southeast1.firebasedatabase.app")
     private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     private val gamesRef = database.getReference("games")
+    private val payoutsRef = database.getReference("paymentRequests")
+
     private val notificationRepo = NotificationRepositoryFirebase()
     private val notificationRepository = NotificationRepository()
 
@@ -101,6 +109,34 @@ class GameRepository {
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    // Get count of pending payouts in real-time (for both scheduler and referee)
+    fun getPendingPayoutsCountLiveData(): LiveData<Int> {
+        val liveData = MutableLiveData<Int>()
+
+        val query = payoutsRef.orderByChild("status").equalTo("PENDING")
+        query.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                try {
+                    val count = snapshot.children.count { child ->
+                        val payout = child.getValue(PaymentRequestData::class.java)
+                        payout?.schedularId == userId || payout?.refereeId == userId
+                    }
+                    liveData.postValue(count)
+                } catch (e: Exception) {
+                    Log.e("PayRepo", "getPendingPayoutsCount onDataChange: ${e.message}")
+                    liveData.postValue(0)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("PayRepo", "getPendingPayoutsCount onCancelled: ${error.message}")
+                liveData.postValue(0)
+            }
+        })
+
+        return liveData
     }
 
     suspend fun getAllAvailableGames(): Result<List<GameData>> = withContext(Dispatchers.IO) {

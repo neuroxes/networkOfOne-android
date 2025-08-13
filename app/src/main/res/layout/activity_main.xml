@@ -87,6 +87,26 @@
             app:layout_constraintStart_toStartOf="parent"
             app:menu="@menu/btm_menu" />
 
+
+        <TextView
+            android:id="@+id/noOfNotifications"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="46dp"
+            android:background="@drawable/oval"
+            android:backgroundTint="?colorPrimary"
+            android:gravity="center"
+            android:text="0"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/btmNav"
+            app:layout_constraintTop_toTopOf="@id/btmNav"
+            tools:visibility="visible" />
+
+
         <View
             android:id="@+id/animator"
             android:layout_width="0dp"

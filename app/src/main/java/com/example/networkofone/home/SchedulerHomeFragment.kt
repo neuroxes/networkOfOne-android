@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.networkofone.R
 import com.example.networkofone.activities.AuthenticationActivity
 import com.example.networkofone.activities.GameDetailActivity
+import com.example.networkofone.activities.GameStatusUpdates
 import com.example.networkofone.activities.NotificationActivity
 import com.example.networkofone.adapters.GamesAdapter
 import com.example.networkofone.databinding.DialogLogoutBinding
@@ -42,7 +43,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.incity.incity_stores.AppFragmentLoader
 import java.util.Calendar
-import kotlin.random.Random
 
 class SchedulerHomeFragment(
     private val context: AppCompatActivity, private val onGameEditing: (GameData) -> Unit,
@@ -184,6 +184,9 @@ class SchedulerHomeFragment(
             val gameJson = Gson().toJson(game)
             intent.putExtra("game_data", gameJson)
             context.startActivity(intent)
+        }, onUpdatesClick = { id ->
+            val intent = Intent(context, GameStatusUpdates::class.java).putExtra("gameId", id)
+            context.startActivity(intent)
         }, onMoreOptionsClick = { game ->
             showGameOptionsDialog(game)
         })
@@ -257,6 +260,10 @@ class SchedulerHomeFragment(
                 binding.rcvGames.visibility = View.VISIBLE
                 binding.layResult.visibility = View.GONE
             }
+        }
+
+        viewModel.selectedTab.observe(context){
+            binding.tabLayout.getTabAt(it)?.select()
         }
     }
 

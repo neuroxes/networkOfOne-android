@@ -320,6 +320,9 @@
         <item name="android:textColorHint">#aaaaaa</item>
         <item name="android:background">@drawable/outlined_10dp_round_with_states_effect</item>
     </style>
+    <style name="editTextOutlined.BackgroundColored" parent="editTextOutlined">
+        <item name="android:background">@drawable/outlined_10dp_round_with_states_effect_with_bg_color</item>
+    </style>
 
 
     <style name="chipStyle">

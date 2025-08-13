@@ -40,75 +40,107 @@ class GameDetailActivity : AppCompatActivity(), LocationHelper.LocationResultLis
     private var userData: UserModel? = null
     private lateinit var loader: LoadingDialog
     private val viewModel: GameDetailActivityViewModel by viewModels()
-
     private lateinit var locationHelper: LocationHelper
+    private var isLocationCheckForCheckIn = false // Flag to track location check purpose
+
+    companion object {
+        const val TAG = "GameDetail"
+        private const val CHECK_IN_DISTANCE_METERS = 100f
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGameDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        initializeComponents()
+        getIntentData()
+        observeViewModel()
+        onClicks()
+    }
+
+    private fun initializeComponents() {
         loader = LoadingDialog(this)
         userData = SharedPrefManager(this).getUser()
         locationHelper = LocationHelper()
         locationHelper.initialize(this, this)
-
-        getIntentData()
-        observeViewModel()
-        onClicks()
     }
 
     private fun getIntentData() {
         try {
             val gameDataJson = intent.getStringExtra("game_data")
             if (gameDataJson != null) {
-                viewModel.gameData = Gson().fromJson(gameDataJson, GameData::class.java)
+                val gameData = Gson().fromJson(gameDataJson, GameData::class.java)
+                viewModel.setGameData(gameData)
                 setupViews()
             } else {
                 val gameId = intent.getStringExtra("gameId")
-                loader.startLoadingAnimation()
-                gameId?.let { viewModel.getData(it) }
+                if (gameId != null) {
+                    loader.startLoadingAnimation()
+                    viewModel.getData(gameId)
+                } else {
+                    NewToastUtil.showError(this, "Invalid game data")
+                    finish()
+                }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "Error getting intent data: ${e.message}")
+            NewToastUtil.showError(this, "Error loading game data")
+            finish()
         }
     }
 
-
     private fun observeViewModel() {
-        try {
-            viewModel.payoutsLiveData.observe(this) {
-                viewModel.gameData = it ?: GameData()
-                loader.endLoadingAnimation()
-                setupViews()
-            }
-
-            viewModel.updateResult.observe(this) {
-                loader.endLoadingAnimation()
-                if (it.isSuccess) {
-                    viewModel.getData(viewModel.gameData.id)
-                    NewToastUtil.showSuccess(this, "Status updated!")
-                } else {
-                    NewToastUtil.showError(this, "Something went wrong")
-                }
-            }
-            viewModel.paymentRequestResult.observe(this) { result ->
-                loader.endLoadingAnimation()
-                if (result.isSuccess) {
-                    updateGameStatus(GameStatus.PAYMENT_REQUESTED)
-                    NewToastUtil.showSuccess(this, "Payment request submitted successfully!")
-                } else {
-                    NewToastUtil.showError(
-                        this,
-                        "Failed to submit payment request: ${result.exceptionOrNull()?.message}"
-                    )
-                }
-            }
-
-        } catch (e: Exception) {
+        viewModel.gameDataLiveData.observe(this) { gameData ->
             loader.endLoadingAnimation()
-            e.printStackTrace()
+            if (gameData != null) {
+                setupViews()
+            } else {
+                NewToastUtil.showError(this, "Failed to load game data")
+                finish()
+            }
         }
 
+        viewModel.updateResult.observe(this) { result ->
+            loader.endLoadingAnimation()
+            if (result.isSuccess) {
+                // Refresh game data to get latest status
+                viewModel.getData(viewModel.getGameData().id)
+                NewToastUtil.showSuccess(this, "Status updated!")
+            } else {
+                val errorMessage = result.exceptionOrNull()?.message ?: "Something went wrong"
+                NewToastUtil.showError(this, errorMessage)
+            }
+        }
+
+        viewModel.paymentRequestResult.observe(this) { result ->
+            loader.endLoadingAnimation()
+            if (result.isSuccess) {
+                // Update local game status and refresh UI
+                viewModel.updateLocalGameStatus(GameStatus.PAYMENT_REQUESTED)
+                setupViews() // Refresh UI with new status
+                NewToastUtil.showSuccess(this, "Payment request submitted successfully!")
+            } else {
+                val errorMessage =
+                    result.exceptionOrNull()?.message ?: "Failed to submit payment request"
+                NewToastUtil.showError(this, errorMessage)
+            }
+        }
+
+        viewModel.loading.observe(this) { isLoading ->
+            if (isLoading) {
+                loader.startLoadingAnimation()
+            } else {
+                loader.endLoadingAnimation()
+            }
+        }
+
+        viewModel.error.observe(this) { errorMessage ->
+            loader.endLoadingAnimation()
+            if (errorMessage.isNotEmpty()) {
+                NewToastUtil.showError(this, errorMessage)
+            }
+        }
     }
 
     private fun onClicks() {
@@ -119,99 +151,72 @@ class GameDetailActivity : AppCompatActivity(), LocationHelper.LocationResultLis
                 initiatePayoutRequest()
             }
 
-            // Check In button
             btnAccept.setOnClickListener {
-                if (btnAccept.text == "Accept") {
-                    updateGameStatus(GameStatus.ACCEPTED)
-                } else {
-                    updateGameStatus(GameStatus.CHECKED_IN)
-                }
+                handleAcceptButtonClick()
             }
 
             btnReturn.setOnClickListener {
                 updateGameStatus(GameStatus.PENDING)
             }
 
-
-            // Directions button
             directionsIcon.setOnClickListener {
                 openDirections()
             }
+        }
+    }
 
+    private fun handleAcceptButtonClick() {
+        val currentStatus = viewModel.getGameData().status
+        when (currentStatus) {
+            GameStatus.PENDING -> {
+                updateGameStatus(GameStatus.ACCEPTED,userData?.name)
+            }
+
+            GameStatus.ACCEPTED -> {
+                // Check if user is within check-in range
+                isLocationCheckForCheckIn = true
+                getMyCurrentLocation()
+            }
+
+            else -> {
+                Log.e(TAG, "Unexpected status for accept button click: $currentStatus")
+            }
         }
     }
 
     @SuppressLint("SetTextI18n")
     private fun initiatePayoutRequest() {
+        // Ensure user can only request payment when checked in
+        if (viewModel.getGameData().status != GameStatus.CHECKED_IN) {
+            NewToastUtil.showError(this, "You can only request payment after checking in")
+            return
+        }
+
         val (dialog, dialogBinding) = DialogUtil.createBottomDialogWithBinding(
             this, LayoutProvidePaymentDetailBinding::inflate
         )
+
         dialog.show()
+        setupPaymentDialog(dialog, dialogBinding)
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun setupPaymentDialog(
+        dialog: android.app.Dialog,
+        dialogBinding: LayoutProvidePaymentDetailBinding,
+    ) {
         dialogBinding.apply {
-            tvAmount.text = "$${NumberFormatterUtil.format(viewModel.gameData.feeAmount)}"
+            tvAmount.text = "$${NumberFormatterUtil.format(viewModel.getGameData().feeAmount)}"
+
             ivBack.setOnClickListener { dialog.dismiss() }
             btnCancel.setOnClickListener { dialog.dismiss() }
-            paymentMethodRadioGroup.setOnCheckedChangeListener { group, checkedId ->
-                when (checkedId) {
-                    R.id.rBtn1 -> {
-                        lay2.visibility = VISIBLE
-                        setPaymentMethod(
-                            "XRPL Address",
-                            "Enter your XRPL wallet address",
-                            R.drawable.round_currency_bitcoin_24
-                        )
-                    }
 
-                    R.id.rBtn2 -> {
-                        lay2.visibility = GONE
-                        setPaymentMethod(
-                            "Bank Account Details",
-                            "Enter your bank account number",
-                            R.drawable.bank
-                        )
-                    }
-
-                    R.id.rBtn3 -> {
-                        lay2.visibility = GONE
-                        setPaymentMethod(
-                            "Card Details", "Enter your credit card number", R.drawable.cvv_card
-                        )
-                    }
-
-                    R.id.rBtn4 -> {
-                        lay2.visibility = GONE
-                        setPaymentMethod(
-                            "Payment Details", "Enter your payment details", R.drawable.sack_dollar
-                        )
-                    }
-                }
-            }
-            add1.setOnClickListener { etAccountDetail.setText(add1.text) }
-            add2.setOnClickListener { etAccountDetail.setText(add2.text) }
-            add3.setOnClickListener { etAccountDetail.setText(add3.text) }
-            add4.setOnClickListener { etAccountDetail.setText(add4.text) }
-
+            setupPaymentMethodSelection(this)
+            setupQuickAddButtons(this)
 
             btnSave.setOnClickListener {
                 if (isDataValid()) {
-                    val paymentDetail = PaymentRequestData(
-                        gameId = viewModel.gameData.id,
-                        gameName = viewModel.gameData.title,
-                        refereeId = userData?.id ?: "Null",
-                        id = "",
-                        refereeName = userData?.name ?: "Null",
-                        schedularName = viewModel.gameData.schedularName,
-                        schedularId = viewModel.gameData.createdBySchoolId,
-                        amount = viewModel.gameData.feeAmount,
-                        paymentMethod = when (paymentMethodRadioGroup.checkedRadioButtonId) {
-                            R.id.rBtn1 -> PaymentMethod.XRPL
-                            R.id.rBtn2 -> PaymentMethod.BANK_TRANSFER
-                            R.id.rBtn3 -> PaymentMethod.PAYPAL
-                            R.id.rBtn4 -> PaymentMethod.VENMO
-                            else -> PaymentMethod.NONE
-                        },
-                    )
-                    loader.startLoadingAnimation()
+                    val paymentDetail = createPaymentRequestData(this)
                     viewModel.createPaymentRequest(paymentDetail)
                     dialog.dismiss()
                 }
@@ -219,9 +224,78 @@ class GameDetailActivity : AppCompatActivity(), LocationHelper.LocationResultLis
         }
     }
 
-    fun LayoutProvidePaymentDetailBinding.isDataValid(): Boolean {
-        val accountDetail = etAccountDetail.getText().toString().trim()
-        if (accountDetail.isEmpty()) {
+    private fun setupPaymentMethodSelection(dialogBinding: LayoutProvidePaymentDetailBinding) {
+        dialogBinding.paymentMethodRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.rBtn1 -> {
+                    dialogBinding.lay2.visibility = VISIBLE
+                    dialogBinding.setPaymentMethod(
+                        "XRPL Address",
+                        "Enter your XRPL wallet address",
+                        R.drawable.round_currency_bitcoin_24
+                    )
+                }
+
+                R.id.rBtn2 -> {
+                    dialogBinding.lay2.visibility = GONE
+                    dialogBinding.setPaymentMethod(
+                        "Bank Account Details", "Enter your bank account number", R.drawable.bank
+                    )
+                }
+
+                R.id.rBtn3 -> {
+                    dialogBinding.lay2.visibility = GONE
+                    dialogBinding.setPaymentMethod(
+                        "Card Details", "Enter your credit card number", R.drawable.cvv_card
+                    )
+                }
+
+                R.id.rBtn4 -> {
+                    dialogBinding.lay2.visibility = GONE
+                    dialogBinding.setPaymentMethod(
+                        "Payment Details", "Enter your payment details", R.drawable.sack_dollar
+                    )
+                }
+            }
+        }
+    }
+
+    private fun setupQuickAddButtons(dialogBinding: LayoutProvidePaymentDetailBinding) {
+        dialogBinding.apply {
+            add1.setOnClickListener { etAccountDetail.setText(add1.text) }
+            add2.setOnClickListener { etAccountDetail.setText(add2.text) }
+            add3.setOnClickListener { etAccountDetail.setText(add3.text) }
+            add4.setOnClickListener { etAccountDetail.setText(add4.text) }
+        }
+    }
+
+    private fun createPaymentRequestData(dialogBinding: LayoutProvidePaymentDetailBinding): PaymentRequestData {
+        return PaymentRequestData(
+            gameId = viewModel.getGameData().id,
+            gameName = viewModel.getGameData().title,
+            refereeId = userData?.id ?: "",
+            id = "",
+            refereeName = userData?.name ?: "",
+            schedularName = viewModel.getGameData().schedularName,
+            schedularId = viewModel.getGameData().createdBySchoolId,
+            amount = viewModel.getGameData().feeAmount,
+            paymentMethod = getSelectedPaymentMethod(dialogBinding)
+        )
+    }
+
+    private fun getSelectedPaymentMethod(dialogBinding: LayoutProvidePaymentDetailBinding): PaymentMethod {
+        return when (dialogBinding.paymentMethodRadioGroup.checkedRadioButtonId) {
+            R.id.rBtn1 -> PaymentMethod.XRPL
+            R.id.rBtn2 -> PaymentMethod.BANK_TRANSFER
+            R.id.rBtn3 -> PaymentMethod.PAYPAL
+            R.id.rBtn4 -> PaymentMethod.VENMO
+            else -> PaymentMethod.NONE
+        }
+    }
+
+    private fun LayoutProvidePaymentDetailBinding.isDataValid(): Boolean {
+        val accountDetail = etAccountDetail.text?.toString()?.trim()
+        if (accountDetail.isNullOrEmpty()) {
             etLayPrice.error = "Required"
             return false
         }
@@ -229,7 +303,7 @@ class GameDetailActivity : AppCompatActivity(), LocationHelper.LocationResultLis
         return true
     }
 
-    fun LayoutProvidePaymentDetailBinding.setPaymentMethod(
+    private fun LayoutProvidePaymentDetailBinding.setPaymentMethod(
         title: String,
         hint: String,
         iconRes: Int,
@@ -237,14 +311,13 @@ class GameDetailActivity : AppCompatActivity(), LocationHelper.LocationResultLis
         t4.text = title
         etAccountDetail.hint = hint
         etAccountDetail.setCompoundDrawablesWithIntrinsicBounds(
-            ContextCompat.getDrawable(
-                this@GameDetailActivity, iconRes
-            ), null, null, null
+            ContextCompat.getDrawable(this@GameDetailActivity, iconRes), null, null, null
         )
     }
 
-
     private fun setupViews() {
+        if (!::binding.isInitialized) return
+
         binding.nestedScrollView.visible()
         setViewVisibility()
         bindGameData()
@@ -267,127 +340,108 @@ class GameDetailActivity : AppCompatActivity(), LocationHelper.LocationResultLis
                     btnReqPay.visible()
                 }
 
-                else -> {}
+                else -> {
+                    // Handle unknown user types gracefully
+                    btnAccept.gone()
+                    btnReturn.gone()
+                    btnReqPay.gone()
+                }
             }
-
         }
-        Log.e(TAG, "setViewVisibility: ${userData?.userType}")
+        Log.d(TAG, "User type: ${userData?.userType}")
     }
 
     @SuppressLint("SetTextI18n")
     private fun bindGameData() {
-        // Basic viewModel.gameData info
+        val gameData = viewModel.getGameData()
         binding.apply {
-            gameTitle.text = viewModel.gameData.title
-            specialNote.text = viewModel.gameData.specialNote
-            feeAmountText.text = "$${NumberFormatterUtil.format(viewModel.gameData.feeAmount)}"
-            locationText.text = viewModel.gameData.location
+            gameTitle.text = gameData.title
+            specialNote.text = gameData.specialNote
+            feeAmountText.text = "$${NumberFormatterUtil.format(gameData.feeAmount)}"
+            locationText.text = gameData.location
 
-            // Date and time
-            dateText.text = formatDate(viewModel.gameData.date)
-            timeText.text = viewModel.gameData.time
+            dateText.text = formatDate(gameData.date)
+            timeText.text = gameData.time
 
-            // Team information
-            createdByText.text = viewModel.gameData.schedularName
-            if (viewModel.gameData.refereeName.isNullOrEmpty()) {
+            createdByText.text = gameData.schedularName
+
+            if (gameData.refereeName.isNullOrEmpty()) {
                 refereeCard.gone()
-            }
-            refereeText.text = viewModel.gameData.refereeName
-
-            // Timestamps
-            createdAtText.text = formatTimestamp(viewModel.gameData.createdAt)
-
-            viewModel.gameData.acceptedAt?.let { acceptedTime ->
-                updatedAtText.text = formatTimestamp(acceptedTime)
-            } ?: run {
-                updatedAtText.text = formatTimestamp(viewModel.gameData.createdAt)
+            } else {
+                refereeCard.visible()
+                refereeText.text = gameData.refereeName
             }
 
+            createdAtText.text = formatTimestamp(gameData.createdAt)
+
+            val displayTime = gameData.acceptedAt ?: gameData.createdAt
+            updatedAtText.text = formatTimestamp(displayTime)
         }
-
     }
 
     private fun formatTimestamp(timestamp: Long): String {
         return try {
+            if (timestamp <= 0) return "Not available"
             val sdf = SimpleDateFormat("MMM dd, yyyy 'at' h:mm a", Locale.getDefault())
             val date = Date(timestamp)
             sdf.format(date)
         } catch (e: Exception) {
-            e.printStackTrace()
-            ""
+            Log.e(TAG, "Error formatting timestamp: ${e.message}")
+            "Invalid date"
         }
     }
 
     private fun updateStatusCard() {
+        val gameData = viewModel.getGameData()
         binding.apply {
-            when (viewModel.gameData.status) {
+            when (gameData.status) {
                 GameStatus.PENDING -> {
-                    statusCard.setCardBackgroundColor(
-                        ContextCompat.getColor(
-                            this@GameDetailActivity, R.color.status_pending
-                        )
-                    )
-                    statusIcon.setImageResource(R.drawable.ic_clock)
-                    statusText.text = "Pending"
+                    setStatusCard(R.color.status_pending, R.drawable.ic_clock, "Pending")
                 }
 
                 GameStatus.PAYMENT_REQUESTED -> {
-                    statusCard.setCardBackgroundColor(
-                        ContextCompat.getColor(
-                            this@GameDetailActivity, R.color.status_pending
-                        )
+                    setStatusCard(
+                        R.color.status_pending,
+                        R.drawable.round_access_alarm_24,
+                        "Payment Requested"
                     )
-                    statusIcon.setImageResource(R.drawable.round_access_alarm_24)
-                    statusText.text = "Payment Requested"
                 }
 
                 GameStatus.ACCEPTED -> {
-                    statusCard.setCardBackgroundColor(
-                        ContextCompat.getColor(
-                            this@GameDetailActivity, R.color.status_confirmed
-                        )
-                    )
-                    statusIcon.setImageResource(R.drawable.check_circle)
-                    statusText.text = "Accepted"
+                    setStatusCard(R.color.status_confirmed, R.drawable.check_circle, "Accepted")
                 }
 
                 GameStatus.REJECTED -> {
-                    statusCard.setCardBackgroundColor(
-                        ContextCompat.getColor(
-                            this@GameDetailActivity, R.color.status_cancelled
-                        )
-                    )
-                    statusIcon.setImageResource(R.drawable.triangle_warning)
-                    statusText.text = "Rejected"
+                    setStatusCard(R.color.status_cancelled, R.drawable.triangle_warning, "Rejected")
                 }
 
                 GameStatus.CHECKED_IN -> {
-                    statusCard.setCardBackgroundColor(
-                        ContextCompat.getColor(
-                            this@GameDetailActivity, R.color.status_processing
-                        )
-                    )
-                    statusIcon.setImageResource(R.drawable.check_circle)
-                    statusText.text = "Checked In"
+                    setStatusCard(R.color.status_processing, R.drawable.check_circle, "Checked In")
                 }
 
                 GameStatus.COMPLETED -> {
-                    statusCard.setCardBackgroundColor(
-                        ContextCompat.getColor(
-                            this@GameDetailActivity, R.color.status_delivered
-                        )
-                    )
-                    statusIcon.setImageResource(R.drawable.check_circle)
-                    statusText.text = "Completed"
+                    setStatusCard(R.color.status_delivered, R.drawable.check_circle, "Completed")
                 }
             }
+        }
+    }
 
+    private fun setStatusCard(colorRes: Int, iconRes: Int, text: String) {
+        binding.apply {
+            statusCard.setCardBackgroundColor(
+                ContextCompat.getColor(
+                    this@GameDetailActivity, colorRes
+                )
+            )
+            statusIcon.setImageResource(iconRes)
+            statusText.text = text
         }
     }
 
     private fun updateActionButtons() {
+        val gameData = viewModel.getGameData()
         binding.apply {
-            when (viewModel.gameData.status) {
+            when (gameData.status) {
                 GameStatus.PENDING -> {
                     btnAccept.text = "Accept"
                     btnAccept.enable()
@@ -396,18 +450,10 @@ class GameDetailActivity : AppCompatActivity(), LocationHelper.LocationResultLis
                 }
 
                 GameStatus.ACCEPTED -> {
-                    btnAccept.text = "Check - in"
+                    btnAccept.text = "Check In"
                     btnAccept.enable()
                     btnReturn.enable()
-                    btnReqPay.disable()/*if (viewModel.gameData.checkInStatus) {
-                        btnReturn.text = "Checked In"
-                        btnReturn.disable()
-                        btnReqPay.enable()
-                    } else {
-                        btnReturn.text = "Check In"
-                        btnReturn.enable()
-                        btnReqPay.disable()
-                    }*/
+                    btnReqPay.disable()
                 }
 
                 GameStatus.CHECKED_IN -> {
@@ -423,42 +469,34 @@ class GameDetailActivity : AppCompatActivity(), LocationHelper.LocationResultLis
                 }
 
                 GameStatus.COMPLETED, GameStatus.REJECTED -> {
+                    btnAccept.disable()
                     btnReturn.disable()
                     btnReqPay.disable()
-                    btnAccept.disable()
                 }
             }
         }
     }
 
-
-    private fun updateGameStatus(status: GameStatus) {
-        loader.startLoadingAnimation()
-        viewModel.updateGame(status)
-
-        /*if (viewModel.gameData.status == GameStatus.ACCEPTED && !viewModel.gameData.checkInStatus) {
-            // Update the viewModel.gameData data
-            viewModel.gameData.checkInStatus = true
-            viewModel.gameData.checkInTime = System.currentTimeMillis()
-            viewModel.gameData.status = GameStatus.CHECKED_IN
-
-            // Update UI
-            updateStatusCard()
-            updateActionButtons()
-            viewModel.updateGame(viewModel.gameData,status)
-
-            // Here you would typically update the data in your database/API
-            // updateGameInDatabase(viewModel.gameData)
-
-            // Show success message
-            // Snackbar.make(findViewById(android.R.id.content), "Successfully checked in!", Snackbar.LENGTH_SHORT).show()
-        }*/
+    private fun updateGameStatus(status: GameStatus,userName: String? = null) {
+        viewModel.updateGame(status, userName)
     }
 
     private fun openDirections() {
-        if (viewModel.gameData.latitude != 0.0 && viewModel.gameData.longitude != 0.0) {
+        val gameData = viewModel.getGameData()
+
+        if (gameData.latitude != 0.0 && gameData.longitude != 0.0) {
+            openDirectionsWithCoordinates(gameData)
+        } else if (gameData.location.isNotEmpty()) {
+            openDirectionsWithLocationName(gameData.location)
+        } else {
+            NewToastUtil.showError(this, "Location information not available")
+        }
+    }
+
+    private fun openDirectionsWithCoordinates(gameData: GameData) {
+        try {
             val uri =
-                "geo:${viewModel.gameData.latitude},${viewModel.gameData.longitude}?q=${viewModel.gameData.latitude},${viewModel.gameData.longitude}(${viewModel.gameData.location})".toUri()
+                "geo:${gameData.latitude},${gameData.longitude}?q=${gameData.latitude},${gameData.longitude}(${gameData.location})".toUri()
             val intent = Intent(Intent.ACTION_VIEW, uri)
             intent.setPackage("com.google.android.apps.maps")
 
@@ -467,15 +505,24 @@ class GameDetailActivity : AppCompatActivity(), LocationHelper.LocationResultLis
             } else {
                 // Fallback to web browser
                 val webUri =
-                    "https://maps.google.com/?q=${viewModel.gameData.latitude},${viewModel.gameData.longitude}".toUri()
+                    "https://maps.google.com/?q=${gameData.latitude},${gameData.longitude}".toUri()
                 val webIntent = Intent(Intent.ACTION_VIEW, webUri)
                 startActivity(webIntent)
             }
-        } else {
-            // Fallback to search by location name
-            val uri = "geo:0,0?q=${Uri.encode(viewModel.gameData.location)}".toUri()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error opening directions: ${e.message}")
+            NewToastUtil.showError(this, "Unable to open directions")
+        }
+    }
+
+    private fun openDirectionsWithLocationName(location: String) {
+        try {
+            val uri = "geo:0,0?q=${Uri.encode(location)}".toUri()
             val intent = Intent(Intent.ACTION_VIEW, uri)
             startActivity(intent)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error opening directions with location name: ${e.message}")
+            NewToastUtil.showError(this, "Unable to open directions")
         }
     }
 
@@ -485,11 +532,13 @@ class GameDetailActivity : AppCompatActivity(), LocationHelper.LocationResultLis
             val outputFormat = SimpleDateFormat("EEEE, MMM dd", Locale.getDefault())
             val date = inputFormat.parse(dateString)
             outputFormat.format(date ?: Date())
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.e(TAG, "Error formatting date: ${e.message}")
             dateString
         }
     }
 
+    // Extension functions
     private fun View.visible() {
         this.visibility = VISIBLE
     }
@@ -511,48 +560,57 @@ class GameDetailActivity : AppCompatActivity(), LocationHelper.LocationResultLis
     }
 
     private fun getMyCurrentLocation() {
-        // Check if permission is already granted (optional)
         if (locationHelper.isLocationPermissionGranted()) {
             locationHelper.getCurrentLocation()
         } else {
-            // This will automatically request permission and then get location
             locationHelper.getCurrentLocation()
         }
     }
 
     override fun onLocationReceived(latitude: Double, longitude: Double) {
-        // Use the received location coordinates
-        Log.e("Location", "Current location: $latitude, $longitude")
-        val distanceInMeters = calculateDistance(
-            latitude, longitude, viewModel.gameData.latitude, viewModel.gameData.longitude
-        )
-        onCheckInAttempt(distanceInMeters)
-        Log.e(TAG, "onLocationReceived: $distanceInMeters")
+        Log.d(TAG, "Current location: $latitude, $longitude")
+
+        if (isLocationCheckForCheckIn) {
+            val gameData = viewModel.getGameData()
+            val distanceInMeters = calculateDistance(
+                latitude, longitude, gameData.latitude, gameData.longitude
+            )
+            Log.d(TAG, "Distance to game location: $distanceInMeters meters")
+            onCheckInAttempt(distanceInMeters)
+            isLocationCheckForCheckIn = false
+        }
     }
 
     override fun onLocationError(error: String) {
-        NewToastUtil.showError(this@GameDetailActivity, "Error: $error")
-        Log.e("Location", "Error: $error")
+        Log.e(TAG, "Location error: $error")
+        NewToastUtil.showError(this, "Location error: $error")
+        isLocationCheckForCheckIn = false
     }
 
     override fun onLocationCanceled() {
-        Log.e("Location", "User canceled location request")
+        Log.d(TAG, "Location request canceled by user")
+        NewToastUtil.showError(this, "Location access required for check-in")
+        isLocationCheckForCheckIn = false
     }
 
-    fun calculateDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Float {
+    private fun calculateDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Float {
         val results = FloatArray(1)
         Location.distanceBetween(lat1, lng1, lat2, lng2, results)
-        return results[0] // distance in meters
+        return results[0]
     }
 
-
-    fun onCheckInAttempt(isWithinRange: Float) {
-        if (isWithinRange < 100) {
+    private fun onCheckInAttempt(distanceInMeters: Float) {
+        if (distanceInMeters <= CHECK_IN_DISTANCE_METERS) {
             updateGameStatus(GameStatus.CHECKED_IN)
         } else {
+            val distanceText = if (distanceInMeters > 1000) {
+                String.format(Locale.getDefault(), "%.1f km", distanceInMeters / 1000)
+            } else {
+                String.format(Locale.getDefault(), "%.0f meters", distanceInMeters)
+            }
             NewToastUtil.showError(
                 this,
-                "You are not in the check-in range of the game location. Distance $isWithinRange"
+                "You are not within check-in range. You are $distanceText away from the game location."
             )
         }
     }
@@ -560,16 +618,11 @@ class GameDetailActivity : AppCompatActivity(), LocationHelper.LocationResultLis
     override fun onDestroy() {
         super.onDestroy()
         try {
-            locationHelper.cleanup()
+            if (::locationHelper.isInitialized) {
+                locationHelper.cleanup()
+            }
         } catch (e: Exception) {
-            Log.e("TAG", "onDestroy: ${e.message}")
+            Log.e(TAG, "Error in onDestroy: ${e.message}")
         }
     }
-
-
-    companion object {
-        const val TAG = "GameDetail"
-    }
 }
-
-

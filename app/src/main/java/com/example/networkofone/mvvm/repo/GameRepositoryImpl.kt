@@ -22,6 +22,8 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class GameRepositoryImpl() {
     private val database: FirebaseDatabase =
@@ -30,6 +32,7 @@ class GameRepositoryImpl() {
     private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     private val notificationRepository = NotificationRepository()
+
     // Original function to get all games
     fun getAllGames(): Flow<List<GameData>> = callbackFlow {
         val listener = object : ValueEventListener {
@@ -183,6 +186,7 @@ class GameRepositoryImpl() {
             null
         }
     }
+
     suspend fun updateGame(game: GameData): Result<Unit> = try {
         gamesRef.child(game.id).setValue(game).await()
         Result.success(Unit)
@@ -192,7 +196,7 @@ class GameRepositoryImpl() {
 
     suspend fun updateGame(game: GameData, status: GameStatus): Result<Unit> = try {
         // Create a map of the fields to update
-
+        Log.e("TAG", "updateGame in GamRepImp: $game")
         val updates = when (status) {
             GameStatus.ACCEPTED -> {
                 mapOf<String, Any>(
@@ -202,6 +206,7 @@ class GameRepositoryImpl() {
                     "acceptedAt" to System.currentTimeMillis()
                 )
             }
+
             GameStatus.PENDING -> {
                 mapOf<String, Any?>(
                     "status" to status,
@@ -212,6 +217,7 @@ class GameRepositoryImpl() {
                     "checkInTime" to null
                 )
             }
+
             else -> {
                 mapOf<String, Any>(
                     "status" to status,
@@ -220,7 +226,14 @@ class GameRepositoryImpl() {
                 )
             }
         }
+        Log.e("TAG", "updateGame in GameRepoImp try: after updates assignment")
         gamesRef.child(game.id).updateChildren(updates).await()
+
+        // Create enhanced notification with detailed message and appropriate type
+        val (notificationMessage, notificationType, notificationTitle) = createNotificationContent(
+            game, status
+        )
+
         notificationRepository.createNotification(
             Notification(
                 userId = game.createdBySchoolId,
@@ -228,15 +241,107 @@ class GameRepositoryImpl() {
                 gameId = game.id,
                 gameName = game.title,
                 refereeId = userId,
-                title = "Game Updated",
-                message = "The status of game \"${game.title}\" has changed from \"${game.status}\" to \"$status\".",
-                type = NotificationTypeLocal.PENDING,
+                refereeName = game.refereeName ?: "Unknown Referee",
+                title = notificationTitle,
+                message = notificationMessage,
+                type = notificationType,
             )
         )
         Result.success(Unit)
     } catch (e: Exception) {
+        Log.e("TAG", "updateGame in GameRepoImp catch: ${e.message}")
         Result.failure(e)
     }
+
+    private fun createNotificationContent(
+        game: GameData,
+        newStatus: GameStatus,
+    ): Triple<String, NotificationTypeLocal, String> {
+        val gameInfo = buildGameInfoString(game)
+        val statusChangeInfo =
+            "Status changed from ${formatStatus(game.status)} to ${formatStatus(newStatus)}"
+
+        return when (newStatus) {
+            GameStatus.ACCEPTED -> {
+                val message =
+                    "Great news! Game \"${game.title}\" has been accepted by referee ${game.refereeName}.\n\n" + "$statusChangeInfo\n\n$gameInfo\n\n" + "The referee will be present at the scheduled time. Please ensure all preparations are complete."
+
+                Triple(message, NotificationTypeLocal.ACCEPTED, "Game Accepted")
+            }
+
+            GameStatus.PENDING -> {
+                val message =
+                    "Your game \"${game.title}\" status has been updated to pending.\n\n" + "$statusChangeInfo\n\n$gameInfo\n\n" + "The game is now waiting for referee assignment. Will be notified once a referee accepts the game."
+
+                Triple(message, NotificationTypeLocal.PENDING, "Game Status Updated")
+            }
+
+            GameStatus.REJECTED -> {
+                val message =
+                    "Unfortunately, your game \"${game.title}\" payout has been rejected.\n\n" + "$statusChangeInfo\n\n$gameInfo\n\n" + "Please review the game details and consider reposting with updated information or contact support for assistance."
+
+                Triple(message, NotificationTypeLocal.REJECTED, "Game Rejected")
+            }
+
+            GameStatus.CHECKED_IN -> {
+                val currentTime = SimpleDateFormat(
+                    "hh:mm a", Locale.getDefault()
+                ).format(System.currentTimeMillis())
+                val message =
+                    "Referee ${game.refereeName} has checked in for game \"${game.title}\" at $currentTime.\n\n" + "$statusChangeInfo\n\n$gameInfo\n\n" + "The referee is now present at the venue. The game can proceed as scheduled."
+
+                Triple(message, NotificationTypeLocal.CHECKED_IN, "Referee Checked In")
+            }
+
+            GameStatus.PAYMENT_REQUESTED -> {
+                val message =
+                    "Payment has been requested for your game \"${game.title}\".\n\n" + "$statusChangeInfo\n\n$gameInfo\n\n" + "<br>Please process the payment to complete the transaction. The referee has fulfilled their duties."
+
+                Triple(message, NotificationTypeLocal.PAYMENT_REQUESTED, "Payment Required")
+            }
+
+            GameStatus.COMPLETED -> {
+                val message =
+                    "Your game \"${game.title}\" has been successfully completed!\n\n" + "$statusChangeInfo\n\n$gameInfo\n\n" + "Thank you for using our service. We hope you had a great game experience. " + "Please consider leaving a review for the referee."
+
+                Triple(message, NotificationTypeLocal.COMPLETED, "Game Completed")
+            }
+        }
+    }
+
+    private fun buildGameInfoString(game: GameData): String {
+        val gameDetails = mutableListOf<String>()
+
+        gameDetails.add("\n<br>📅 Date: ${game.date}")
+        gameDetails.add("\n<br>⏰ Time: ${game.time}")
+        gameDetails.add("\n<br>📍 Location: ${game.location}")
+
+        if (game.feeAmount.isNotEmpty()) {
+            gameDetails.add("\n<br>💰 Fee: $${game.feeAmount}")
+        }
+
+        if (game.refereeName?.isNotEmpty() == true) {
+            gameDetails.add("\n<br>👨‍⚖️ Referee: ${game.refereeName}")
+        }
+
+        if (game.specialNote.isNotEmpty()) {
+            gameDetails.add("\n<br>📝 Note: ${game.specialNote}")
+        }
+
+        return gameDetails.joinToString("\n")
+    }
+
+    private fun formatStatus(status: GameStatus): String {
+        return when (status) {
+            GameStatus.PENDING -> "Pending"
+            GameStatus.ACCEPTED -> "Accepted"
+            GameStatus.REJECTED -> "Payout Rejected"
+            GameStatus.CHECKED_IN -> "Checked In"
+            GameStatus.PAYMENT_REQUESTED -> "Payout Requested"
+            GameStatus.COMPLETED -> "Completed"
+        }
+    }
+
     suspend fun updateGame(payout: PaymentRequestData, status: GameStatus): Result<Unit> = try {
         // Create a map of the fields to update
 
@@ -271,6 +376,7 @@ class GameRepositoryImpl() {
         )
         Result.success(Unit)
     } catch (e: Exception) {
+        Log.e("TAG", "updateGame in GameRepoImp catch: ${e.message}")
         Result.failure(e)
     }
 
@@ -282,42 +388,44 @@ class GameRepositoryImpl() {
     }
 
 
-    suspend fun createPaymentRequest(paymentRequestData: PaymentRequestData): Result<String> = withContext(Dispatchers.IO) {
-        try {
-            val paymentRequestRef = database.getReference("paymentRequests")
+    suspend fun createPaymentRequest(paymentRequestData: PaymentRequestData): Result<String> =
+        withContext(Dispatchers.IO) {
+            try {
+                val paymentRequestRef = database.getReference("paymentRequests")
 
-            /*// First query by refereeId (more efficient than getting all records)
-            val query = paymentRequestRef.orderByChild("refereeId").equalTo(paymentRequestData.refereeId)
-            val snapshot = query.get().await()
+                /*// First query by refereeId (more efficient than getting all records)
+                val query = paymentRequestRef.orderByChild("refereeId").equalTo(paymentRequestData.refereeId)
+                val snapshot = query.get().await()
 
-            // Then check gameId in matching records
-            snapshot.children.forEach { child ->
-                val existingGameId = child.child("gameId").getValue(String::class.java)
-                if (existingGameId == paymentRequestData.gameId) {
-                    return@withContext Result.failure(Exception("Duplicate payment request exists"))
-                }
-            }*/
+                // Then check gameId in matching records
+                snapshot.children.forEach { child ->
+                    val existingGameId = child.child("gameId").getValue(String::class.java)
+                    if (existingGameId == paymentRequestData.gameId) {
+                        return@withContext Result.failure(Exception("Duplicate payment request exists"))
+                    }
+                }*/
 
-            val id = paymentRequestRef.push().key ?: return@withContext Result.failure(Exception("ID generation failed"))
-            paymentRequestRef.child(id).setValue(paymentRequestData.copy(id = id)).await()
+                val id = paymentRequestRef.push().key
+                    ?: return@withContext Result.failure(Exception("ID generation failed"))
+                paymentRequestRef.child(id).setValue(paymentRequestData.copy(id = id)).await()
 
-            notificationRepository.createNotification(
-                Notification(
-                    userId = paymentRequestData.schedularId,
-                    userName = paymentRequestData.schedularName,
-                    gameId = paymentRequestData.gameId,
-                    gameName = paymentRequestData.gameName,
-                    refereeId = paymentRequestData.refereeId,
-                    refereeName = paymentRequestData.refereeName,
-                    title = "Payout Requested",
-                    message = "Dear user, referee \"${paymentRequestData.refereeName}\" has requested payment of $${paymentRequestData.amount} for game \"${paymentRequestData.gameName}\".",
-                    type = NotificationTypeLocal.PAYMENT_REQUESTED
+                notificationRepository.createNotification(
+                    Notification(
+                        userId = paymentRequestData.schedularId,
+                        userName = paymentRequestData.schedularName,
+                        gameId = paymentRequestData.gameId,
+                        gameName = paymentRequestData.gameName,
+                        refereeId = paymentRequestData.refereeId,
+                        refereeName = paymentRequestData.refereeName,
+                        title = "Payout Requested",
+                        message = "Dear user, referee \"${paymentRequestData.refereeName}\" has requested payment of $${paymentRequestData.amount} for game \"${paymentRequestData.gameName}\".",
+                        type = NotificationTypeLocal.PAYMENT_REQUESTED
+                    )
                 )
-            )
-            Result.success(id)
-        } catch (e: Exception) {
-            Result.failure(e)
+                Result.success(id)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
         }
-    }
 
 }

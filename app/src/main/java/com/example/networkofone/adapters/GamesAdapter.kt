@@ -17,6 +17,7 @@ import com.example.networkofone.utils.NumberFormatterUtil
 
 class GamesAdapter(
     private val onGameClick: (GameData) -> Unit,
+    private val onUpdatesClick: (String) -> Unit,
     private val onMoreOptionsClick: (GameData) -> Unit,
 ) : ListAdapter<GameData, GamesAdapter.GameViewHolder>(GameDiffCallback()) {
 
@@ -191,6 +192,7 @@ class GamesAdapter(
                 // Set click listeners
                 root.setOnClickListener { onGameClick(game) }
                 moreOptions.setOnClickListener { onMoreOptionsClick(game) }
+                btnUpdates.setOnClickListener { onUpdatesClick(game.id) }
             }
         }
     }

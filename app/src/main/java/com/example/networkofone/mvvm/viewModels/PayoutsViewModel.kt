@@ -2,6 +2,7 @@ package com.example.networkofone.mvvm.viewModels
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,66 +19,111 @@ class PayoutsViewModel : ViewModel() {
     private val _searchQuery = MutableLiveData("")
     val searchQuery: LiveData<String> = _searchQuery
 
-    private var _payoutsData = MutableLiveData<List<PaymentRequestData>>()
-    private var payoutsLiveData: LiveData<List<PaymentRequestData>> = _payoutsData
+    private val _currentUserType = MutableLiveData<UserType?>()
 
+    // Combined LiveData for real-time updates and search
+    private val _filteredPayouts = MediatorLiveData<List<PaymentRequestData>>()
+    private var allPayoutsLiveData: LiveData<List<PaymentRequestData>>? = null
 
-    fun loadPayouts(userType: UserType? = UserType.SCHOOL) {
-        _uiState.value = PayoutsUiState.Loading
-        viewModelScope.launch {
-            userType?.let {
-                when (it) {
-                    UserType.SCHOOL -> {
-                        _payoutsData.value = repository.getPayoutsBySchedulerId()
-                    }
+    init {
+        // Initialize with empty state
+        _uiState.value = PayoutsUiState.Empty
 
-                    UserType.REFEREE -> {
-                        _payoutsData.value = repository.getPayoutsByRefereeId()
-                    }
+        // Set up the observer for filtered payouts
+        _filteredPayouts.observeForever { filteredPayouts ->
+            updateUiState(filteredPayouts)
+        }
+    }
 
-                    else -> {
-
-                    }
+    private fun updateUiState(filteredPayouts: List<PaymentRequestData>) {
+        when {
+            filteredPayouts.isEmpty() -> {
+                val query = _searchQuery.value?.trim() ?: ""
+                if (query.isNotEmpty()) {
+                    _uiState.value = PayoutsUiState.Empty // No results for search
+                } else {
+                    _uiState.value = PayoutsUiState.Empty // No data at all
                 }
             }
 
-            Log.e("TAG", "loadPayouts viewmodel: ${_payoutsData.value}")
+            else -> _uiState.value = PayoutsUiState.Success(filteredPayouts)
         }
-        payoutsLiveData.observeForever { payouts ->
-            when {
-                payouts.isEmpty() -> _uiState.value = PayoutsUiState.Empty
-                else -> _uiState.value = PayoutsUiState.Success(payouts)
+    }
+
+    fun loadPayouts(userType: UserType? = UserType.SCHOOL) {
+        try {
+            if (_currentUserType.value == userType && allPayoutsLiveData != null) {
+                // Already listening for this user type, no need to reload
+                return
             }
+
+            _currentUserType.value = userType
+            _uiState.value = PayoutsUiState.Loading
+
+            // Remove all previous sources
+            allPayoutsLiveData?.let { _filteredPayouts.removeSource(it) }
+            _filteredPayouts.removeSource(_searchQuery)
+
+            viewModelScope.launch {
+                userType?.let {
+                    // Set up real-time listener based on user type
+                    allPayoutsLiveData = when (it) {
+                        UserType.SCHOOL -> repository.getPayoutsBySchedulerIdLiveData()
+                        UserType.REFEREE -> repository.getPayoutsByRefereeIdLiveData()
+                        else -> null
+                    }
+
+                    // Observe the real-time data
+                    allPayoutsLiveData?.let { liveData ->
+                        _filteredPayouts.addSource(liveData) { payouts ->
+                            Log.d("PayoutsVM", "Real-time data received: ${payouts.size} payouts")
+                            applySearchFilter(payouts, _searchQuery.value ?: "")
+                        }
+
+                        // Also observe search query changes
+                        _filteredPayouts.addSource(_searchQuery) { query ->
+                            val currentPayouts = liveData.value ?: emptyList()
+                            applySearchFilter(currentPayouts, query)
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("PayoutsVM", "Error loading payouts", e)
+            _uiState.value = PayoutsUiState.Error(e.message ?: "Failed to load payouts")
         }
+    }
+
+    private fun applySearchFilter(payouts: List<PaymentRequestData>, query: String) {
+        val trimmedQuery = query.trim()
+
+        if (trimmedQuery.isBlank()) {
+            // No search query, show all payouts
+            _filteredPayouts.value = payouts
+            return
+        }
+
+        // Filter payouts based on search query
+        val filteredPayouts = payouts.filter { payout ->
+            payout.id.contains(trimmedQuery, ignoreCase = true) ||
+                    payout.gameId.contains(trimmedQuery, ignoreCase = true) ||
+                    payout.refereeName.contains(trimmedQuery, ignoreCase = true) ||
+                    payout.schedularName.contains(trimmedQuery, ignoreCase = true) ||
+                    payout.amount.contains(trimmedQuery, ignoreCase = true)
+        }
+
+        _filteredPayouts.value = filteredPayouts
     }
 
     fun searchPayouts(query: String) {
         _searchQuery.value = query
-        _uiState.value = PayoutsUiState.Loading
+        // The search will be automatically applied through the observer
+    }
 
-        if (query.isBlank()) {
-            // If query is empty, show all payouts
-            _payoutsData.value?.let { payouts ->
-                _uiState.value = PayoutsUiState.Success(payouts)
-            }
-            return
-        }
-
-        // Filter the existing payouts data based on the search query
-        val filteredPayouts = _payoutsData.value?.filter { payout ->
-            payout.id.contains(query, ignoreCase = true) || payout.gameId.contains(
-                query, ignoreCase = true
-            ) || payout.refereeName.contains(
-                query, ignoreCase = true
-            ) || payout.schedularName.contains(query, ignoreCase = true) || payout.amount.contains(
-                query, ignoreCase = true
-            )
-        } ?: emptyList()
-
-        when {
-            filteredPayouts.isEmpty() -> _uiState.value = PayoutsUiState.Empty
-            else -> _uiState.value = PayoutsUiState.Success(filteredPayouts)
-        }
+    fun refreshData() {
+        val currentUserType = _currentUserType.value
+        _currentUserType.value = null // Clear current type to force reload
+        loadPayouts(currentUserType) // Reload
     }
 
     fun acceptPayout(payout: PaymentRequestData): LiveData<Boolean> {
@@ -101,8 +147,14 @@ class PayoutsViewModel : ViewModel() {
         val result = MutableLiveData<Boolean>()
 
         viewModelScope.launch {
-            val success = repository.rejectPayout(payout)
-            result.value = success
+            try {
+                val success = repository.rejectPayout(payout)
+                Log.d("PayoutVM", "Payout rejection result: $success")
+                result.value = success
+            } catch (e: Exception) {
+                Log.e("PayoutVM", "Error in payout rejection", e)
+                result.value = false
+            }
         }
 
         return result
@@ -110,12 +162,14 @@ class PayoutsViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        payoutsLiveData.removeObserver { }
+        // Clean up listeners
+        repository.removePayoutsListeners()
+        allPayoutsLiveData?.let { _filteredPayouts.removeSource(it) }
+        _filteredPayouts.removeSource(_searchQuery)
     }
 }
 
-
-// 1. UI State Sealed Class
+// UI State Sealed Class (unchanged)
 sealed class PayoutsUiState {
     object Loading : PayoutsUiState()
     object Empty : PayoutsUiState()

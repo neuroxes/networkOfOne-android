@@ -15,6 +15,7 @@ import com.example.networkofone.databinding.ItemNotificationsBinding
 import com.example.networkofone.mvvm.models.Notification
 import com.example.networkofone.utils.NotificationIconFormatter
 import com.example.networkofone.R
+import com.example.networkofone.databinding.ItemUpdatesBinding
 import java.text.SimpleDateFormat
 import java.util.*
 

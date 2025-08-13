@@ -5,6 +5,6 @@
         android:width="1300dp"
         android:height="1dp" />
     <corners android:radius="4dp" />
-    <solid android:color="?cardBackgroundColor" />
+    <solid android:color="#55aaaaaa" />
 
 </shape>

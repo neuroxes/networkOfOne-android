@@ -17,6 +17,7 @@
             style="@style/textHeading.Large"
             android:layout_marginBottom="8dp"
             android:gravity="center"
+            android:textColor="@color/textColorSecondary"
             android:text="Choose Location"
             />
 
@@ -24,7 +25,6 @@
             android:layout_width="40dp"
             android:layout_height="4dp"
             android:layout_gravity="center"
-            android:layout_marginBottom="8dp"
             android:background="@drawable/line" />
 
     </LinearLayout>
@@ -56,6 +56,7 @@
             style="@style/btn_lwm.outlined"
             android:layout_width="0dp"
             android:layout_marginEnd="8dp"
+            android:textColor="@color/textColorSecondary"
             android:layout_weight="1"
             android:text="Cancel" />
 
@@ -63,6 +64,7 @@
             android:id="@+id/btn_done"
             style="@style/btn_lwm"
             android:layout_width="0dp"
+            android:textColor="@color/white"
             android:layout_weight="1"
             android:text="Done" />
 

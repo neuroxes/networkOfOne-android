@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.networkofone.R
 import com.example.networkofone.activities.AuthenticationActivity
 import com.example.networkofone.activities.GameDetailActivity
+import com.example.networkofone.activities.GameStatusUpdates
 import com.example.networkofone.activities.NotificationActivity
 import com.example.networkofone.adapters.RefereeGamesAdapter
 import com.example.networkofone.databinding.DialogLogoutBinding
@@ -151,6 +152,9 @@ class RefereeHomeFragment(
             verifyLocationForCheckIn(game.latitude, game.longitude)
         }, onRequestPayout = { game ->
             initiatePayoutRequest(game)
+        }, onUpdatesClick = { id ->
+            val intent = Intent(context, GameStatusUpdates::class.java).putExtra("gameId", id)
+            context.startActivity(intent)
         }, onLocationClicked = { lat, long ->
             navigateToGoogleMaps(lat, long)
         })
@@ -348,6 +352,10 @@ class RefereeHomeFragment(
                     "Failed to submit payment request: ${result.exceptionOrNull()?.message}"
                 )
             }
+        }
+
+        viewModel.selectedTab.observe(context){
+            binding.tabLayout.getTabAt(it)?.select()
         }
     }
 

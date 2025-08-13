@@ -18,7 +18,12 @@ class MainActivityViewModel(private val repository: GameRepository) : ViewModel(
     private val _userGames = MutableLiveData<Result<List<GameData>>>()
     val userGames: LiveData<Result<List<GameData>>> = _userGames
 
+    private val _pendingPayoutsCount = MutableLiveData<Int>()
+    val pendingPayoutsCount: LiveData<Int> = _pendingPayoutsCount
 
+    init {
+        loadPendingPayoutsCount()
+    }
     
     fun saveGame(gameData: GameData) {
         viewModelScope.launch {
@@ -36,6 +41,17 @@ class MainActivityViewModel(private val repository: GameRepository) : ViewModel(
         viewModelScope.launch {
             _saveGameResult.value = repository.updateGame(gameData)
         }
+    }
+
+    private fun loadPendingPayoutsCount() {
+        repository.getPendingPayoutsCountLiveData().observeForever {
+            _pendingPayoutsCount.value = it
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        //repository.removePayoutsListeners()
     }
 
 }

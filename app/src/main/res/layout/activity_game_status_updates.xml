@@ -22,7 +22,7 @@
         android:id="@+id/tvHeading"
         style="@style/textHeading"
         android:layout_marginStart="10dp"
-        android:text="Notifications"
+        android:text="Game Updates"
         app:layout_constraintBottom_toBottomOf="@id/ivBack"
         app:layout_constraintStart_toEndOf="@id/ivBack"
         app:layout_constraintTop_toTopOf="@id/ivBack" />
@@ -37,91 +37,10 @@
         app:layout_constraintBottom_toBottomOf="@id/ivBack"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <HorizontalScrollView
-        android:id="@+id/horiScroll"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:clipToPadding="false"
-        android:layout_marginTop="8dp"
-        android:paddingHorizontal="15dp"
-        android:scrollbars="none"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivBack">
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroup"
-            style="@style/Widget.Material3.ChipGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:chipSpacingHorizontal="8dp"
-            app:selectionRequired="true"
-            app:singleSelection="true">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipAll"
-                style="@style/chipStyle"
-                android:checked="true"
-                android:text="All" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipActive"
-                style="@style/chipStyle"
-                android:text="Active" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipPending"
-                style="@style/chipStyle"
-                android:text="Pending" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipPayout"
-                style="@style/chipStyle"
-                android:text="Payouts" />
-
-
-            <!--
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chipBooking"
-                            style="@style/chipStyle"
-                            android:text="Bookings" />
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chipCancel"
-                            style="@style/chipStyle"
-                            android:text="Cancellations" />
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chipReschedule"
-                            style="@style/chipStyle"
-                            android:text="Reschedules" />
-            -->
-            <!--
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chipPayments"
-                            style="@style/chipStyle"
-                            android:text="Payments" />-->
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipReview"
-                style="@style/chipStyle"
-                android:text="Reviews" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipReminders"
-                style="@style/chipStyle"
-                android:text="Reminders" />
-
-        </com.google.android.material.chip.ChipGroup>
-    </HorizontalScrollView>
-
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcvNotiDate"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="15dp"
         android:orientation="vertical"
         android:paddingHorizontal="15dp"
         android:visibility="gone"
@@ -129,9 +48,9 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/horiScroll"
-        tools:itemCount="1"
-        tools:listitem="@layout/item_date_notification" />
+        app:layout_constraintTop_toBottomOf="@id/ivBack"
+        tools:itemCount="2"
+        tools:listitem="@layout/item_updates" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/progress_indicator"
@@ -168,13 +87,13 @@
             android:id="@+id/tvTitle"
             style="@style/textHeading.medium"
             android:layout_marginTop="15dp"
-            android:text="No notifications found." />
+            android:text="No game updates found." />
 
         <TextView
             android:id="@+id/tvMsg"
             style="@style/textBody"
             android:layout_marginTop="5dp"
-            android:text="There is no notification to show you right now."
+            android:text="There are no game updates to show you right now."
             android:textAlignment="center" />
 
     </LinearLayout>

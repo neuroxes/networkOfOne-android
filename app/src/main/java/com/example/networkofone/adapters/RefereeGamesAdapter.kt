@@ -19,6 +19,7 @@ import com.example.networkofone.utils.NumberFormatterUtil
 
 class RefereeGamesAdapter(
     private val onGameClick: (GameData) -> Unit,
+    private val onUpdatesClick: (String) -> Unit,
     private val onAcceptClick: (GameData) -> Unit,
     private val onCheckInClick: (GameData) -> Unit,
     private val onRequestPayout: (GameData) -> Unit,
@@ -218,6 +219,7 @@ class RefereeGamesAdapter(
                             "Request Payout" -> onRequestPayout(game)
                         }
                     }
+                    btnUpdates.setOnClickListener { onUpdatesClick(game.id) }
                     btnLocation.setOnClickListener { onLocationClicked(game.latitude, game.longitude) }
                 }
             } catch (e: Exception) {

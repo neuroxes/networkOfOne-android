@@ -9,6 +9,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -22,7 +23,7 @@ import com.example.networkofone.databinding.ActivityMainBinding
 import com.example.networkofone.databinding.DialogCreateGameBinding
 import com.example.networkofone.databinding.DialogSearchLocationBinding
 import com.example.networkofone.fcm.FCMTokenManager
-import com.example.networkofone.home.PayoutFragmentScheduler
+import com.example.networkofone.home.PayoutFragment
 import com.example.networkofone.home.SchedulerHomeFragment
 import com.example.networkofone.mvvm.models.GameData
 import com.example.networkofone.mvvm.models.GameStatus
@@ -71,7 +72,7 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
 
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var schedulerHomeFragment: SchedulerHomeFragment
-    private lateinit var payoutFragmentScheduler: PayoutFragmentScheduler
+    private lateinit var payoutFragment: PayoutFragment
     private var selectedDate: String = ""
     private var selectedTime: String = ""
     private var latitude: Double = 0.0
@@ -79,9 +80,9 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
 
     private var isEditing = false
 
-    private lateinit var placesClient : PlacesClient
-    private lateinit var searchLocationAdapter : LocationAdapter
-    private lateinit var locationList  : MutableList<LocationModel>
+    private lateinit var placesClient: PlacesClient
+    private lateinit var searchLocationAdapter: LocationAdapter
+    private lateinit var locationList: MutableList<LocationModel>
     private val fcmTokenManager = FCMTokenManager()
 
 
@@ -97,9 +98,9 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
         }
         fragDashboard.onAppFragmentLoader = schedulerHomeFragment
 
-        payoutFragmentScheduler = PayoutFragmentScheduler(this)
+        payoutFragment = PayoutFragment(this)
         fragMore = findViewById(R.id.fragMore)
-        fragMore.onAppFragmentLoader = payoutFragmentScheduler
+        fragMore.onAppFragmentLoader = payoutFragment
 
         locationHelper = LocationHelper()
         locationHelper.initialize(this, this)
@@ -139,7 +140,7 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
                 }
 
                 R.id.more_tab -> {
-                    payoutFragmentScheduler.refreshData()
+                    payoutFragment.refreshData()
                 }
 
                 else -> {
@@ -180,6 +181,9 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
                     loader.endLoadingAnimation()
                 }
             })
+        }
+        viewModel.pendingPayoutsCount.observe(this) { count ->
+            updateNotificationBadge(count)
         }
     }
 
@@ -265,9 +269,10 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
         }
     }
 
-    private fun showLocationSearchDialog(){
-        val (dialog,dialogBinding) = DialogUtil.createBottomDialogWithBinding(this@SchedulerMainActivity,
-            DialogSearchLocationBinding::inflate)
+    private fun showLocationSearchDialog() {
+        val (dialog, dialogBinding) = DialogUtil.createBottomDialogWithBinding(
+            this@SchedulerMainActivity, DialogSearchLocationBinding::inflate
+        )
         dialog.show()
         locationList = mutableListOf()
         searchLocationAdapter = LocationAdapter(locationList) { location ->
@@ -288,22 +293,27 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
                     etLongi.setText(location.longitude.toString())
                 }
             }.addOnFailureListener { exception ->
-                NewToastUtil.showError(this@SchedulerMainActivity, "Place not found: ${exception.message}")
+                NewToastUtil.showError(
+                    this@SchedulerMainActivity, "Place not found: ${exception.message}"
+                )
             }
             KeyboardUtils.hideKeyboard(this@SchedulerMainActivity)
             dialog.dismiss()
         }
         dialogBinding.apply {
-            ivBack.setOnClickListener{ dialog.dismiss()}
+            ivBack.setOnClickListener { dialog.dismiss() }
             recyclerView.adapter = searchLocationAdapter
             Places.initialize(applicationContext, getString(R.string.MAP_API_KEY))
             placesClient = Places.createClient(this@SchedulerMainActivity)
-            searchInput.addTextChangedListener(object : TextWatcher { override fun beforeTextChanged(
-                charSequence: CharSequence?,
-                i: Int,
-                i1: Int,
-                i2: Int,
-            ) {}
+            searchInput.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    charSequence: CharSequence?,
+                    i: Int,
+                    i1: Int,
+                    i2: Int,
+                ) {
+                }
+
                 @SuppressLint("NotifyDataSetChanged")
                 override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {
                     if (!s.toString().isEmpty()) {
@@ -313,6 +323,7 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
                         searchLocationAdapter.notifyDataSetChanged()
                     }
                 }
+
                 override fun afterTextChanged(editable: Editable?) {}
             })
         }
@@ -320,9 +331,7 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
 
     @SuppressLint("NotifyDataSetChanged")
     private fun searchLocations(query: String?) {
-        val request = FindAutocompletePredictionsRequest.builder()
-            .setQuery(query)
-            .build()
+        val request = FindAutocompletePredictionsRequest.builder().setQuery(query).build()
 
         placesClient.findAutocompletePredictions(request).addOnCompleteListener({ task ->
             if (task.isSuccessful) {
@@ -341,11 +350,18 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
                     searchLocationAdapter.notifyDataSetChanged()
                 }
             } else {
-                NewToastUtil.showError(this@SchedulerMainActivity, "searchLocations: Error in fetching List of Locations\nError : ${task.exception?.message}")
-                Log.e("TAG", "searchLocations: Error in fetching List of Locations\\nError : ${task.exception?.message}")
+                NewToastUtil.showError(
+                    this@SchedulerMainActivity,
+                    "searchLocations: Error in fetching List of Locations\nError : ${task.exception?.message}"
+                )
+                Log.e(
+                    "TAG",
+                    "searchLocations: Error in fetching List of Locations\\nError : ${task.exception?.message}"
+                )
             }
         })
     }
+
     private fun DialogCreateGameBinding.setupTextWatchers() {
         etGameName.addTextWatcher(layGame)
         etLati.addTextWatcher(layLati)
@@ -495,8 +511,8 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
         return GameData(
             title = etGameName.text.toString().trim(),
             location = tvLocation.text.toString().trim(),
-            latitude = this@SchedulerMainActivity.latitude,
-            longitude = this@SchedulerMainActivity.longitude,
+            latitude = etLati.text.toString().toDouble(),
+            longitude = etLongi.text.toString().toDouble(),
             date = etDate.text.toString().trim(),
             time = etTime.text.toString().trim(),
             feeAmount = etPrice.text.toString().trim(),
@@ -581,6 +597,16 @@ class SchedulerMainActivity : AppCompatActivity(), LocationHelper.LocationResult
 
         } catch (e: Exception) {
             Log.e("TAG", "updateLocationUI: ${e.message}")
+        }
+    }
+    private fun updateNotificationBadge(count: Int) {
+        // Update your notification badge/indicator
+        val badge = binding.noOfNotifications
+        if (count > 0) {
+            badge.visibility = View.VISIBLE
+            badge.text = if (count > 99) "99+" else count.toString()
+        } else {
+            badge.visibility = View.GONE
         }
     }
 

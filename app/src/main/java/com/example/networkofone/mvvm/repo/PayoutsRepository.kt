@@ -1,6 +1,8 @@
 package com.example.networkofone.mvvm.repo
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.networkofone.mvvm.models.GameStatus
 import com.example.networkofone.mvvm.models.Notification
 import com.example.networkofone.mvvm.models.NotificationData
@@ -10,8 +12,14 @@ import com.example.networkofone.mvvm.models.PaymentRequestData
 import com.example.networkofone.mvvm.models.PaymentStatus
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
@@ -23,6 +31,10 @@ class PayoutsRepository {
     private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     private val notificationRepo = NotificationRepositoryFirebase()
     private val notificationRepoLocal = NotificationRepository()
+
+    private var schedulerPayoutsListener: ValueEventListener? = null
+    private var refereePayoutsListener: ValueEventListener? = null
+
 
     suspend fun createPaymentRequest(paymentRequestData: PaymentRequestData): Result<String> =
         withContext(Dispatchers.IO) {
@@ -47,6 +59,137 @@ class PayoutsRepository {
                 Result.failure(e)
             }
         }
+
+    fun getPayoutsBySchedulerIdLiveData(): LiveData<List<PaymentRequestData>> {
+        val liveData = MutableLiveData<List<PaymentRequestData>>()
+
+        val query = payoutsRef.orderByChild("schedularId").equalTo(userId)
+        schedulerPayoutsListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                try {
+                    val payouts = snapshot.children.mapNotNull { child ->
+                        child.getValue(PaymentRequestData::class.java)
+                    }
+
+                    liveData.postValue(payouts)
+
+                    if (payouts.isEmpty()) {
+                        Log.e("Payout Repo", "No payouts found for schedulerId: $userId")
+                    }
+                } catch (e: Exception) {
+                    Log.e("PayRepo", "getPayoutsBySchedulerIdLiveData onDataChange: ${e.message}")
+                    liveData.postValue(emptyList())
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("PayRepo", "getPayoutsBySchedulerIdLiveData onCancelled: ${error.message}")
+                liveData.postValue(emptyList())
+            }
+        }
+
+        query.addValueEventListener(schedulerPayoutsListener!!)
+        return liveData
+    }
+
+    // Real-time listener for referee payouts
+    fun getPayoutsByRefereeIdLiveData(): LiveData<List<PaymentRequestData>> {
+        val liveData = MutableLiveData<List<PaymentRequestData>>()
+
+        val query = payoutsRef.orderByChild("refereeId").equalTo(userId)
+        refereePayoutsListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                try {
+                    val payouts = snapshot.children.mapNotNull { child ->
+                        child.getValue(PaymentRequestData::class.java)
+                    }
+
+                    liveData.postValue(payouts)
+
+                    if (payouts.isEmpty()) {
+                        Log.e("Payout Repo", "No payouts found for refereeId: $userId")
+                    }
+                } catch (e: Exception) {
+                    Log.e("PayRepo", "getPayoutsByRefereeIdLiveData onDataChange: ${e.message}")
+                    liveData.postValue(emptyList())
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("PayRepo", "getPayoutsByRefereeIdLiveData onCancelled: ${error.message}")
+                liveData.postValue(emptyList())
+            }
+        }
+
+        query.addValueEventListener(refereePayoutsListener!!)
+        return liveData
+    }
+
+    // Flow-based alternative (more modern approach)
+    fun getPayoutsBySchedulerIdFlow(): Flow<List<PaymentRequestData>> = callbackFlow {
+        val query = payoutsRef.orderByChild("schedularId").equalTo(userId)
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                try {
+                    val payouts = snapshot.children.mapNotNull { child ->
+                        child.getValue(PaymentRequestData::class.java)
+                    }
+                    trySend(payouts)
+                } catch (e: Exception) {
+                    Log.e("PayRepo", "getPayoutsBySchedulerIdFlow onDataChange: ${e.message}")
+                    trySend(emptyList())
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("PayRepo", "getPayoutsBySchedulerIdFlow onCancelled: ${error.message}")
+                trySend(emptyList())
+                close(error.toException())
+            }
+        }
+
+        query.addValueEventListener(listener)
+        awaitClose { query.removeEventListener(listener) }
+    }
+
+    fun getPayoutsByRefereeIdFlow(): Flow<List<PaymentRequestData>> = callbackFlow {
+        val query = payoutsRef.orderByChild("refereeId").equalTo(userId)
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                try {
+                    val payouts = snapshot.children.mapNotNull { child ->
+                        child.getValue(PaymentRequestData::class.java)
+                    }
+                    trySend(payouts)
+                } catch (e: Exception) {
+                    Log.e("PayRepo", "getPayoutsByRefereeIdFlow onDataChange: ${e.message}")
+                    trySend(emptyList())
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("PayRepo", "getPayoutsByRefereeIdFlow onCancelled: ${error.message}")
+                trySend(emptyList())
+                close(error.toException())
+            }
+        }
+
+        query.addValueEventListener(listener)
+        awaitClose { query.removeEventListener(listener) }
+    }
+
+    // Clean up listeners
+    fun removePayoutsListeners() {
+        schedulerPayoutsListener?.let { listener ->
+            payoutsRef.orderByChild("schedularId").equalTo(userId).removeEventListener(listener)
+            schedulerPayoutsListener = null
+        }
+
+        refereePayoutsListener?.let { listener ->
+            payoutsRef.orderByChild("refereeId").equalTo(userId).removeEventListener(listener)
+            refereePayoutsListener = null
+        }
+    }
 
     suspend fun getPayoutsBySchedulerId(): List<PaymentRequestData> = withContext(
         Dispatchers.IO
@@ -113,39 +256,43 @@ class PayoutsRepository {
         }
     }
 
-    suspend fun getPayoutBySchedulerId(schedulerId: String): PaymentRequestData? = withContext(Dispatchers.IO) {
-        try {
-            val query = payoutsRef.orderByChild("schedularId").equalTo(schedulerId).limitToFirst(1)
-            val snapshot = query.get().await()
+    suspend fun getPayoutBySchedulerId(schedulerId: String): PaymentRequestData? =
+        withContext(Dispatchers.IO) {
+            try {
+                val query =
+                    payoutsRef.orderByChild("schedularId").equalTo(schedulerId).limitToFirst(1)
+                val snapshot = query.get().await()
 
-            snapshot.children.firstOrNull()?.getValue(PaymentRequestData::class.java)?.also {
-                Log.d("PayRepo", "Found payout for schedulerId: $schedulerId")
-            } ?: run {
-                Log.e("PayRepo", "No payout found for schedulerId: $schedulerId")
+                snapshot.children.firstOrNull()?.getValue(PaymentRequestData::class.java)?.also {
+                    Log.d("PayRepo", "Found payout for schedulerId: $schedulerId")
+                } ?: run {
+                    Log.e("PayRepo", "No payout found for schedulerId: $schedulerId")
+                    null
+                }
+            } catch (e: Exception) {
+                Log.e("PayRepo", "getPayoutBySchedulerId: ${e.message}")
                 null
             }
-        } catch (e: Exception) {
-            Log.e("PayRepo", "getPayoutBySchedulerId: ${e.message}")
-            null
         }
-    }
 
-    suspend fun getPayoutByRefereeId(refereeId: String): PaymentRequestData? = withContext(Dispatchers.IO) {
-        try {
-            val query = payoutsRef.orderByChild("refereeId").equalTo(refereeId).limitToFirst(1)
-            val snapshot = query.get().await()
+    suspend fun getPayoutByRefereeId(refereeId: String): PaymentRequestData? =
+        withContext(Dispatchers.IO) {
+            try {
+                val query = payoutsRef.orderByChild("refereeId").equalTo(refereeId).limitToFirst(1)
+                val snapshot = query.get().await()
 
-            snapshot.children.firstOrNull()?.getValue(PaymentRequestData::class.java)?.also {
-                Log.d("PayRepo", "Found payout for refereeId: $refereeId")
-            } ?: run {
-                Log.e("PayRepo", "No payout found for refereeId: $refereeId")
+                snapshot.children.firstOrNull()?.getValue(PaymentRequestData::class.java)?.also {
+                    Log.d("PayRepo", "Found payout for refereeId: $refereeId")
+                } ?: run {
+                    Log.e("PayRepo", "No payout found for refereeId: $refereeId")
+                    null
+                }
+            } catch (e: Exception) {
+                Log.e("PayRepo", "getPayoutByRefereeId: ${e.message}")
                 null
             }
-        } catch (e: Exception) {
-            Log.e("PayRepo", "getPayoutByRefereeId: ${e.message}")
-            null
         }
-    }
+
     suspend fun acceptPayout(payout: PaymentRequestData): Boolean {
         val updates = mapOf(
             "status" to PaymentStatus.APPROVED, "paidAt" to System.currentTimeMillis()

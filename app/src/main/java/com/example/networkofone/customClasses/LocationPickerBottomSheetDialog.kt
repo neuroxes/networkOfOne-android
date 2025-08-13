@@ -2,17 +2,15 @@ package com.example.networkofone.customClasses
 
 
 // LocationPickerBottomSheetDialog.kt
-import android.Manifest
-import android.content.pm.PackageManager
 import android.location.Geocoder
-import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.core.content.ContextCompat
+import com.example.networkofone.R
+import com.example.networkofone.utils.LocationHelper
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -30,14 +28,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
-import com.example.networkofone.R
+import java.util.Locale
 
 
 data class LocationResult(
     val latitude: Double,
     val longitude: Double,
-    val address: String
+    val address: String,
 )
 
 class LocationPickerBottomSheetDialog : BottomSheetDialogFragment(), OnMapReadyCallback {
@@ -47,12 +44,35 @@ class LocationPickerBottomSheetDialog : BottomSheetDialogFragment(), OnMapReadyC
     private var fusedLocationClient: FusedLocationProviderClient? = null
     private var selectedLocation: LatLng? = null
     private var geocoder: Geocoder? = null
+    private var locationHelper: LocationHelper? = null
 
     private var onLocationSelectedListener: ((LocationResult) -> Unit)? = null
 
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
+    // Location callback for LocationHelper
+    private val locationResultListener = object : LocationHelper.LocationResultListener {
+        override fun onLocationReceived(latitude: Double, longitude: Double) {
+            val currentLatLng = LatLng(latitude, longitude)
 
+            // Move camera to current location and zoom in
+            googleMap?.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f)
+            )
+
+            // Set current location as initially selected
+            updateSelectedLocation(currentLatLng)
+        }
+
+        override fun onLocationError(error: String) {
+            // Handle location error - could show a toast or default to a city center
+            // For now, we'll just log it and let the user manually select location
+        }
+
+        override fun onLocationCanceled() {
+            // User canceled location request - they can still manually select location on map
+        }
+    }
+
+    companion object {
         fun newInstance(onLocationSelected: (LocationResult) -> Unit): LocationPickerBottomSheetDialog {
             return LocationPickerBottomSheetDialog().apply {
                 onLocationSelectedListener = onLocationSelected
@@ -63,9 +83,41 @@ class LocationPickerBottomSheetDialog : BottomSheetDialogFragment(), OnMapReadyC
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.dialog_location_picker, container, false)
+    }
+
+    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Setup full height bottom sheet
+        setupFullHeightBottomSheet()
+
+        // Initialize services
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        geocoder = Geocoder(requireContext(), Locale.getDefault())
+
+        // Initialize LocationHelper
+        locationHelper = LocationHelper()
+        locationHelper?.initialize(this, locationResultListener)
+
+        // Setup map
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+
+        // Setup buttons
+        setupButtons(view)
+    }*/
+
+    private fun setupMap() {
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+        if (mapFragment == null) {
+            // Fragment not ready yet, try again after a delay
+            view?.postDelayed({ setupMap() }, 100)
+            return
+        }
+        mapFragment.getMapAsync(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,9 +130,12 @@ class LocationPickerBottomSheetDialog : BottomSheetDialogFragment(), OnMapReadyC
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         geocoder = Geocoder(requireContext(), Locale.getDefault())
 
-        // Setup map
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+        // Initialize LocationHelper
+        locationHelper = LocationHelper()
+        locationHelper?.initialize(this, locationResultListener)
+
+        // Setup map with delay to ensure fragment is ready
+        setupMap()
 
         // Setup buttons
         setupButtons(view)
@@ -90,7 +145,8 @@ class LocationPickerBottomSheetDialog : BottomSheetDialogFragment(), OnMapReadyC
         dialog?.let { dialog ->
             if (dialog is BottomSheetDialog) {
                 dialog.setOnShowListener {
-                    val bottomSheet = dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+                    val bottomSheet =
+                        dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
                     bottomSheet?.let { sheet ->
                         val behavior = BottomSheetBehavior.from(sheet)
                         behavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -113,6 +169,7 @@ class LocationPickerBottomSheetDialog : BottomSheetDialogFragment(), OnMapReadyC
         doneButton.apply {
             backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.brand)
         }
+
         cancelButton.setOnClickListener {
             dismiss()
         }
@@ -150,50 +207,23 @@ class LocationPickerBottomSheetDialog : BottomSheetDialogFragment(), OnMapReadyC
         // Enable my location if permission is granted
         enableMyLocation()
 
-        // Get current location and move camera
-        getCurrentLocationAndMoveCamera()
+        // Use LocationHelper to get current location with proper permission handling
+        getCurrentLocationWithLocationHelper()
     }
 
     private fun enableMyLocation() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            googleMap?.isMyLocationEnabled = true
-        } else {
-            requestLocationPermission()
-        }
-    }
-
-    private fun requestLocationPermission() {
-        ActivityCompat.requestPermissions(
-            requireActivity(),
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ),
-            LOCATION_PERMISSION_REQUEST_CODE
-        )
-    }
-
-    private fun getCurrentLocationAndMoveCamera() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            fusedLocationClient?.lastLocation?.addOnSuccessListener { location: Location? ->
-                location?.let {
-                    val currentLatLng = LatLng(it.latitude, it.longitude)
-                    googleMap?.animateCamera(
-                        CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f)
-                    )
-                    // Set current location as initially selected
-                    updateSelectedLocation(currentLatLng)
-                }
+        if (locationHelper?.isLocationPermissionGranted() == true) {
+            try {
+                googleMap?.isMyLocationEnabled = true
+            } catch (e: SecurityException) {
+                // Permission check failed, let LocationHelper handle it
             }
         }
+    }
+
+    private fun getCurrentLocationWithLocationHelper() {
+        // Use LocationHelper to handle permissions and get current location
+        locationHelper?.getCurrentLocation()
     }
 
     private fun updateSelectedLocation(latLng: LatLng) {
@@ -204,16 +234,14 @@ class LocationPickerBottomSheetDialog : BottomSheetDialogFragment(), OnMapReadyC
 
         // Add new marker
         currentMarker = googleMap?.addMarker(
-            MarkerOptions()
-                .position(latLng)
-                .title("Selected Location")
+            MarkerOptions().position(latLng).title("Selected Location")
         )
 
         // Move camera to selected location
         googleMap?.animateCamera(CameraUpdateFactory.newLatLng(latLng))
     }
 
-    fun getAddressFromLocation(latLng: LatLng, callback: (String) -> Unit) {
+    private fun getAddressFromLocation(latLng: LatLng, callback: (String) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val addresses = geocoder?.getFromLocation(latLng.latitude, latLng.longitude, 1)
@@ -234,19 +262,10 @@ class LocationPickerBottomSheetDialog : BottomSheetDialogFragment(), OnMapReadyC
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                enableMyLocation()
-                getCurrentLocationAndMoveCamera()
-            }
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        // Clean up LocationHelper resources
+        locationHelper?.cleanup()
     }
 
     override fun getTheme(): Int = R.style.BottomSheetDialogTheme
