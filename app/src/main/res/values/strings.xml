@@ -14,5 +14,5 @@
     <string name="pay2">Bank\n<small>Transactions</small></string>
     <string name="pay3">Paypal\n<small>Transaction</small></string>
     <string name="pay4">Vimeo\n<small>Transaction</small></string>
-    <string name="MAP_API_KEY">AIzaSyCHXMmlfIfL2w_rqOgDF2yPvCTDDEhfas8</string>
+    <string name="MAP_API_KEY">AIzaSyCHXMmlfIfL2w_rqOgDF2jabbaryPvCTDDEhfas8</string>
 </resources>
